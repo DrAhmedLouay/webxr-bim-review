@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🥽 غرفة فحص التعارضات الفراغية (WebXR BIM Lab)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0b0f19;
+            color: #ffffff;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+        #webgl-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        /* Top Navigation Header (Always Visible & Prominent) */
+        #header-bar {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            left: 18px;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.94);
+            backdrop-filter: blur(14px);
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+        .title-group h1 {
+            font-size: 1.12rem;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .title-group p {
+            font-size: 0.76rem;
+            color: #94a3b8;
+        }
+        .actions-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+        .btn-lab-active {
+            background: rgba(14, 165, 233, 0.25);
+            border: 1.5px solid #38bdf8;
+            color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+        }
+        .btn-upload {
+            background: #059669;
+            box-shadow: 0 4px 14px rgba(5, 150, 105, 0.4);
+        }
+        .btn-upload:hover {
+            background: #047857;
+        }
+        .btn-center {
+            background: #0284c7;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+        }
+        .btn-center:hover {
+            background: #0369a1;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #e2e8f0;
+        }
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        /* 2D Info Panel */
+        #desktop-info-panel {
+            position: absolute;
+            bottom: 25px;
+            right: 25px;
+            width: 330px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(14px);
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            z-index: 90;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+        #desktop-info-panel h3 {
+            font-size: 1rem;
+            color: #38bdf8;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .prop-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            margin-bottom: 7px;
+        }
+        .prop-label {
+            color: #94a3b8;
+        }
+        .prop-val {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+        .status-pill {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            font-weight: 600;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+        #instructions {
+            position: absolute;
+            bottom: 25px;
+            left: 25px;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(10px);
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            z-index: 90;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            line-height: 1.6;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            max-width: 420px;
+        }
+        #drop-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 15, 25, 0.92);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            border: 4px dashed #38bdf8;
+            font-size: 1.6rem;
+            color: #38bdf8;
+            font-weight: bold;
+            pointer-events: none;
+        }
+        #VRButton {
+            border-radius: 8px !important;
+            font-weight: bold !important;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.5) !important;
+            z-index: 95 !important;
+            bottom: 25px !important;
+            padding: 10px 24px !important;
+            font-size: 0.9rem !important;
+        }
+        /* Loading Notification */
+        #loading-toast {
+            display: none;
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.98);
+            border: 1px solid #38bdf8;
+            color: white;
+            padding: 18px 26px;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            z-index: 1001;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.7);
+            min-width: 380px;
+            text-align: right;
+        }
+        /* Clash Beacon Pulse Animation */
+        .clash-badge {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+    </style>
+
+    <!-- Standard Three.js r128 Core & Helpers -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/webxr/VRButton.js"></script>
+
+    <!-- Compatibility Bridge for IFC buffer geometry merging -->
+    <script>
+      if (window.THREE && window.THREE.BufferGeometryUtils && !window.THREE.BufferGeometryUtils.mergeGeometries) {
+        window.THREE.BufferGeometryUtils.mergeGeometries = window.THREE.BufferGeometryUtils.mergeBufferGeometries;
+      }
+    </script>
+
+    <!-- Web-IFC Engine (WASM + API) -->
+    <script src="https://unpkg.com/web-ifc@0.0.57/web-ifc-api-iife.js"></script>
+    <!-- Web-IFC-Three UMD Loader (Works natively with window.THREE) -->
+    <script src="https://unpkg.com/web-ifc-three@0.0.126/IFCLoader.umd.cjs"></script>
+</head>
+<body>
+    <!-- 3D WebGL Canvas Container: ACTIVE & IN CENTER BY DEFAULT -->
+    <div id="webgl-container"></div>
+
+    <!-- Drag & Drop Overlay -->
+    <div id="drop-overlay">📥 أفلت ملف النموذج (.GLB / .GLTF / .IFC) هنا ليتم وضعه في منتصف الشاشة فوراً</div>
+    
+    <!-- Floating Loading Notification -->
+    <div id="loading-toast">
+        <div id="toast-title" style="font-weight: bold; color: #38bdf8; font-size: 0.95rem; margin-bottom: 6px;">جاري معالجة وتوسيط الموديل...</div>
+        <div id="toast-file-info" style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 8px;">📁 جاري قراءة الملف...</div>
+        <div id="toast-status" style="font-size: 0.82rem; color: #e2e8f0; line-height: 1.5;">يرجى الانتظار...</div>
+        <div id="toast-error" style="display: none; color: #f87171; font-size: 0.8rem; margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(248, 113, 113, 0.3);"></div>
+    </div>
+
+    <!-- Hidden File Input for IFC and GLB -->
+    <input type="file" id="file-input" accept=".ifc,.glb,.gltf" style="display: none;">
+
+    <!-- Top Navigation Header -->
+    <div id="header-bar">
+        <div class="title-group">
+            <h1>🥽 غرفة فحص التعارضات (WebXR Lab)</h1>
+            <p>مراجعة التصاميم وتنسيق النماذج المعمارية والـ MEP بمقياس 1:1</p>
+        </div>
+        <div class="actions-group">
+            <!-- View Mode Switcher: WebXR Lab is Default Active -->
+            <button class="btn btn-lab-active" id="tab-lab-view">🥽 غرفة التعارضات (WebXR Lab)</button>
+            <button class="btn btn-outline" id="tab-speckle-view">🏢 نموذج Speckle السحابي</button>
+            
+            <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 4px;"></div>
+            
+            <button class="btn btn-upload" id="btn-trigger-upload">📂 استيراد نموذج آخر (GLB / IFC)</button>
+            <button class="btn btn-center" id="btn-center-model" title="إعادة الكاميرا وتوسيط الموديل في منتصف الشاشة">🎯 وضع المجسم في المنتصف</button>
+            <button class="btn btn-outline" id="btn-toggle-ceiling">الأسقف</button>
+            <button class="btn btn-outline" id="btn-export-issues">تقرير التعارضات (CSV)</button>
+            <span class="status-pill" id="clash-counter">🔴 التعارضات المرصودة: 0</span>
+        </div>
+    </div>
+
+    <!-- Speckle Live Model Container (Secondary View) -->
+    <div id="speckle-embed-container" style="display: none; position: absolute; top: 68px; left: 0; width: 100vw; height: calc(100vh - 68px); z-index: 50; background: #0b0f19;">
+        <iframe id="speckle-frame" src="https://app.speckle.systems/projects/9634c835c9/models/36a4c21a29#embed=%7B%22hideSidebar%22%3Afalse%2C%22hideHeader%22%3Afalse%7D" width="100%" height="100%" frameborder="0" allow="xr-spatial-tracking; fullscreen; accelerometer; gyroscope"></iframe>
+    </div>
+
+    <!-- 2D Element Inspection Panel -->
+    <div id="desktop-info-panel">
+        <h3>
+            <span id="panel-elem-name">بيانات العنصر المختار</span>
+            <span id="panel-badge" class="clash-badge">BIM Metadata</span>
+        </h3>
+        <div class="prop-row"><span class="prop-label">المعرف (Element ID):</span><span class="prop-val" id="val-id">-</span></div>
+        <div class="prop-row"><span class="prop-label">التصنيف (Category):</span><span class="prop-val" id="val-cat">-</span></div>
+        <div class="prop-row"><span class="prop-label">النظام (System):</span><span class="prop-val" id="val-sys">-</span></div>
+        <div class="prop-row"><span class="prop-label">الأبعاد / القطر:</span><span class="prop-val" id="val-dim">-</span></div>
+        <div class="prop-row"><span class="prop-label">خلوص الصيانة / الكود:</span><span class="prop-val" id="val-clearance">-</span></div>
+        <div class="prop-row"><span class="prop-label">حالة الفحص الفراغي:</span><span class="prop-val" id="val-status">-</span></div>
+        <button class="btn" style="width: 100%; margin-top: 12px; justify-content: center; background: #ef4444;" id="btn-flag-clash">🚩 تسجيل كتعارض تشغيلي</button>
+    </div>
+
+    <!-- Guidance Note (Bottom Left) -->
+    <div id="instructions">
+        🔍 <b>غرفة فحص التعارضات نشطة الآن:</b> تفحص أنظمة التكييف، الأكسجين الطبي، والصمامات في منتصف الشاشة.<br>
+        🖱️ <b>التحكم:</b> انقر على أي عنصر لمعاينة مواصفاته. اسحب للدوران وحرك العجلة للتقريب.<br>
+        🎯 <b>التوسيط:</b> اضغط زر <b>"وضع المجسم في المنتصف"</b> في أي وقت لإعادة ضبط المشهد كاملاً.<br>
+        🥽 <b>الواقع الافتراضي:</b> انقر زر <b>ENTER VR</b> بالأسفل لدخول الفراغ بمقياس واقعي 1:1 بنظارة Meta Quest.
+    </div>
+
+    <!-- Main 3D Engine & BIM Inspection Logic -->
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            if (typeof THREE === 'undefined') {
+                alert('تنبيه: تعذر تحميل مكتبة Three.js. يرجى التأكد من اتصال الإنترنت ثم إعادة تحديث الصفحة.');
+                return;
+            }
+
+            // =====================================================================
+            // 1. Scene, Camera, Renderer Setup (WebXR Ready)
+            // =====================================================================
+            var container = document.getElementById('webgl-container');
+            var scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0b0f19);
+
+            var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.05, 500000);
+            camera.position.set(0, 2.2, 5.8);
+
+            var renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.xr.enabled = true;
+            container.appendChild(renderer.domElement);
+
+            if (THREE.VRButton) {
+                document.body.appendChild(THREE.VRButton.createButton(renderer));
+            }
+
+            var controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.target.set(0, 1.8, 0);
+
+            // =====================================================================
+            // 2. High-Performance Architectural Lighting
+            // =====================================================================
+            var ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
+            scene.add(ambientLight);
+
+            var hemiLight = new THREE.HemisphereLight(0xffffff, 0x1e293b, 0.85);
+            scene.add(hemiLight);
+
+            var dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
+            dirLight1.position.set(30, 50, 30);
+            dirLight1.castShadow = true;
+            scene.add(dirLight1);
+
+            var dirLight2 = new THREE.DirectionalLight(0x93c5fd, 0.85);
+            dirLight2.position.set(-30, 40, -30);
+            scene.add(dirLight2);
+
+            function adjustLighting(radius) {
+                var d = Math.max(25, radius * 2.5);
+                ambientLight.intensity = 1.0;
+                hemiLight.intensity = 0.85;
+                dirLight1.position.set(d, d * 1.4, d);
+                dirLight2.position.set(-d, d * 1.0, -d);
+            }
+
+            // =====================================================================
+            // 3. WebXR Coordination Lab Room & Multi-Disciplinary Clashes
+            // =====================================================================
+            var bimElements = [];
+            var webxrLabGroup = new THREE.Group();
+            var ceilingGroup = new THREE.Group();
+            scene.add(webxrLabGroup);
+            webxrLabGroup.add(ceilingGroup);
+
+            // Materials
+            var matFloor = new THREE.MeshStandardMaterial({ color: 0x172033, roughness: 0.5, metalness: 0.1 });
+            var matWall = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.85 });
+            var matCeiling = new THREE.MeshStandardMaterial({ color: 0xf8fafc, transparent: true, opacity: 0.85 });
+            var matDuct = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.85, roughness: 0.25 });
+            var matMedGas = new THREE.MeshStandardMaterial({ color: 0x10b981, metalness: 0.6, roughness: 0.35 });
+            var matWater = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.65, roughness: 0.3 });
+            var matValve = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.8, roughness: 0.25 });
+            var matFire = new THREE.MeshStandardMaterial({ color: 0xef4444, metalness: 0.5, roughness: 0.4 });
+            var matDoor = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6 });
+
+            // Floor & Grid
+            var floorMesh = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), matFloor);
+            floorMesh.rotation.x = -Math.PI / 2;
+            floorMesh.receiveShadow = true;
+            webxrLabGroup.add(floorMesh);
+
+            var grid = new THREE.GridHelper(14, 14, 0x38bdf8, 0x334155);
+            grid.position.y = 0.01;
+            webxrLabGroup.add(grid);
+
+            // Architectural Walls
+            function addWall(w, h, d, x, y, z) {
+                var wall = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), matWall);
+                wall.position.set(x, y, z);
+                wall.receiveShadow = true;
+                wall.castShadow = true;
+                webxrLabGroup.add(wall);
+            }
+            addWall(14, 3.8, 0.2, 0, 1.9, -7);
+            addWall(0.2, 3.8, 14, -7, 1.9, 0);
+            addWall(0.2, 3.8, 14, 7, 1.9, 0);
+
+            // Ceiling with inspection toggle
+            var ceiling = new THREE.Mesh(new THREE.BoxGeometry(13.8, 0.05, 13.8), matCeiling);
+            ceiling.position.set(0, 3.2, 0);
+            ceilingGroup.add(ceiling);
+
+            // Register BIM helper
+            function registerBIM(mesh, data, isLabElem) {
+                mesh.userData = data || {};
+                mesh.userData.isBIM = true;
+                mesh.userData.isLabElem = !!isLabElem;
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                bimElements.push(mesh);
+                return mesh;
+            }
+
+            // 1. Primary HVAC Duct (Air Distribution)
+            var ductGeo = new THREE.BoxGeometry(7.0, 0.5, 0.8);
+            var mainDuct = new THREE.Mesh(ductGeo, matDuct);
+            mainDuct.position.set(0, 2.5, 0);
+            webxrLabGroup.add(mainDuct);
+            registerBIM(mainDuct, {
+                elementId: 'MEP-HVAC-DUCT-401',
+                category: 'مجرى هواء تكييف مركزي (Supply Air Duct)',
+                system: 'HVAC Air Distribution',
+                dimensions: '800x500 mm Galvanized Sheet Metal',
+                clearance: 'يتطلب خلوص صيانة 150 مم',
+                status: 'تعارض حرج مع ماسورة الأكسجين الطبي'
+            }, true);
+
+            // 2. Medical Oxygen Line (Critical Clash Crossing Through Duct)
+            var pipeGeo = new THREE.CylinderGeometry(0.04, 0.04, 8.0, 20);
+            var oxygenPipe = new THREE.Mesh(pipeGeo, matMedGas);
+            oxygenPipe.rotation.z = Math.PI / 2;
+            oxygenPipe.position.set(0, 2.52, 0.12);
+            webxrLabGroup.add(oxygenPipe);
+            registerBIM(oxygenPipe, {
+                elementId: 'MEP-MEDGAS-O2-108',
+                category: 'ماسورة أكسجين طبي (Medical Gas Pipe)',
+                system: 'Life Safety / Medical Gas',
+                dimensions: 'Ø 40 mm Medical Copper (Type L)',
+                clearance: 'مخالف لكود NFPA 99 و ASHRAE 170 (حظر اختراق مجاري الهواء)',
+                status: '🔴 تعارض فراغي مباشر (Physical Interpenetration)'
+            }, true);
+
+            // 3. Chilled Water Pipe
+            var chwGeo = new THREE.CylinderGeometry(0.065, 0.065, 8.0, 20);
+            var chwPipe = new THREE.Mesh(chwGeo, matWater);
+            chwPipe.rotation.x = Math.PI / 2;
+            chwPipe.position.set(1.5, 2.7, 0);
+            webxrLabGroup.add(chwPipe);
+            registerBIM(chwPipe, {
+                elementId: 'MEP-PLUMB-CHW-204',
+                category: 'ماسورة مياه مثلجة (Chilled Water Supply)',
+                system: 'HVAC Hydronics',
+                dimensions: 'Ø 65 mm Welded Steel',
+                clearance: 'يتطلب عزل حراري 50 مم ضد التكثيف',
+                status: 'تم الفحص - خلوص العزل محقق'
+            }, true);
+
+            // 4. Isolation Valve with Maintenance Clash
+            var valveGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.25, 16);
+            var valve = new THREE.Mesh(valveGeo, matValve);
+            valve.position.set(1.5, 2.7, 0.8);
+            webxrLabGroup.add(valve);
+            registerBIM(valve, {
+                elementId: 'MEP-HVAC-VLV-302',
+                category: 'محبس عزل ميكانيكي (Chilled Water Gate Valve)',
+                system: 'HVAC Piping Specialties',
+                dimensions: 'DN 65 Flanged',
+                clearance: 'يتطلب خلوص يدوي 300 مم لتشغيل ذراع الصمام',
+                status: '⚠️ تعارض تشغيلي (Operational Clearance Clash)'
+            }, true);
+
+            // 5. Fire Sprinkler Branch
+            var sprGeo = new THREE.CylinderGeometry(0.03, 0.03, 7.0, 16);
+            var sprPipe = new THREE.Mesh(sprGeo, matFire);
+            sprPipe.rotation.z = Math.PI / 2;
+            sprPipe.position.set(0, 2.85, -1.5);
+            webxrLabGroup.add(sprPipe);
+            registerBIM(sprPipe, {
+                elementId: 'MEP-FIRE-SPR-101',
+                category: 'ماسورة شبكة إطفاء حريق (Fire Sprinkler Line)',
+                system: 'Fire Protection / NFPA 13',
+                dimensions: 'Ø 32 mm Black Carbon Steel',
+                clearance: 'تغطية رأس الرشاش خالية من العوائق',
+                status: 'تم الفحص - مطابق للمواصفات'
+            }, true);
+
+            // 6. Architectural Door
+            var doorGeo = new THREE.BoxGeometry(1.2, 2.4, 0.08);
+            var door = new THREE.Mesh(doorGeo, matDoor);
+            door.position.set(0, 1.2, -6.88);
+            webxrLabGroup.add(door);
+            registerBIM(door, {
+                elementId: 'ARCH-DOOR-SINGLE-105',
+                category: 'باب معماري (Single Flush Hospital Door)',
+                system: 'Architectural / ADA Compliant',
+                dimensions: '1200x2400 mm Fire-Rated',
+                clearance: 'خلوص فتح 90 درجة محقق بالكامل',
+                status: 'مطابق للكود المعماري'
+            }, true);
+
+            // Visual Halo / Beacon around Critical Clash in Center
+            var clashBeaconGeo = new THREE.RingGeometry(0.18, 0.24, 32);
+            var clashBeaconMat = new THREE.MeshBasicMaterial({ color: 0xef4444, side: THREE.DoubleSide });
+            var clashBeacon = new THREE.Mesh(clashBeaconGeo, clashBeaconMat);
+            clashBeacon.rotation.x = Math.PI / 2;
+            clashBeacon.position.set(0, 2.52, 0.12);
+            webxrLabGroup.add(clashBeacon);
+
+            // =====================================================================
+            // 4. Centering & Camera Framing Algorithm (Guaranteed Center View)
+            // =====================================================================
+            function fitCameraToObject(cam, obj, ctrl) {
+                if (!obj) return;
+                
+                var box = new THREE.Box3().setFromObject(obj);
+                if (box.isEmpty()) return;
+
+                var size = box.getSize(new THREE.Vector3());
+                var center = box.getCenter(new THREE.Vector3());
+                var maxDim = Math.max(size.x, size.y, size.z);
+
+                if (maxDim <= 0 || !isFinite(maxDim)) return;
+
+                // Center object at the origin (0, 0, 0)
+                obj.position.x -= center.x;
+                obj.position.y -= center.y;
+                obj.position.z -= center.z;
+
+                // Recalculate bounding sphere
+                box.setFromObject(obj);
+                var sphere = box.getBoundingSphere(new THREE.Sphere());
+                var radius = Math.max(1, sphere.radius);
+
+                // Compute exact distance
+                var fov = cam.fov * (Math.PI / 180);
+                var distance = (radius / Math.sin(fov / 2)) * 1.35;
+
+                // Update near and far clip planes (zero clipping)
+                cam.near = Math.max(0.01, distance / 1000);
+                cam.far = Math.max(500000, distance * 50);
+                cam.updateProjectionMatrix();
+
+                // Elevated isometric framing looking at center
+                cam.position.set(distance * 0.75, distance * 0.55, distance * 0.85);
+                cam.lookAt(0, 0, 0);
+
+                if (ctrl) {
+                    ctrl.target.set(0, 0, 0);
+                    ctrl.minDistance = Math.max(0.01, radius * 0.02);
+                    ctrl.maxDistance = distance * 30;
+                    ctrl.update();
+                }
+
+                adjustLighting(radius);
+            }
+
+            // Function to reset camera to WebXR Lab default overview
+            function resetWebXRLabCamera() {
+                camera.near = 0.05;
+                camera.far = 10000;
+                camera.updateProjectionMatrix();
+                camera.position.set(0, 2.2, 5.8);
+                camera.lookAt(0, 2.2, 0);
+                controls.target.set(0, 2.2, 0);
+                controls.minDistance = 0.1;
+                controls.maxDistance = 50;
+                controls.update();
+            }
+
+            // Initial view: perfectly framed on WebXR Lab in the center
+            resetWebXRLabCamera();
+
+            // =====================================================================
+            // 5. Custom 3D Model Loading (GLB / GLTF / IFC)
+            // =====================================================================
+            var currentCustomModel = null;
+            var gltfLoader = new THREE.GLTFLoader();
+            if (THREE.DRACOLoader) {
+                var dracoLoader = new THREE.DRACOLoader();
+                dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.3/');
+                gltfLoader.setDRACOLoader(dracoLoader);
+            }
+
+            var fileInput = document.getElementById('file-input');
+            var dropOverlay = document.getElementById('drop-overlay');
+            var toast = document.getElementById('loading-toast');
+            var toastTitle = document.getElementById('toast-title');
+            var toastFileInfo = document.getElementById('toast-file-info');
+            var toastStatus = document.getElementById('toast-status');
+            var toastError = document.getElementById('toast-error');
+
+            function triggerUpload() {
+                fileInput.click();
+            }
+            document.getElementById('btn-trigger-upload').addEventListener('click', triggerUpload);
+
+            fileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    loadFile(e.target.files[0]);
+                }
+            });
+
+            function clearCustomModel() {
+                if (currentCustomModel) {
+                    scene.remove(currentCustomModel);
+                    currentCustomModel.traverse(function(child) {
+                        if (child.isMesh) {
+                            if (child.geometry) child.geometry.dispose();
+                            if (child.material) {
+                                if (Array.isArray(child.material)) {
+                                    child.material.forEach(function(m) { m.dispose(); });
+                                } else {
+                                    child.material.dispose();
+                                }
+                            }
+                        }
+                    });
+                    currentCustomModel = null;
+                }
+                bimElements = bimElements.filter(function(e) { return e.userData && e.userData.isLabElem; });
+            }
+
+            function loadFile(file) {
+                var fileNameLower = file.name.toLowerCase();
+                var sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                
+                switchView('webxr');
+
+                toast.style.display = 'block';
+                toastError.style.display = 'none';
+                toastTitle.innerText = 'جاري معالجة وتوسيط الموديل في الفراغ...';
+                toastFileInfo.innerText = '📁 الملف: ' + file.name + ' (' + sizeMB + ' MB)';
+                toastStatus.innerText = '⏳ الخطوة 1 من 2: جاري قراءة الملف...';
+
+                // ==================== IFC Loading ====================
+                if (fileNameLower.endsWith('.ifc')) {
+                    toastStatus.innerText = '⚙️ الخطوة 2 من 2: جاري استدعاء محرك IFC وتوليد كتل المبنى وتوسيطها...';
+                    
+                    try {
+                        var LoaderClass = (window.IFCLoader && window.IFCLoader.IFCLoader) || window.IFCLoader;
+                        if (!LoaderClass) {
+                            throw new Error('محرك قراءة ملفات الـ IFC غير متوفر. تأكد من اتصال الإنترنت.');
+                        }
+                        var ifcLoader = new LoaderClass();
+                        ifcLoader.ifcManager.setWasmPath('https://unpkg.com/web-ifc@0.0.57/');
+
+                        var fileUrl = URL.createObjectURL(file);
+
+                        ifcLoader.load(fileUrl, function(ifcModel) {
+                            URL.revokeObjectURL(fileUrl);
+                            
+                            clearCustomModel();
+                            webxrLabGroup.visible = false; // Hide lab to display user's full building
+                            currentCustomModel = ifcModel;
+                            scene.add(ifcModel);
+
+                            // Center model in the middle of the screen
+                            fitCameraToObject(camera, ifcModel, controls);
+
+                            registerBIM(ifcModel, {
+                                elementId: file.name,
+                                category: 'نموذج IFC متكامل (OpenBIM)',
+                                system: 'Architectural / Structural / MEP',
+                                dimensions: 'أبعاد ومناسيب هندسية أصلية',
+                                clearance: 'جاهز للفحص الفراغي في الـ VR',
+                                status: 'تم التوسيط والعرض بنجاح في منتصف الشاشة'
+                            }, false);
+
+                            toast.style.display = 'none';
+                        }, function(progress) {
+                            if (progress.lengthComputable && progress.total > 0) {
+                                var pct = Math.round((progress.loaded / progress.total) * 100);
+                                toastStatus.innerText = '⚙️ بناء كتل الـ IFC: ' + pct + '%...';
+                            }
+                        }, function(err) {
+                            toastError.style.display = 'block';
+                            toastError.innerText = 'خطأ في معالجة ملف الـ IFC: ' + (err.message || err);
+                        });
+                    } catch (err) {
+                        toastError.style.display = 'block';
+                        toastError.innerText = 'تعذر تشغيل محرك IFC: ' + (err.message || err);
+                    }
+                } 
+                // ==================== GLB / GLTF Loading ====================
+                else {
+                    var reader = new FileReader();
+                    reader.onprogress = function(e) {
+                        if (e.lengthComputable) {
+                            var p = Math.round((e.loaded / e.total) * 100);
+                            toastStatus.innerText = '⏳ قراءة الملف: ' + p + '% (' + (e.loaded / (1024 * 1024)).toFixed(1) + ' / ' + sizeMB + ' MB)';
+                        }
+                    };
+
+                    reader.onload = function(event) {
+                        toastStatus.innerText = '⚙️ الخطوة 2 من 2: جاري فك وبناء الكتل وتوسيطها في منتصف الشاشة...';
+
+                        try {
+                            gltfLoader.parse(event.target.result, '', function(gltf) {
+                                clearCustomModel();
+                                webxrLabGroup.visible = false; // Hide lab to display user's building
+                                var model = gltf.scene;
+                                currentCustomModel = model;
+
+                                model.traverse(function(child) {
+                                    if (child.isMesh) {
+                                        child.castShadow = true;
+                                        child.receiveShadow = true;
+                                        if (child.material) {
+                                            child.material.side = THREE.DoubleSide;
+                                        }
+                                        registerBIM(child, {
+                                            elementId: child.name || 'BIM-ELEM-' + Math.floor(Math.random() * 9000),
+                                            category: 'عنصر مستورد من النموذج',
+                                            system: 'Architectural / MEP',
+                                            dimensions: 'أبعاد هندسية حقيقية',
+                                            clearance: 'جاهز للمعاينة',
+                                            status: 'تم الاستيراد بنجاح'
+                                        }, false);
+                                    }
+                                });
+
+                                scene.add(model);
+
+                                // Place model EXACTLY in the center of the screen
+                                fitCameraToObject(camera, model, controls);
+
+                                toast.style.display = 'none';
+                            }, function(err) {
+                                toastError.style.display = 'block';
+                                toastError.innerText = 'خطأ في فك شفرة الـ GLB: ' + (err.message || 'الملف تالف أو غير مدعوم');
+                            });
+                        } catch (e) {
+                            toastError.style.display = 'block';
+                            toastError.innerText = 'استثناء برمجى: ' + e.message;
+                        }
+                    };
+
+                    reader.onerror = function() {
+                        toastError.style.display = 'block';
+                        toastError.innerText = 'فشل في قراءة الملف من القرص.';
+                    };
+
+                    reader.readAsArrayBuffer(file);
+                }
+            }
+
+            // =====================================================================
+            // 6. Center Model Button Action
+            // =====================================================================
+            document.getElementById('btn-center-model').addEventListener('click', function() {
+                if (currentCustomModel) {
+                    fitCameraToObject(camera, currentCustomModel, controls);
+                } else if (webxrLabGroup.visible) {
+                    resetWebXRLabCamera();
+                }
+            });
+
+            // =====================================================================
+            // 7. Drag and Drop Support
+            // =====================================================================
+            window.addEventListener('dragenter', function(e) { e.preventDefault(); dropOverlay.style.display = 'flex'; });
+            window.addEventListener('dragover', function(e) { e.preventDefault(); });
+            window.addEventListener('dragleave', function(e) {
+                if (e.clientX <= 0 || e.clientY <= 0) {
+                    dropOverlay.style.display = 'none';
+                }
+            });
+            window.addEventListener('drop', function(e) {
+                e.preventDefault();
+                dropOverlay.style.display = 'none';
+                if (e.dataTransfer && e.dataTransfer.files.length > 0) {
+                    var f = e.dataTransfer.files[0];
+                    var nameLower = f.name.toLowerCase();
+                    if (nameLower.endsWith('.glb') || nameLower.endsWith('.gltf') || nameLower.endsWith('.ifc')) {
+                        loadFile(f);
+                    } else {
+                        alert('يرجى سحب ملف بصيغة .GLB أو .GLTF أو .IFC');
+                    }
+                }
+            });
+
+            // =====================================================================
+            // 8. View Switcher (WebXR Lab as Primary vs Speckle Cloud)
+            // =====================================================================
+            var tabLab = document.getElementById('tab-lab-view');
+            var tabSpeckle = document.getElementById('tab-speckle-view');
+            var speckleContainer = document.getElementById('speckle-embed-container');
+
+            function switchView(mode) {
+                if (mode === 'speckle') {
+                    speckleContainer.style.display = 'block';
+                    tabSpeckle.className = 'btn btn-lab-active';
+                    tabLab.className = 'btn btn-outline';
+                } else {
+                    speckleContainer.style.display = 'none';
+                    tabLab.className = 'btn btn-lab-active';
+                    tabSpeckle.className = 'btn btn-outline';
+                }
+            }
+
+            tabLab.addEventListener('click', function() { 
+                switchView('webxr'); 
+                if (currentCustomModel) {
+                    fitCameraToObject(camera, currentCustomModel, controls);
+                } else {
+                    webxrLabGroup.visible = true;
+                    resetWebXRLabCamera();
+                }
+            });
+            tabSpeckle.addEventListener('click', function() { switchView('speckle'); });
+
+            // =====================================================================
+            // 9. Click Selection & Metadata Inspection
+            // =====================================================================
+            var raycaster = new THREE.Raycaster();
+            var mouse = new THREE.Vector2();
+            var selectedMesh = null;
+            var panel = document.getElementById('desktop-info-panel');
+            var valId = document.getElementById('val-id');
+            var valCat = document.getElementById('val-cat');
+            var valSys = document.getElementById('val-sys');
+            var valDim = document.getElementById('val-dim');
+            var valClearance = document.getElementById('val-clearance');
+            var valStatus = document.getElementById('val-status');
+
+            window.addEventListener('click', function(e) {
+                if (e.target.closest('#header-bar') || e.target.closest('#desktop-info-panel') || e.target.closest('#loading-toast') || e.target.closest('#VRButton')) {
+                    return;
+                }
+                mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+                var intersects = raycaster.intersectObjects(scene.children, true);
+
+                var hitBIM = null;
+                for (var i = 0; i < intersects.length; i++) {
+                    var obj = intersects[i].object;
+                    while (obj && obj !== scene) {
+                        if (obj.userData && obj.userData.isBIM) {
+                            hitBIM = obj;
+                            break;
+                        }
+                        obj = obj.parent;
+                    }
+                    if (hitBIM) break;
+                }
+
+                if (hitBIM) {
+                    selectedMesh = hitBIM;
+                    var data = selectedMesh.userData || {};
+                    valId.innerText = data.elementId || selectedMesh.name || 'عنصر معماري';
+                    valCat.innerText = data.category || 'كتلة نموذج BIM';
+                    valSys.innerText = data.system || 'العمارة والإنشاءات';
+                    valDim.innerText = data.dimensions || 'أبعاد هندسية أصلية';
+                    valClearance.innerText = data.clearance || 'مطابق للمواصفات';
+                    valStatus.innerText = data.status || 'جاهز للمعاينة الفراغية';
+                    panel.style.display = 'block';
+                } else {
+                    panel.style.display = 'none';
+                    selectedMesh = null;
+                }
+            });
+
+            // =====================================================================
+            // 10. Clash Reporting & CSV Export
+            // =====================================================================
+            var flaggedIssues = [];
+            var clashCounter = document.getElementById('clash-counter');
+            document.getElementById('btn-flag-clash').addEventListener('click', function() {
+                if (!selectedMesh) return;
+                var data = selectedMesh.userData || {};
+                var clashSphere = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.16, 16, 16),
+                    new THREE.MeshBasicMaterial({ color: 0xef4444 })
+                );
+                selectedMesh.getWorldPosition(clashSphere.position);
+                scene.add(clashSphere);
+
+                flaggedIssues.push({
+                    timestamp: new Date().toISOString(),
+                    elementId: data.elementId || 'ID-UNKNOWN',
+                    category: data.category || 'General',
+                    system: data.system || 'Architecture',
+                    description: 'تعارض فراغي / تشغيلي تم رصده وتوثيقه في جلسة المراجعة'
+                });
+
+                clashCounter.innerText = '🔴 التعارضات المرصودة: ' + flaggedIssues.length;
+                alert('✅ تم توثيق التعارض بنجاح: ' + (data.elementId || 'العنصر المختار'));
+            });
+
+            document.getElementById('btn-export-issues').addEventListener('click', function() {
+                if (flaggedIssues.length === 0) {
+                    alert('لم يتم تسجيل أي تعارض بعد. انقر على أي عنصر ثم اضغط "تسجيل كتعارض تشغيلي".');
+                    return;
+                }
+                var csv = 'data:text/csv;charset=utf-8,Time,ElementID,Category,System,Description\n';
+                flaggedIssues.forEach(function(r) {
+                    csv += r.timestamp + ',' + r.elementId + ',"' + r.category + '","' + r.system + '","' + r.description + '"\n';
+                });
+                var a = document.createElement('a');
+                a.href = encodeURI(csv);
+                a.download = 'BIM_WebXR_Clash_Inspection_Report.csv';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            });
+
+            // Toggle Ceiling
+            var ceilingVisible = true;
+            document.getElementById('btn-toggle-ceiling').addEventListener('click', function() {
+                ceilingVisible = !ceilingVisible;
+                ceilingGroup.visible = ceilingVisible;
+            });
+
+            // =====================================================================
+            // 11. Render Loop & Window Resize
+            // =====================================================================
+            window.addEventListener('resize', function() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // Continuous animation loop (rotates beacon slightly for attention)
+            var clock = new THREE.Clock();
+            renderer.setAnimationLoop(function() {
+                var delta = clock.getDelta();
+                if (clashBeacon) {
+                    clashBeacon.rotation.z += delta * 0.8;
+                }
+                controls.update();
+                renderer.render(scene, camera);
+            });
+        });
+    </script>
+</body>
+</html>
