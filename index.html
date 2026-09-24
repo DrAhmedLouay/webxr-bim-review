@@ -567,7 +567,10 @@
     <div id="desktop-info-panel">
         <h3>
             <span id="panel-elem-name">بيانات العنصر المختار</span>
-            <span id="panel-badge" class="clash-badge">BIM Metadata</span>
+            <span style="display: flex; align-items: center; gap: 8px;">
+                <span id="panel-badge" class="clash-badge">BIM Metadata</span>
+                <button id="btn-close-info-panel" title="إلغاء التحديد وإغلاق النافذة" style="background: transparent; border: none; color: #94a3b8; font-size: 1.15rem; cursor: pointer; padding: 0 4px; line-height: 1;">✕</button>
+            </span>
         </h3>
         <div class="prop-row"><span class="prop-label">المعرف (Element ID):</span><span class="prop-val" id="val-id">-</span></div>
         <div class="prop-row"><span class="prop-label">التصنيف (Category):</span><span class="prop-val" id="val-cat">-</span></div>
@@ -575,7 +578,10 @@
         <div class="prop-row"><span class="prop-label">الأبعاد / القطر:</span><span class="prop-val" id="val-dim">-</span></div>
         <div class="prop-row"><span class="prop-label">خلوص الصيانة / الكود:</span><span class="prop-val" id="val-clearance">-</span></div>
         <div class="prop-row"><span class="prop-label">حالة الفحص الفراغي:</span><span class="prop-val" id="val-status">-</span></div>
-        <button class="btn" style="width: 100%; margin-top: 12px; justify-content: center; background: #ef4444;" id="btn-flag-clash">🚩 تسجيل كتعارض تشغيلي</button>
+        <div style="margin: 8px 0 6px 0; padding: 6px 10px; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.35); border-radius: 6px; font-size: 0.72rem; color: #00f0ff; display: flex; align-items: center; gap: 6px;">
+            <span>✨</span> <span>العنصر محدد ومميّز بلون سماوي مشع في الفراغ</span>
+        </div>
+        <button class="btn" style="width: 100%; margin-top: 10px; justify-content: center; background: #ef4444;" id="btn-flag-clash">🚩 تسجيل كتعارض تشغيلي</button>
     </div>
 
     <!-- Clash Review & Inspection Modal -->
@@ -935,52 +941,6 @@
             grid.position.y = 0.01;
             webxrLabGroup.add(grid);
 
-            // Architectural Walls
-            function addWall(w, h, d, x, y, z) {
-                var wall = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), matWall);
-                wall.position.set(x, y, z);
-                wall.receiveShadow = true;
-                wall.castShadow = true;
-                wallGroup.add(wall);
-            }
-            addWall(14, 3.8, 0.2, 0, 1.9, -7);
-            addWall(0.2, 3.8, 14, -7, 1.9, 0);
-            addWall(0.2, 3.8, 14, 7, 1.9, 0);
-
-            // Structural Concrete Columns & Drop Beams
-            var colGeo = new THREE.BoxGeometry(0.5, 3.8, 0.5);
-            var col1 = new THREE.Mesh(colGeo, matConcrete);
-            col1.position.set(-6.75, 1.9, -6.75);
-            structureGroup.add(col1);
-
-            var col2 = new THREE.Mesh(colGeo, matConcrete);
-            col2.position.set(6.75, 1.9, -6.75);
-            structureGroup.add(col2);
-
-            var dropBeam = new THREE.Mesh(new THREE.BoxGeometry(14.0, 0.35, 0.45), matConcrete);
-            dropBeam.position.set(0, 3.02, 0);
-            structureGroup.add(dropBeam);
-
-            var steelBeam = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 14.0), matSteelBeam);
-            steelBeam.position.set(-3.5, 3.05, 0);
-            structureGroup.add(steelBeam);
-
-            // Suspended Ceiling & Flush LED Troffers
-            var ceiling = new THREE.Mesh(new THREE.BoxGeometry(13.8, 0.04, 13.8), matCeiling);
-            ceiling.position.set(0, 3.2, 0);
-            ceilingGroup.add(ceiling);
-
-            // Add 4 recessed 600x1200 LED Troffers to Ceiling
-            [[-2.5, -2.5], [2.5, -2.5], [-2.5, 2.5], [2.5, 2.5]].forEach(function(pos) {
-                var trofferFrame = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.02, 1.26), matTrofferFrame);
-                trofferFrame.position.set(pos[0], 3.19, pos[1]);
-                ceilingGroup.add(trofferFrame);
-
-                var trofferDiffuser = new THREE.Mesh(new THREE.BoxGeometry(0.60, 0.015, 1.20), matTrofferDiffuser);
-                trofferDiffuser.position.set(pos[0], 3.185, pos[1]);
-                ceilingGroup.add(trofferDiffuser);
-            });
-
             // Register BIM helper (propagates metadata and shadows to all children)
             function registerBIM(obj, data, isLabElem) {
                 obj.userData = data || {};
@@ -999,13 +959,99 @@
                 return obj;
             }
 
-            registerBIM(structureGroup, {
-                elementId: 'STR-RC-BEAM-COL-101',
-                category: 'أعمدة وكمرات خرسانية مسلحة (RC Columns & Drop Beam)',
+            // Architectural Walls
+            function addWall(w, h, d, x, y, z, wallId, wallDesc) {
+                var wall = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), matWall);
+                wall.position.set(x, y, z);
+                wall.receiveShadow = true;
+                wall.castShadow = true;
+                wallGroup.add(wall);
+                registerBIM(wall, {
+                    elementId: wallId || 'ARCH-WALL-EXT',
+                    category: 'حائط معماري فاصل (Architectural Wall)',
+                    system: 'Architectural / Drywall & Partitions',
+                    dimensions: w + ' x ' + h + ' x ' + d + ' m',
+                    clearance: 'جدار فاصل معزول للصوت ومقاوم للحريق',
+                    status: wallDesc || 'مطابق للمخططات المعمارية'
+                }, true);
+            }
+            addWall(14, 3.8, 0.2, 0, 1.9, -7, 'ARCH-WALL-NORTH', 'حائط الغرفة الشمالي (امتداد 14م)');
+            addWall(0.2, 3.8, 14, -7, 1.9, 0, 'ARCH-WALL-WEST', 'حائط الغرفة الغربي (امتداد 14م)');
+            addWall(0.2, 3.8, 14, 7, 1.9, 0, 'ARCH-WALL-EAST', 'حائط الغرفة الشرقي (امتداد 14م)');
+
+            // Structural Concrete Columns & Drop Beams
+            var colGeo = new THREE.BoxGeometry(0.5, 3.8, 0.5);
+            var col1 = new THREE.Mesh(colGeo, matConcrete);
+            col1.position.set(-6.75, 1.9, -6.75);
+            structureGroup.add(col1);
+            registerBIM(col1, {
+                elementId: 'STR-RC-COL-01',
+                category: 'عمود خرساني مسلح (RC Column)',
                 system: 'Structural Framing / C35 Concrete',
-                dimensions: 'Columns 500x500 mm / Drop Beam 450x350 mm',
-                clearance: 'الخلوص الصافي أسفل الكمرة الإنشائية: 2.85 م',
-                status: 'عنصر إنشائي حامل رئيسي - محدد لمناسيب الـ MEP'
+                dimensions: '500x500 mm / الارتفاع: 3.80 م',
+                clearance: 'عنصر إنشائي رأسي رئيسي حامل',
+                status: 'سليم إنشائياً ومطابق للمناسيب'
+            }, true);
+
+            var col2 = new THREE.Mesh(colGeo, matConcrete);
+            col2.position.set(6.75, 1.9, -6.75);
+            structureGroup.add(col2);
+            registerBIM(col2, {
+                elementId: 'STR-RC-COL-02',
+                category: 'عمود خرساني مسلح (RC Column)',
+                system: 'Structural Framing / C35 Concrete',
+                dimensions: '500x500 mm / الارتفاع: 3.80 م',
+                clearance: 'عنصر إنشائي رأسي رئيسي حامل',
+                status: 'سليم إنشائياً ومطابق للمناسيب'
+            }, true);
+
+            var dropBeam = new THREE.Mesh(new THREE.BoxGeometry(14.0, 0.35, 0.45), matConcrete);
+            dropBeam.position.set(0, 3.02, 0);
+            structureGroup.add(dropBeam);
+            registerBIM(dropBeam, {
+                elementId: 'STR-RC-BEAM-101',
+                category: 'كمرة خرسانية ساقطة (RC Drop Beam)',
+                system: 'Structural Framing / C35 Concrete',
+                dimensions: '450x350 mm / الطول: 14.0 م',
+                clearance: 'الخلوص الصافي أسفل الكمرة: 2.85 م',
+                status: 'عنصر حامل رئيسي - محدد لمناسيب شبكات الـ MEP'
+            }, true);
+
+            var steelBeam = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 14.0), matSteelBeam);
+            steelBeam.position.set(-3.5, 3.05, 0);
+            structureGroup.add(steelBeam);
+            registerBIM(steelBeam, {
+                elementId: 'STR-STL-BEAM-102',
+                category: 'كمرة فولاذية ثانوية (Structural Steel I-Beam)',
+                system: 'Secondary Framing / ASTM A992 Steel',
+                dimensions: 'HEA 220 / الطول: 14.0 م',
+                clearance: 'خلوص التثبيت العلوي: 3.05 م',
+                status: 'سليم إنشائياً - حامل لمسارات الكهروميكانيك'
+            }, true);
+
+            // Suspended Ceiling & Flush LED Troffers
+            var ceiling = new THREE.Mesh(new THREE.BoxGeometry(13.8, 0.04, 13.8), matCeiling);
+            ceiling.position.set(0, 3.2, 0);
+            ceilingGroup.add(ceiling);
+
+            // Add 4 recessed 600x1200 LED Troffers to Ceiling
+            [[-2.5, -2.5], [2.5, -2.5], [-2.5, 2.5], [2.5, 2.5]].forEach(function(pos) {
+                var trofferFrame = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.02, 1.26), matTrofferFrame);
+                trofferFrame.position.set(pos[0], 3.19, pos[1]);
+                ceilingGroup.add(trofferFrame);
+
+                var trofferDiffuser = new THREE.Mesh(new THREE.BoxGeometry(0.60, 0.015, 1.20), matTrofferDiffuser);
+                trofferDiffuser.position.set(pos[0], 3.185, pos[1]);
+                ceilingGroup.add(trofferDiffuser);
+            });
+
+            registerBIM(ceilingGroup, {
+                elementId: 'ARCH-CEILING-L2',
+                category: 'سقف معلق ووحدات إضاءة (Suspended Ceiling & Troffers)',
+                system: 'Architectural / 600x600 Acoustic Grid & Lighting',
+                dimensions: '13.8 x 13.8 m / المنسوب: +3.20 م',
+                clearance: 'الخلوص الصافي أسفل السقف المعلق: 3.20 م',
+                status: 'يحتوي على فراغ بلينوم ميكانيكي (Plenum) بارتفاع 600 مم'
             }, true);
 
             // =====================================================================
@@ -1725,6 +1771,7 @@
             });
 
             function clearCustomModel() {
+                if (typeof clearCurrentSelectionHighlight === 'function') clearCurrentSelectionHighlight();
                 clearCategorySubsets();
                 clearStoreySubsets();
                 clearExplodedSubsets();
@@ -2164,6 +2211,7 @@
             // 9. Color Differentiation & Shading Switcher
             // =====================================================================
             function applyColorCodingMode(mode) {
+                if (typeof clearCurrentSelectionHighlight === 'function') clearCurrentSelectionHighlight();
                 colorCodingMode = mode;
 
                 document.querySelectorAll('.mode-btn[data-mode]').forEach(function(b) {
@@ -2517,6 +2565,7 @@
             var speckleContainer = document.getElementById('speckle-embed-container');
 
             function switchView(mode) {
+                if (typeof clearCurrentSelectionHighlight === 'function') clearCurrentSelectionHighlight();
                 if (mode === 'speckle') {
                     speckleContainer.style.display = 'block';
                     tabSpeckle.className = 'btn btn-lab-active';
@@ -2541,12 +2590,13 @@
             tabSpeckle.addEventListener('click', function() { switchView('speckle'); });
 
             // =====================================================================
-            // 12. Click Selection & Metadata Inspection
+            // 12. Visual Selection Highlight & Metadata Inspection Engine
             // =====================================================================
             var raycaster = new THREE.Raycaster();
             var mouse = new THREE.Vector2();
             var selectedMesh = null;
             var panel = document.getElementById('desktop-info-panel');
+            var btnCloseInfoPanel = document.getElementById('btn-close-info-panel');
             var valId = document.getElementById('val-id');
             var valCat = document.getElementById('val-cat');
             var valSys = document.getElementById('val-sys');
@@ -2554,10 +2604,118 @@
             var valClearance = document.getElementById('val-clearance');
             var valStatus = document.getElementById('val-status');
 
+            // Active Highlight Tracking & Glowing Materials
+            var currentHighlightedObject = null;
+            var ifcHighlightMesh = null;
+
+            // Radiant electric cyan selection material with glowing emissive accent
+            var labHighlightMaterial = new THREE.MeshStandardMaterial({
+                color: 0x00f0ff,
+                emissive: 0x0284c7,
+                emissiveIntensity: 0.65,
+                roughness: 0.25,
+                metalness: 0.25,
+                side: THREE.DoubleSide
+            });
+
+            var ifcHighlightMaterial = new THREE.MeshStandardMaterial({
+                color: 0x00f0ff,
+                emissive: 0x0284c7,
+                emissiveIntensity: 0.65,
+                roughness: 0.25,
+                metalness: 0.25,
+                depthTest: true,
+                polygonOffset: true,
+                polygonOffsetFactor: -2,
+                polygonOffsetUnits: -2,
+                side: THREE.DoubleSide
+            });
+
+            function clearCurrentSelectionHighlight() {
+                if (currentHighlightedObject) {
+                    currentHighlightedObject.traverse(function(child) {
+                        if (child.isMesh && child.userData && child.userData.__origMaterial !== undefined) {
+                            child.material = child.userData.__origMaterial;
+                            delete child.userData.__origMaterial;
+                        }
+                    });
+                    currentHighlightedObject = null;
+                }
+                if (ifcHighlightMesh) {
+                    scene.remove(ifcHighlightMesh);
+                    if (currentIFCLoader && currentCustomModel) {
+                        try {
+                            currentIFCLoader.ifcManager.removeSubset(currentCustomModel.modelID, null, 'user_selection_highlight');
+                        } catch(e) {}
+                    }
+                    if (ifcHighlightMesh.geometry) ifcHighlightMesh.geometry.dispose();
+                    ifcHighlightMesh = null;
+                }
+            }
+
+            function applyObjectHighlight(obj) {
+                clearCurrentSelectionHighlight();
+                if (!obj) return;
+                currentHighlightedObject = obj;
+                obj.traverse(function(child) {
+                    if (child.isMesh) {
+                        if (child.userData.__origMaterial === undefined) {
+                            child.userData.__origMaterial = child.material;
+                        }
+                        child.material = labHighlightMaterial;
+                    }
+                });
+            }
+
+            function applyIFCHighlight(expressID) {
+                clearCurrentSelectionHighlight();
+                if (!currentCustomModel || !currentIFCLoader || expressID === undefined || expressID === null) return;
+                try {
+                    var subMesh = currentIFCLoader.ifcManager.createSubset({
+                        modelID: currentCustomModel.modelID,
+                        ids: [expressID],
+                        material: ifcHighlightMaterial,
+                        scene: scene,
+                        removePrevious: true,
+                        customID: 'user_selection_highlight'
+                    });
+                    if (subMesh) {
+                        subMesh.position.copy(currentCustomModel.position);
+                        subMesh.rotation.copy(currentCustomModel.rotation);
+                        subMesh.scale.copy(currentCustomModel.scale);
+                        subMesh.visible = true;
+                        subMesh.renderOrder = 999;
+                        ifcHighlightMesh = subMesh;
+                    }
+                } catch(err) {
+                    console.warn('Error applying IFC selection highlight:', err);
+                }
+            }
+
+            if (btnCloseInfoPanel) {
+                btnCloseInfoPanel.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    panel.style.display = 'none';
+                    selectedMesh = null;
+                    clearCurrentSelectionHighlight();
+                });
+            }
+
+            var pointerDownPos = { x: 0, y: 0 };
+            window.addEventListener('pointerdown', function(e) {
+                pointerDownPos.x = e.clientX;
+                pointerDownPos.y = e.clientY;
+            });
+
             window.addEventListener('click', async function(e) {
                 if (e.target.closest('#header-bar') || e.target.closest('#desktop-info-panel') || e.target.closest('#bim-filter-panel') || e.target.closest('#loading-toast') || e.target.closest('#VRButton') || e.target.closest('#clash-review-modal')) {
                     return;
                 }
+
+                // If user was dragging OrbitControls to rotate or pan, ignore click selection
+                var dragDist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+                if (dragDist > 6) return;
+
                 mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
                 mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
@@ -2601,9 +2759,13 @@
                                 selectedMesh.userData = {
                                     elementId: '#' + expressID + ' - ' + pName,
                                     category: pType,
-                                    system: 'Architectural / BIM'
+                                    system: 'Architectural / BIM',
+                                    expressID: expressID,
+                                    clickPoint: hit.point ? hit.point.clone() : null
                                 };
                                 panel.style.display = 'block';
+
+                                applyIFCHighlight(expressID);
                                 return;
                             }
                         } catch(err) {
@@ -2617,6 +2779,7 @@
                 var hitBIM = null;
                 for (var i = 0; i < intersects.length; i++) {
                     var obj = intersects[i].object;
+                    if (obj === ifcHighlightMesh || (obj.userData && obj.userData.isClashSphere)) continue;
                     while (obj && obj !== scene) {
                         if (obj.userData && obj.userData.isBIM) {
                             hitBIM = obj.userData.parentBIM || obj;
@@ -2637,9 +2800,12 @@
                     valClearance.innerText = data.clearance || 'مطابق للمواصفات';
                     valStatus.innerText = data.status || 'جاهز للمعاينة الفراغية';
                     panel.style.display = 'block';
+
+                    applyObjectHighlight(hitBIM);
                 } else {
                     panel.style.display = 'none';
                     selectedMesh = null;
+                    clearCurrentSelectionHighlight();
                 }
             });
 
@@ -2661,7 +2827,7 @@
             updateClashCounter();
 
             // Focus & smooth camera glide to clash in 3D
-            function focusClash(tx, ty, tz, cx, cy, cz, targetObj) {
+            function focusClash(tx, ty, tz, cx, cy, cz, targetObj, expressID) {
                 if (clashModal) clashModal.style.display = 'none';
 
                 var startTime = performance.now();
@@ -2699,6 +2865,14 @@
                     valClearance.innerText = data.clearance || '-';
                     valStatus.innerText = data.status || '🔴 رصد تعارض فراغي';
                     panel.style.display = 'block';
+
+                    if (expressID !== undefined && expressID !== null) {
+                        applyIFCHighlight(expressID);
+                    } else if (data.expressID !== undefined && data.expressID !== null) {
+                        applyIFCHighlight(data.expressID);
+                    } else {
+                        applyObjectHighlight(targetObj);
+                    }
                 }
 
                 // Temporary highlight pulse sphere at clash position
@@ -2816,7 +2990,7 @@
                         var idx = parseInt(b.dataset.idx, 10);
                         var itm = flaggedIssues[idx];
                         if (itm && itm.pos) {
-                            focusClash(itm.pos.x, itm.pos.y, itm.pos.z, itm.pos.x + 1.2, itm.pos.y + 0.6, itm.pos.z + 1.2, itm.mesh);
+                            focusClash(itm.pos.x, itm.pos.y, itm.pos.z, itm.pos.x + 1.2, itm.pos.y + 0.6, itm.pos.z + 1.2, itm.mesh, itm.expressID);
                         }
                     });
                 });
@@ -2885,8 +3059,13 @@
                     new THREE.SphereGeometry(0.16, 16, 16),
                     new THREE.MeshBasicMaterial({ color: 0xef4444 })
                 );
+                clashSphere.userData = { isClashSphere: true };
                 var worldPos = new THREE.Vector3();
-                selectedMesh.getWorldPosition(worldPos);
+                if (data.clickPoint) {
+                    worldPos.copy(data.clickPoint);
+                } else {
+                    selectedMesh.getWorldPosition(worldPos);
+                }
                 clashSphere.position.copy(worldPos);
                 scene.add(clashSphere);
 
@@ -2898,6 +3077,7 @@
                     description: 'تعارض فراغي / تشغيلي تم رصده وتوثيقه في جلسة المراجعة',
                     pos: worldPos,
                     mesh: selectedMesh,
+                    expressID: data.expressID || null,
                     sphere: clashSphere
                 });
 
