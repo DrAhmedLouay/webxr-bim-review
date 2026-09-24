@@ -132,6 +132,17 @@
         .btn-outline:hover {
             background: rgba(255, 255, 255, 0.1);
         }
+        .btn-clash-view {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1.5px solid #ef4444;
+            color: #fca5a5;
+            font-weight: 700;
+        }
+        .btn-clash-view:hover {
+            background: rgba(239, 68, 68, 0.4);
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(239, 68, 68, 0.45);
+        }
         /* Floating BIM Filter & Storeys Panel */
         #bim-filter-panel {
             position: absolute;
@@ -434,6 +445,7 @@
             <button class="btn btn-filter" id="btn-toggle-filters-panel" title="فصل الطوابق وتصفية عناصر المبنى والتأسيسات وضبط الإضاءة">🎛️ تصفية العناصر والإضاءة</button>
             <button class="btn btn-upload" id="btn-trigger-upload">📂 استيراد نموذج آخر (GLB / IFC)</button>
             <button class="btn btn-center" id="btn-center-model" title="إعادة الكاميرا وتوسيط الموديل في منتصف الشاشة">🎯 وضع المجسم في المنتصف</button>
+            <button class="btn btn-clash-view" id="btn-view-clashes" title="مشاهدة واستعراض التعارضات في المشهد الثلاثي الأبعاد">⚠️ مشاهدة التعارضات</button>
             <button class="btn btn-outline" id="btn-export-issues">تقرير التعارضات (CSV)</button>
             <span class="status-pill" id="clash-counter">🔴 التعارضات المرصودة: 0</span>
         </div>
@@ -564,6 +576,29 @@
         <div class="prop-row"><span class="prop-label">خلوص الصيانة / الكود:</span><span class="prop-val" id="val-clearance">-</span></div>
         <div class="prop-row"><span class="prop-label">حالة الفحص الفراغي:</span><span class="prop-val" id="val-status">-</span></div>
         <button class="btn" style="width: 100%; margin-top: 12px; justify-content: center; background: #ef4444;" id="btn-flag-clash">🚩 تسجيل كتعارض تشغيلي</button>
+    </div>
+
+    <!-- Clash Review & Inspection Modal -->
+    <div id="clash-review-modal" style="display: none; position: absolute; top: 75px; left: 50%; transform: translateX(-50%); width: 560px; max-width: 92vw; max-height: calc(100vh - 100px); background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(18px); padding: 18px 20px; border-radius: 16px; border: 1.5px solid rgba(239, 68, 68, 0.45); z-index: 105; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85); overflow-y: auto; color: #f8fafc;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 10px; margin-bottom: 14px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.3rem;">⚠️</span>
+                <div>
+                    <h3 style="color: #ef4444; font-size: 1.05rem; font-weight: bold; margin: 0;">سجل واستعراض التعارضات الفراغية (Clash Detection Log)</h3>
+                    <div style="font-size: 0.72rem; color: #94a3b8;">فحص التداخلات المباشرة والخلوص التشغيلي بين شبكات MEP والعمارة</div>
+                </div>
+            </div>
+            <button id="btn-close-clash-modal" style="background: transparent; border: none; color: #94a3b8; font-size: 1.3rem; cursor: pointer; padding: 2px 8px;">✕</button>
+        </div>
+
+        <div id="clash-modal-list">
+            <!-- Populated dynamically via JS -->
+        </div>
+
+        <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.75rem; color: #64748b;">انقر "انتقال إلى الفراغ 🎯" لنقل الكاميرا مباشرة للتعارض</span>
+            <button class="btn btn-outline" id="btn-modal-export-csv" style="font-size: 0.78rem; padding: 4px 10px;">📥 تصدير التقرير (CSV)</button>
+        </div>
     </div>
 
     <!-- Guidance Note (Bottom Left) -->
@@ -2520,7 +2555,7 @@
             var valStatus = document.getElementById('val-status');
 
             window.addEventListener('click', async function(e) {
-                if (e.target.closest('#header-bar') || e.target.closest('#desktop-info-panel') || e.target.closest('#bim-filter-panel') || e.target.closest('#loading-toast') || e.target.closest('#VRButton')) {
+                if (e.target.closest('#header-bar') || e.target.closest('#desktop-info-panel') || e.target.closest('#bim-filter-panel') || e.target.closest('#loading-toast') || e.target.closest('#VRButton') || e.target.closest('#clash-review-modal')) {
                     return;
                 }
                 mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -2609,10 +2644,201 @@
             });
 
             // =====================================================================
-            // 13. Clash Reporting & CSV Export
+            // 13. Clash Reporting, Inspection & CSV Export
             // =====================================================================
             var flaggedIssues = [];
             var clashCounter = document.getElementById('clash-counter');
+            var clashModal = document.getElementById('clash-review-modal');
+            var btnViewClashes = document.getElementById('btn-view-clashes');
+            var btnCloseClashModal = document.getElementById('btn-close-clash-modal');
+            var clashModalList = document.getElementById('clash-modal-list');
+
+            function updateClashCounter() {
+                var labCount = (!currentCustomModel || (webxrLabGroup && webxrLabGroup.visible)) ? 2 : 0;
+                var total = labCount + flaggedIssues.length;
+                if (clashCounter) clashCounter.innerText = '🔴 التعارضات المرصودة: ' + total;
+            }
+            updateClashCounter();
+
+            // Focus & smooth camera glide to clash in 3D
+            function focusClash(tx, ty, tz, cx, cy, cz, targetObj) {
+                if (clashModal) clashModal.style.display = 'none';
+
+                var startTime = performance.now();
+                var startCamPos = camera.position.clone();
+                var startTarget = controls.target.clone();
+                var targetCamPos = new THREE.Vector3(cx, cy, cz);
+                var targetLook = new THREE.Vector3(tx, ty, tz);
+
+                function animateFly(now) {
+                    var elapsed = (now - startTime) / 800; // 800ms smooth transition
+                    if (elapsed > 1) elapsed = 1;
+                    var t = elapsed < 0.5 ? 2 * elapsed * elapsed : -1 + (4 - 2 * elapsed) * elapsed;
+                    
+                    camera.position.lerpVectors(startCamPos, targetCamPos, t);
+                    controls.target.lerpVectors(startTarget, targetLook, t);
+                    controls.update();
+
+                    if (elapsed < 1) {
+                        requestAnimationFrame(animateFly);
+                    } else {
+                        camera.lookAt(targetLook);
+                        controls.target.copy(targetLook);
+                        controls.update();
+                    }
+                }
+                requestAnimationFrame(animateFly);
+
+                if (targetObj) {
+                    selectedMesh = targetObj;
+                    var data = selectedMesh.userData || {};
+                    valId.innerText = data.elementId || 'تعارض هندسي';
+                    valCat.innerText = data.category || '-';
+                    valSys.innerText = data.system || '-';
+                    valDim.innerText = data.dimensions || '-';
+                    valClearance.innerText = data.clearance || '-';
+                    valStatus.innerText = data.status || '🔴 رصد تعارض فراغي';
+                    panel.style.display = 'block';
+                }
+
+                // Temporary highlight pulse sphere at clash position
+                var pulseSphere = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.18, 16, 16),
+                    new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0.85 })
+                );
+                pulseSphere.position.set(tx, ty, tz);
+                scene.add(pulseSphere);
+
+                var pulseStart = performance.now();
+                function animatePulse(pNow) {
+                    var pElapsed = (pNow - pulseStart) / 1800;
+                    if (pElapsed < 1) {
+                        var scale = 1.0 + Math.sin(pElapsed * Math.PI * 4) * 0.45;
+                        pulseSphere.scale.set(scale, scale, scale);
+                        requestAnimationFrame(animatePulse);
+                    } else {
+                        scene.remove(pulseSphere);
+                    }
+                }
+                requestAnimationFrame(animatePulse);
+            }
+
+            function renderClashModalList() {
+                var html = '';
+                var hasAny = false;
+
+                // 1. WebXR Lab Predefined Clashes
+                if (!currentCustomModel || (webxrLabGroup && webxrLabGroup.visible)) {
+                    hasAny = true;
+                    html += '<div class="clash-card" style="background: rgba(239, 68, 68, 0.12); border: 1.5px solid rgba(239, 68, 68, 0.45); border-radius: 12px; padding: 14px; margin-bottom: 12px;">' +
+                        '<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">' +
+                            '<div>' +
+                                '<span style="font-weight: bold; color: #f87171; font-size: 0.95rem;">🔴 تعارض حرج #1: اختراق ماسورة الأكسجين لدكت التكييف</span>' +
+                                '<div style="font-size: 0.72rem; color: #fca5a5; margin-top: 2px;">تداخل فيزيائي مباشر (Physical Interpenetration Clash)</div>' +
+                            '</div>' +
+                            '<span style="background: #ef4444; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; white-space: nowrap;">High Priority</span>' +
+                        '</div>' +
+                        '<div style="font-size: 0.82rem; color: #e2e8f0; margin-bottom: 6px; line-height: 1.5;">' +
+                            '<b>العناصر المتعارضة:</b> <span style="color: #38bdf8; font-family: monospace;">MEP-MEDGAS-O2-108</span> ⚔️ <span style="color: #38bdf8; font-family: monospace;">MEP-HVAC-DUCT-401</span>' +
+                        '</div>' +
+                        '<div style="font-size: 0.78rem; color: #fca5a5; margin-bottom: 10px; line-height: 1.4;">' +
+                            '<b>مخالفة الكود:</b> كود NFPA 99 و ASHRAE 170 (حظر اختراق مواسير الغازات الطبية لمجاري الهواء والبلينوم تماماً).' +
+                        '</div>' +
+                        '<div style="display: flex; gap: 8px;">' +
+                            '<button class="btn btn-center" id="btn-fly-clash-1" style="font-size: 0.8rem; padding: 6px 14px;">🎯 انتقال وتكبير في الفراغ</button>' +
+                        '</div>' +
+                    '</div>';
+
+                    html += '<div class="clash-card" style="background: rgba(245, 158, 11, 0.12); border: 1.5px solid rgba(245, 158, 11, 0.45); border-radius: 12px; padding: 14px; margin-bottom: 12px;">' +
+                        '<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">' +
+                            '<div>' +
+                                '<span style="font-weight: bold; color: #fbbf24; font-size: 0.95rem;">⚠️ تعارض تشغيلي #2: خلوص طارة محبس مياه التبريد</span>' +
+                                '<div style="font-size: 0.72rem; color: #fde68a; margin-top: 2px;">نقص خلوص الصيانة والتشغيل (Operational Clearance)</div>' +
+                            '</div>' +
+                            '<span style="background: #f59e0b; color: #1e293b; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; white-space: nowrap;">Clearance Warning</span>' +
+                        '</div>' +
+                        '<div style="font-size: 0.82rem; color: #e2e8f0; margin-bottom: 6px; line-height: 1.5;">' +
+                            '<b>العنصر:</b> <span style="color: #38bdf8; font-family: monospace;">MEP-HVAC-VLV-302</span> (DN65 Flanged Gate Valve & Gauge)' +
+                        '</div>' +
+                        '<div style="font-size: 0.78rem; color: #fcd34d; margin-bottom: 10px; line-height: 1.4;">' +
+                            '<b>المتطلب الهندسي:</b> يتطلب خلوص يدوي حر 300 مم لتشغيل ذراع الصمام واستبدال الحشوة وقراءة مقياس الضغط.' +
+                        '</div>' +
+                        '<div style="display: flex; gap: 8px;">' +
+                            '<button class="btn btn-center" id="btn-fly-clash-2" style="font-size: 0.8rem; padding: 6px 14px;">🎯 انتقال وتكبير في الفراغ</button>' +
+                        '</div>' +
+                    '</div>';
+                }
+
+                // 2. User Flagged Issues
+                if (flaggedIssues.length > 0) {
+                    hasAny = true;
+                    html += '<div style="font-size: 0.88rem; font-weight: bold; color: #38bdf8; margin: 14px 0 10px 0; border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 12px;">📋 تعارضات موثقة بواسطة المهندس (' + flaggedIssues.length + '):</div>';
+                    flaggedIssues.forEach(function(issue, idx) {
+                        html += '<div class="clash-card" style="background: rgba(30, 41, 59, 0.75); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 12px; margin-bottom: 8px;">' +
+                            '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">' +
+                                '<span style="font-weight: bold; color: #e2e8f0; font-size: 0.88rem;">#' + (idx + 1) + ' ' + issue.elementId + '</span>' +
+                                '<span style="font-size: 0.72rem; color: #94a3b8;">' + (issue.timestamp ? issue.timestamp.substring(11, 19) : '') + '</span>' +
+                            '</div>' +
+                            '<div style="font-size: 0.78rem; color: #94a3b8; margin-bottom: 8px;">التصنيف: ' + issue.category + ' | النظام: ' + issue.system + '</div>' +
+                            '<button class="btn btn-outline btn-fly-flagged" data-idx="' + idx + '" style="font-size: 0.76rem; padding: 4px 10px;">🎯 انتقال للعنصر في الفراغ</button>' +
+                        '</div>';
+                    });
+                }
+
+                if (!hasAny) {
+                    html = '<div style="text-align: center; padding: 35px 12px; color: #94a3b8;">' +
+                        '<div style="font-size: 2.5rem; margin-bottom: 12px;">✅</div>' +
+                        '<div style="font-weight: bold; font-size: 1rem; color: #e2e8f0; margin-bottom: 6px;">لا توجد تعارضات مسجلة بعد في هذا الموديل</div>' +
+                        '<div style="font-size: 0.8rem; line-height: 1.6; max-width: 400px; margin: 0 auto;">انقر على أي عنصر في المشهد لمعاينة مواصفاته، ثم اضغط زر <span style="color:#ef4444; font-weight:bold;">"🚩 تسجيل كتعارض تشغيلي"</span> لتوثيقه هنا واستعراضه أو تصديره.</div>' +
+                    '</div>';
+                }
+
+                clashModalList.innerHTML = html;
+
+                // Event Listeners for Flying to Clashes
+                var btnFly1 = document.getElementById('btn-fly-clash-1');
+                if (btnFly1) {
+                    btnFly1.addEventListener('click', function() {
+                        focusClash(0, 2.52, 0.41, 0, 2.52, 2.0, oxygenPipe);
+                    });
+                }
+                var btnFly2 = document.getElementById('btn-fly-clash-2');
+                if (btnFly2) {
+                    btnFly2.addEventListener('click', function() {
+                        focusClash(1.5, 2.7, 0.8, 1.5, 2.7, 2.2, valve);
+                    });
+                }
+                document.querySelectorAll('.btn-fly-flagged').forEach(function(b) {
+                    b.addEventListener('click', function() {
+                        var idx = parseInt(b.dataset.idx, 10);
+                        var itm = flaggedIssues[idx];
+                        if (itm && itm.pos) {
+                            focusClash(itm.pos.x, itm.pos.y, itm.pos.z, itm.pos.x + 1.2, itm.pos.y + 0.6, itm.pos.z + 1.2, itm.mesh);
+                        }
+                    });
+                });
+            }
+
+            // Button "مشاهدة التعارضات" Action
+            if (btnViewClashes) {
+                btnViewClashes.addEventListener('click', function() {
+                    if (clashModal.style.display === 'block') {
+                        clashModal.style.display = 'none';
+                    } else {
+                        renderClashModalList();
+                        clashModal.style.display = 'block';
+                        if (filterPanel) filterPanel.style.display = 'none';
+                    }
+                });
+            }
+
+            if (btnCloseClashModal) {
+                btnCloseClashModal.addEventListener('click', function() {
+                    clashModal.style.display = 'none';
+                });
+            }
+
+            // Flag Clash Button in Info Panel
             document.getElementById('btn-flag-clash').addEventListener('click', function() {
                 if (!selectedMesh) return;
                 var data = selectedMesh.userData || {};
@@ -2620,7 +2846,9 @@
                     new THREE.SphereGeometry(0.16, 16, 16),
                     new THREE.MeshBasicMaterial({ color: 0xef4444 })
                 );
-                selectedMesh.getWorldPosition(clashSphere.position);
+                var worldPos = new THREE.Vector3();
+                selectedMesh.getWorldPosition(worldPos);
+                clashSphere.position.copy(worldPos);
                 scene.add(clashSphere);
 
                 flaggedIssues.push({
@@ -2628,21 +2856,58 @@
                     elementId: data.elementId || 'ID-UNKNOWN',
                     category: data.category || 'General',
                     system: data.system || 'Architecture',
-                    description: 'تعارض فراغي / تشغيلي تم رصده وتوثيقه في جلسة المراجعة'
+                    description: 'تعارض فراغي / تشغيلي تم رصده وتوثيقه في جلسة المراجعة',
+                    pos: worldPos,
+                    mesh: selectedMesh
                 });
 
-                clashCounter.innerText = '🔴 التعارضات المرصودة: ' + flaggedIssues.length;
+                updateClashCounter();
+                if (clashModal.style.display === 'block') {
+                    renderClashModalList();
+                }
                 alert('✅ تم توثيق التعارض بنجاح: ' + (data.elementId || 'العنصر المختار'));
             });
 
-            document.getElementById('btn-export-issues').addEventListener('click', function() {
-                if (flaggedIssues.length === 0) {
+            // Export CSV (Handles both lab predefined clashes and custom flagged issues)
+            function exportClashesCSV() {
+                var rows = [];
+
+                // Predefined Lab Clashes
+                if (!currentCustomModel || (webxrLabGroup && webxrLabGroup.visible)) {
+                    rows.push({
+                        time: new Date().toISOString(),
+                        id: 'MEP-MEDGAS-O2-108 / MEP-HVAC-DUCT-401',
+                        cat: 'ماسورة أكسجين طبي / مجرى هواء تكييف',
+                        sys: 'Life Safety / HVAC Air Distribution',
+                        desc: 'تعارض فيزيائي حرج - اختراق خط الأكسجين لمجرى التكييف (مخالف لكود NFPA 99 و ASHRAE 170)'
+                    });
+                    rows.push({
+                        time: new Date().toISOString(),
+                        id: 'MEP-HVAC-VLV-302',
+                        cat: 'محبس عزل ميكانيكي سكينة',
+                        sys: 'HVAC Hydronics Specialties',
+                        desc: 'تعارض خلوص تشغيلي - يتطلب خلوص يدوي 300 مم لتشغيل ذراع الصمام واستبدال الحشوة'
+                    });
+                }
+
+                flaggedIssues.forEach(function(r) {
+                    rows.push({
+                        time: r.timestamp,
+                        id: r.elementId,
+                        cat: r.category,
+                        sys: r.system,
+                        desc: r.description
+                    });
+                });
+
+                if (rows.length === 0) {
                     alert('لم يتم تسجيل أي تعارض بعد. انقر على أي عنصر ثم اضغط "تسجيل كتعارض تشغيلي".');
                     return;
                 }
+
                 var csv = 'data:text/csv;charset=utf-8,Time,ElementID,Category,System,Description\n';
-                flaggedIssues.forEach(function(r) {
-                    csv += r.timestamp + ',' + r.elementId + ',"' + r.category + '","' + r.system + '","' + r.description + '"\n';
+                rows.forEach(function(r) {
+                    csv += r.time + ',' + r.id + ',"' + r.cat + '","' + r.sys + '","' + r.desc + '"\n';
                 });
                 var a = document.createElement('a');
                 a.href = encodeURI(csv);
@@ -2650,7 +2915,13 @@
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
-            });
+            }
+
+            document.getElementById('btn-export-issues').addEventListener('click', exportClashesCSV);
+            var btnModalExportCsv = document.getElementById('btn-modal-export-csv');
+            if (btnModalExportCsv) {
+                btnModalExportCsv.addEventListener('click', exportClashesCSV);
+            }
 
             // =====================================================================
             // 14. Render Loop & Window Resize
