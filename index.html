@@ -27,7 +27,7 @@
             left: 0;
             z-index: 1;
         }
-        /* Top Navigation Header (Always Visible & Prominent) */
+        /* Top Navigation Header */
         #header-bar {
             position: absolute;
             top: 14px;
@@ -67,7 +67,7 @@
             background: #2563eb;
             color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 8px 14px;
             border-radius: 8px;
             font-size: 0.82rem;
             cursor: pointer;
@@ -87,6 +87,15 @@
             border: 1.5px solid #38bdf8;
             color: #38bdf8;
             box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+        }
+        .btn-filter {
+            background: rgba(14, 165, 233, 0.18);
+            border: 1.5px solid #38bdf8;
+            color: #38bdf8;
+            font-weight: 700;
+        }
+        .btn-filter:hover {
+            background: rgba(14, 165, 233, 0.35);
         }
         .btn-upload {
             background: #059669;
@@ -109,6 +118,73 @@
         }
         .btn-outline:hover {
             background: rgba(255, 255, 255, 0.1);
+        }
+        /* Floating BIM Filter & Storeys Panel */
+        #bim-filter-panel {
+            position: absolute;
+            top: 72px;
+            right: 18px;
+            width: 350px;
+            max-height: calc(100vh - 95px);
+            background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(18px);
+            padding: 16px 18px;
+            border-radius: 14px;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            z-index: 95;
+            display: none;
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.7);
+            overflow-y: auto;
+        }
+        #bim-filter-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+        #bim-filter-panel::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.3);
+            border-radius: 3px;
+        }
+        .filter-section-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .filter-box {
+            background: rgba(30, 41, 59, 0.65);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 12px;
+        }
+        .cat-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background 0.15s ease;
+            font-size: 0.8rem;
+            color: #e2e8f0;
+            cursor: pointer;
+        }
+        .cat-item:hover {
+            background: rgba(56, 189, 248, 0.12);
+        }
+        .cat-item input[type="checkbox"] {
+            margin-left: 8px;
+            accent-color: #38bdf8;
+            cursor: pointer;
+            width: 15px;
+            height: 15px;
+        }
+        .cat-badge {
+            font-size: 0.68rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
         }
         /* 2D Info Panel */
         #desktop-info-panel {
@@ -172,7 +248,7 @@
             border: 1px solid rgba(255, 255, 255, 0.12);
             line-height: 1.6;
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            max-width: 420px;
+            max-width: 440px;
         }
         #drop-overlay {
             display: none;
@@ -200,7 +276,6 @@
             padding: 10px 24px !important;
             font-size: 0.9rem !important;
         }
-        /* Loading Notification */
         #loading-toast {
             display: none;
             position: absolute;
@@ -218,7 +293,6 @@
             min-width: 380px;
             text-align: right;
         }
-        /* Clash Beacon Pulse Animation */
         .clash-badge {
             background: rgba(239, 68, 68, 0.2);
             color: #ef4444;
@@ -275,17 +349,64 @@
             <p>مراجعة التصاميم وتنسيق النماذج المعمارية والـ MEP بمقياس 1:1</p>
         </div>
         <div class="actions-group">
-            <!-- View Mode Switcher: WebXR Lab is Default Active -->
             <button class="btn btn-lab-active" id="tab-lab-view">🥽 غرفة التعارضات (WebXR Lab)</button>
             <button class="btn btn-outline" id="tab-speckle-view">🏢 نموذج Speckle السحابي</button>
             
             <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 4px;"></div>
             
+            <!-- BIM Filters & Storeys Button -->
+            <button class="btn btn-filter" id="btn-toggle-filters-panel" title="فصل الطوابق وتصفية عناصر المبنى والتأسيسات">🎛️ تصفية العناصر وفصل الطوابق</button>
             <button class="btn btn-upload" id="btn-trigger-upload">📂 استيراد نموذج آخر (GLB / IFC)</button>
             <button class="btn btn-center" id="btn-center-model" title="إعادة الكاميرا وتوسيط الموديل في منتصف الشاشة">🎯 وضع المجسم في المنتصف</button>
-            <button class="btn btn-outline" id="btn-toggle-ceiling">الأسقف</button>
             <button class="btn btn-outline" id="btn-export-issues">تقرير التعارضات (CSV)</button>
             <span class="status-pill" id="clash-counter">🔴 التعارضات المرصودة: 0</span>
+        </div>
+    </div>
+
+    <!-- Floating BIM Elements & Storeys Filter Panel -->
+    <div id="bim-filter-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 8px; margin-bottom: 12px;">
+            <h3 style="color: #38bdf8; font-size: 0.95rem; font-weight: bold; display: flex; align-items: center; gap: 6px;">
+                <span>🎛️ تصفية العناصر وفصل الطوابق</span>
+            </h3>
+            <button id="btn-close-filter-panel" style="background: transparent; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 2px 6px;">✕</button>
+        </div>
+
+        <!-- 1. Storeys & Levels Isolation -->
+        <div class="filter-box">
+            <div class="filter-section-title">
+                <span>🏢 فصل وعزل الطوابق (Storeys / Levels):</span>
+            </div>
+            <select id="select-storey-filter" style="width: 100%; background: #0f172a; color: #f1f5f9; border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 8px; padding: 8px 10px; font-size: 0.8rem; margin-bottom: 10px; cursor: pointer; outline: none;">
+                <option value="all">🏢 عرض المبنى كاملاً (جميع الطوابق)</option>
+            </select>
+
+            <!-- Exploded Storeys View Slider -->
+            <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
+                <div style="display: flex; justify-content: space-between; font-size: 0.76rem; color: #94a3b8; margin-bottom: 4px;">
+                    <span>💥 تفجير الطوابق رأسياً (Exploded View):</span>
+                    <span id="label-explode-val" style="color: #38bdf8; font-weight: bold;">0 م</span>
+                </div>
+                <input type="range" id="slider-explode" min="0" max="15" step="0.5" value="0" style="width: 100%; cursor: pointer; accent-color: #38bdf8;">
+            </div>
+        </div>
+
+        <!-- 2. BIM Disciplines & Categories Filtering -->
+        <div class="filter-box">
+            <div class="filter-section-title" style="justify-content: space-between;">
+                <span>🧱 تصفية العناصر والتخصصات:</span>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+                <button id="btn-filter-all" class="btn" style="flex: 1; padding: 5px 8px; font-size: 0.72rem; justify-content: center; background: #334155;">تحديد الكل</button>
+                <button id="btn-filter-mep-only" class="btn" style="flex: 1.2; padding: 5px 8px; font-size: 0.72rem; justify-content: center; background: #0284c7; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);">⚡ عزل MEP فقط</button>
+            </div>
+
+            <!-- Categories Checkbox List -->
+            <div id="category-checkbox-container" style="display: flex; flex-direction: column; gap: 4px; max-height: 250px; overflow-y: auto; padding-right: 2px;">
+                <!-- Populated dynamically via JS -->
+            </div>
         </div>
     </div>
 
@@ -311,10 +432,10 @@
 
     <!-- Guidance Note (Bottom Left) -->
     <div id="instructions">
-        🔍 <b>غرفة فحص التعارضات نشطة الآن:</b> تفحص أنظمة التكييف، الأكسجين الطبي، والصمامات في منتصف الشاشة.<br>
+        🔍 <b>تصفية وفصل الطوابق:</b> اضغط زر <b>"🎛️ تصفية العناصر وفصل الطوابق"</b> لعزل أي طابق أو إخفاء الجدران وعزل الـ MEP.<br>
         🖱️ <b>التحكم:</b> انقر على أي عنصر لمعاينة مواصفاته. اسحب للدوران وحرك العجلة للتقريب.<br>
-        🎯 <b>التوسيط:</b> اضغط زر <b>"وضع المجسم في المنتصف"</b> في أي وقت لإعادة ضبط المشهد كاملاً.<br>
-        🥽 <b>الواقع الافتراضي:</b> انقر زر <b>ENTER VR</b> بالأسفل لدخول الفراغ بمقياس واقعي 1:1 بنظارة Meta Quest.
+        🎯 <b>التوسيط:</b> اضغط زر <b>"وضع المجسم في المنتصف"</b> لإعادة ضبط المشهد كاملاً.<br>
+        🥽 <b>الواقع الافتراضي:</b> انقر زر <b>ENTER VR</b> بالأسفل لدخول الفراغ بمقياس 1:1 بنظارة Meta Quest.
     </div>
 
     <!-- Main 3D Engine & BIM Inspection Logic -->
@@ -379,13 +500,52 @@
             }
 
             // =====================================================================
-            // 3. WebXR Coordination Lab Room & Multi-Disciplinary Clashes
+            // 3. BIM Categories Definition & Mapping
+            // =====================================================================
+            var BIM_CATEGORIES = [
+                { id: 'doors', label: 'الأبواب (Doors)', types: ['IFCDOOR', 'IFCDOORSTANDARDCASE'], icon: '🚪', badge: 'Arch', badgeBg: '#475569', isMEP: false },
+                { id: 'windows', label: 'الشبابيك (Windows)', types: ['IFCWINDOW', 'IFCWINDOWSTANDARDCASE'], icon: '🪟', badge: 'Arch', badgeBg: '#475569', isMEP: false },
+                { id: 'walls', label: 'الجدران والقواطع (Walls)', types: ['IFCWALL', 'IFCWALLSTANDARDCASE', 'IFCCURTAINWALL'], icon: '🧱', badge: 'Arch', badgeBg: '#475569', isMEP: false },
+                { id: 'slabs', label: 'السقوف والأرضيات (Slabs / Ceilings)', types: ['IFCSLAB', 'IFCROOF', 'IFCCOVERING'], icon: '🏢', badge: 'Arch', badgeBg: '#475569', isMEP: false },
+                { id: 'structure', label: 'الأعمدة والكمرات الإنشائية (Columns / Beams)', types: ['IFCCOLUMN', 'IFCBEAM', 'IFCMEMBER', 'IFCFOOTING'], icon: '🏛️', badge: 'Struct', badgeBg: '#7c3aed', isMEP: false },
+                { id: 'equipment', label: 'الأجهزة والمعدات والأثاث (Equipment)', types: ['IFCFURNISHINGELEMENT', 'IFCFURNITURE', 'IFCEQUIPMENTELEMENT', 'IFCSANITARYTERMINAL'], icon: '🛋️', badge: 'FF&E', badgeBg: '#64748b', isMEP: false },
+                { id: 'pipes', label: 'الأنابيب والسباكة (Piping & Plumbing)', types: ['IFCPIPESEGMENT', 'IFCPIPEFITTING', 'IFCFLOWSEGMENT', 'IFCFLOWFITTING', 'IFCVALVE'], icon: '🚰', badge: 'MEP', badgeBg: '#0284c7', isMEP: true },
+                { id: 'hvac', label: 'التكييف ومجاري الهواء (HVAC & Ducts)', types: ['IFCDUCTSEGMENT', 'IFCDUCTFITTING', 'IFCAIRTERMINAL', 'IFCDAMPER', 'IFCFAN'], icon: '💨', badge: 'MEP', badgeBg: '#0891b2', isMEP: true },
+                { id: 'electrical', label: 'الكهربائيات وحوامل الكابلات (Electrical)', types: ['IFCCABLECARRIERSEGMENT', 'IFCCABLECARRIERFITTING', 'IFCELECTRICALELEMENT', 'IFCLIGHTFIXTURE', 'IFCOUTLET', 'IFCJUNCTIONBOX'], icon: '⚡', badge: 'MEP', badgeBg: '#d97706', isMEP: true },
+                { id: 'other', label: 'عناصر ومكونات إضافية (Stairs / Misc)', types: ['IFCSTAIR', 'IFCRAILING', 'IFCRAMP', 'IFCBUILDINGELEMENTPROXY'], icon: '🪜', badge: 'General', badgeBg: '#334155', isMEP: false }
+            ];
+
+            var categoryState = {};
+            var catCheckboxes = {};
+            var catContainer = document.getElementById('category-checkbox-container');
+
+            BIM_CATEGORIES.forEach(function(cat) {
+                categoryState[cat.id] = true;
+                var row = document.createElement('label');
+                row.className = 'cat-item';
+                row.innerHTML = '<span><input type="checkbox" id="chk-cat-' + cat.id + '" checked style="margin-left: 8px;"> ' + cat.icon + ' ' + cat.label + '</span><span class="cat-badge" style="background: ' + cat.badgeBg + '; color: white;">' + cat.badge + '</span>';
+                catContainer.appendChild(row);
+
+                var chk = row.querySelector('input');
+                catCheckboxes[cat.id] = chk;
+                chk.addEventListener('change', function() {
+                    categoryState[cat.id] = chk.checked;
+                    applyFilters();
+                });
+            });
+
+            // =====================================================================
+            // 4. WebXR Coordination Lab Room & Multi-Disciplinary Clashes
             // =====================================================================
             var bimElements = [];
             var webxrLabGroup = new THREE.Group();
             var ceilingGroup = new THREE.Group();
+            var wallGroup = new THREE.Group();
+            var mepGroup = new THREE.Group();
             scene.add(webxrLabGroup);
             webxrLabGroup.add(ceilingGroup);
+            webxrLabGroup.add(wallGroup);
+            webxrLabGroup.add(mepGroup);
 
             // Materials
             var matFloor = new THREE.MeshStandardMaterial({ color: 0x172033, roughness: 0.5, metalness: 0.1 });
@@ -414,13 +574,13 @@
                 wall.position.set(x, y, z);
                 wall.receiveShadow = true;
                 wall.castShadow = true;
-                webxrLabGroup.add(wall);
+                wallGroup.add(wall);
             }
             addWall(14, 3.8, 0.2, 0, 1.9, -7);
             addWall(0.2, 3.8, 14, -7, 1.9, 0);
             addWall(0.2, 3.8, 14, 7, 1.9, 0);
 
-            // Ceiling with inspection toggle
+            // Ceiling
             var ceiling = new THREE.Mesh(new THREE.BoxGeometry(13.8, 0.05, 13.8), matCeiling);
             ceiling.position.set(0, 3.2, 0);
             ceilingGroup.add(ceiling);
@@ -436,11 +596,11 @@
                 return mesh;
             }
 
-            // 1. Primary HVAC Duct (Air Distribution)
+            // 1. Primary HVAC Duct
             var ductGeo = new THREE.BoxGeometry(7.0, 0.5, 0.8);
             var mainDuct = new THREE.Mesh(ductGeo, matDuct);
             mainDuct.position.set(0, 2.5, 0);
-            webxrLabGroup.add(mainDuct);
+            mepGroup.add(mainDuct);
             registerBIM(mainDuct, {
                 elementId: 'MEP-HVAC-DUCT-401',
                 category: 'مجرى هواء تكييف مركزي (Supply Air Duct)',
@@ -450,12 +610,12 @@
                 status: 'تعارض حرج مع ماسورة الأكسجين الطبي'
             }, true);
 
-            // 2. Medical Oxygen Line (Critical Clash Crossing Through Duct)
+            // 2. Medical Oxygen Line
             var pipeGeo = new THREE.CylinderGeometry(0.04, 0.04, 8.0, 20);
             var oxygenPipe = new THREE.Mesh(pipeGeo, matMedGas);
             oxygenPipe.rotation.z = Math.PI / 2;
             oxygenPipe.position.set(0, 2.52, 0.12);
-            webxrLabGroup.add(oxygenPipe);
+            mepGroup.add(oxygenPipe);
             registerBIM(oxygenPipe, {
                 elementId: 'MEP-MEDGAS-O2-108',
                 category: 'ماسورة أكسجين طبي (Medical Gas Pipe)',
@@ -470,7 +630,7 @@
             var chwPipe = new THREE.Mesh(chwGeo, matWater);
             chwPipe.rotation.x = Math.PI / 2;
             chwPipe.position.set(1.5, 2.7, 0);
-            webxrLabGroup.add(chwPipe);
+            mepGroup.add(chwPipe);
             registerBIM(chwPipe, {
                 elementId: 'MEP-PLUMB-CHW-204',
                 category: 'ماسورة مياه مثلجة (Chilled Water Supply)',
@@ -480,11 +640,11 @@
                 status: 'تم الفحص - خلوص العزل محقق'
             }, true);
 
-            // 4. Isolation Valve with Maintenance Clash
+            // 4. Isolation Valve
             var valveGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.25, 16);
             var valve = new THREE.Mesh(valveGeo, matValve);
             valve.position.set(1.5, 2.7, 0.8);
-            webxrLabGroup.add(valve);
+            mepGroup.add(valve);
             registerBIM(valve, {
                 elementId: 'MEP-HVAC-VLV-302',
                 category: 'محبس عزل ميكانيكي (Chilled Water Gate Valve)',
@@ -499,7 +659,7 @@
             var sprPipe = new THREE.Mesh(sprGeo, matFire);
             sprPipe.rotation.z = Math.PI / 2;
             sprPipe.position.set(0, 2.85, -1.5);
-            webxrLabGroup.add(sprPipe);
+            mepGroup.add(sprPipe);
             registerBIM(sprPipe, {
                 elementId: 'MEP-FIRE-SPR-101',
                 category: 'ماسورة شبكة إطفاء حريق (Fire Sprinkler Line)',
@@ -523,16 +683,16 @@
                 status: 'مطابق للكود المعماري'
             }, true);
 
-            // Visual Halo / Beacon around Critical Clash in Center
+            // Visual Halo around Critical Clash
             var clashBeaconGeo = new THREE.RingGeometry(0.18, 0.24, 32);
             var clashBeaconMat = new THREE.MeshBasicMaterial({ color: 0xef4444, side: THREE.DoubleSide });
             var clashBeacon = new THREE.Mesh(clashBeaconGeo, clashBeaconMat);
             clashBeacon.rotation.x = Math.PI / 2;
             clashBeacon.position.set(0, 2.52, 0.12);
-            webxrLabGroup.add(clashBeacon);
+            mepGroup.add(clashBeacon);
 
             // =====================================================================
-            // 4. Centering & Camera Framing Algorithm (Guaranteed Center View)
+            // 5. Centering & Camera Framing Algorithm
             // =====================================================================
             function fitCameraToObject(cam, obj, ctrl) {
                 if (!obj) return;
@@ -546,26 +706,21 @@
 
                 if (maxDim <= 0 || !isFinite(maxDim)) return;
 
-                // Center object at the origin (0, 0, 0)
                 obj.position.x -= center.x;
                 obj.position.y -= center.y;
                 obj.position.z -= center.z;
 
-                // Recalculate bounding sphere
                 box.setFromObject(obj);
                 var sphere = box.getBoundingSphere(new THREE.Sphere());
                 var radius = Math.max(1, sphere.radius);
 
-                // Compute exact distance
                 var fov = cam.fov * (Math.PI / 180);
                 var distance = (radius / Math.sin(fov / 2)) * 1.35;
 
-                // Update near and far clip planes (zero clipping)
                 cam.near = Math.max(0.01, distance / 1000);
                 cam.far = Math.max(500000, distance * 50);
                 cam.updateProjectionMatrix();
 
-                // Elevated isometric framing looking at center
                 cam.position.set(distance * 0.75, distance * 0.55, distance * 0.85);
                 cam.lookAt(0, 0, 0);
 
@@ -579,7 +734,6 @@
                 adjustLighting(radius);
             }
 
-            // Function to reset camera to WebXR Lab default overview
             function resetWebXRLabCamera() {
                 camera.near = 0.05;
                 camera.far = 10000;
@@ -592,13 +746,19 @@
                 controls.update();
             }
 
-            // Initial view: perfectly framed on WebXR Lab in the center
             resetWebXRLabCamera();
 
             // =====================================================================
-            // 5. Custom 3D Model Loading (GLB / GLTF / IFC)
+            // 6. Custom 3D Model Loading (GLB / GLTF / IFC)
             // =====================================================================
             var currentCustomModel = null;
+            var currentIFCLoader = null;
+            var ifcStoreysList = [];
+            var ifcStoreyElementMap = {}; // storeyID -> Set of expressIDs
+            var ifcCategoryMap = {};      // catKey -> Set of expressIDs
+            var ifcAllIds = new Set();
+            var activeSubsetMesh = null;
+
             var gltfLoader = new THREE.GLTFLoader();
             if (THREE.DRACOLoader) {
                 var dracoLoader = new THREE.DRACOLoader();
@@ -626,6 +786,10 @@
             });
 
             function clearCustomModel() {
+                if (activeSubsetMesh) {
+                    scene.remove(activeSubsetMesh);
+                    activeSubsetMesh = null;
+                }
                 if (currentCustomModel) {
                     scene.remove(currentCustomModel);
                     currentCustomModel.traverse(function(child) {
@@ -643,7 +807,36 @@
                     currentCustomModel = null;
                 }
                 bimElements = bimElements.filter(function(e) { return e.userData && e.userData.isLabElem; });
+                ifcStoreysList = [];
+                ifcStoreyElementMap = {};
+                ifcCategoryMap = {};
+                ifcAllIds.clear();
             }
+
+            // Populate Storeys dropdown
+            var selectStoreyFilter = document.getElementById('select-storey-filter');
+            function refreshStoreyDropdown() {
+                selectStoreyFilter.innerHTML = '<option value="all">🏢 عرض المبنى كاملاً (جميع الطوابق)</option>';
+                if (ifcStoreysList.length > 0) {
+                    ifcStoreysList.forEach(function(s, idx) {
+                        var opt = document.createElement('option');
+                        opt.value = s.id;
+                        opt.innerText = '📍 ' + (s.name || ('طابق ' + (idx + 1))) + ' (' + s.count + ' عنصر)';
+                        selectStoreyFilter.appendChild(opt);
+                    });
+                } else if (webxrLabGroup.visible) {
+                    var opt1 = document.createElement('option');
+                    opt1.value = 'lab_lower';
+                    opt1.innerText = '📍 المستوى السفلي (الأرضية وجدران الفراغ)';
+                    selectStoreyFilter.appendChild(opt1);
+
+                    var opt2 = document.createElement('option');
+                    opt2.value = 'lab_upper';
+                    opt2.innerText = '📍 المستوى العلوي (السقف المعلق والـ MEP)';
+                    selectStoreyFilter.appendChild(opt2);
+                }
+            }
+            refreshStoreyDropdown();
 
             function loadFile(file) {
                 var fileNameLower = file.name.toLowerCase();
@@ -679,8 +872,8 @@
                                 throw new Error('محرك قراءة ملفات الـ IFC غير متوفر. تأكد من اتصال الإنترنت.');
                             }
                             var ifcLoader = new LoaderClass();
+                            currentIFCLoader = ifcLoader;
 
-                            // Explicit absolute locateFile path for web-ifc.wasm
                             var baseDir = window.location.href.split('?')[0].split('#')[0].replace(/\/[^\/]*$/, '/');
                             var wasmUrl = baseDir + 'web-ifc.wasm';
 
@@ -694,7 +887,6 @@
                                 ifcLoader.ifcManager.setWasmPath(baseDir);
                             }
 
-                            // Track progress of generating 3D geometries
                             if (typeof ifcLoader.ifcManager.setOnProgress === 'function') {
                                 ifcLoader.ifcManager.setOnProgress(function(prog) {
                                     if (prog && prog.total > 0) {
@@ -714,19 +906,24 @@
                             currentCustomModel = ifcModel;
                             scene.add(ifcModel);
 
-                            // Center model in the middle of the screen
                             fitCameraToObject(camera, ifcModel, controls);
+
+                            // Index Storeys and Categories from IFC
+                            await indexIFCStructure(ifcModel, ifcLoader);
+                            refreshStoreyDropdown();
 
                             registerBIM(ifcModel, {
                                 elementId: file.name,
                                 category: 'نموذج IFC متكامل (OpenBIM)',
                                 system: 'Architectural / Structural / MEP',
                                 dimensions: 'أبعاد ومناسيب هندسية أصلية',
-                                clearance: 'جاهز للفحص الفراغي في الـ VR',
-                                status: 'تم التوسيط والعرض بنجاح في منتصف الشاشة'
+                                clearance: 'جاهز للفحص والتصفية الفراغية',
+                                status: 'تم التوسيط وفهرسة الطوابق بنجاح'
                             }, false);
 
                             toast.style.display = 'none';
+                            // Open filter panel to show user the newly discovered storeys
+                            document.getElementById('bim-filter-panel').style.display = 'block';
                         } catch (err) {
                             console.error('IFC Error:', err);
                             toastError.style.display = 'block';
@@ -757,7 +954,7 @@
                         try {
                             gltfLoader.parse(event.target.result, '', function(gltf) {
                                 clearCustomModel();
-                                webxrLabGroup.visible = false; // Hide lab to display user's building
+                                webxrLabGroup.visible = false;
                                 var model = gltf.scene;
                                 currentCustomModel = model;
 
@@ -780,9 +977,8 @@
                                 });
 
                                 scene.add(model);
-
-                                // Place model EXACTLY in the center of the screen
                                 fitCameraToObject(camera, model, controls);
+                                refreshStoreyDropdown();
 
                                 toast.style.display = 'none';
                             }, function(err) {
@@ -805,7 +1001,207 @@
             }
 
             // =====================================================================
-            // 6. Center Model Button Action
+            // 7. Storey & Category Indexing Logic for IFC
+            // =====================================================================
+            async function indexIFCStructure(model, loader) {
+                var modelID = model.modelID;
+                ifcAllIds.clear();
+                ifcStoreysList = [];
+                ifcStoreyElementMap = {};
+                ifcCategoryMap = {};
+
+                // 1. Index Categories
+                for (var i = 0; i < BIM_CATEGORIES.length; i++) {
+                    var cat = BIM_CATEGORIES[i];
+                    var catIds = new Set();
+                    for (var j = 0; j < cat.types.length; j++) {
+                        var typeName = cat.types[j];
+                        if (window.WebIFC && window.WebIFC[typeName] !== undefined) {
+                            try {
+                                var lines = await loader.ifcManager.getAllItemsOfType(modelID, window.WebIFC[typeName], false);
+                                if (lines && lines.length > 0) {
+                                    for (var k = 0; k < lines.length; k++) {
+                                        catIds.add(lines[k]);
+                                        ifcAllIds.add(lines[k]);
+                                    }
+                                }
+                            } catch (e) {}
+                        }
+                    }
+                    ifcCategoryMap[cat.id] = catIds;
+                }
+
+                // 2. Index Storeys via Spatial Structure
+                try {
+                    var spatial = await loader.ifcManager.getSpatialStructure(modelID);
+                    function traverseSpatial(node) {
+                        if (!node) return;
+                        if (node.type === 'IFCBUILDINGSTOREY') {
+                            var sName = node.Name ? (node.Name.value || node.Name) : ('طابق ' + (ifcStoreysList.length + 1));
+                            var sId = String(node.expressID);
+                            var sIds = new Set();
+
+                            function collectIds(n) {
+                                if (!n) return;
+                                if (n.expressID && n.type !== 'IFCBUILDINGSTOREY') {
+                                    sIds.add(n.expressID);
+                                }
+                                if (n.children && n.children.length > 0) {
+                                    n.children.forEach(collectIds);
+                                }
+                            }
+                            collectIds(node);
+
+                            ifcStoreysList.push({ id: sId, name: sName, count: sIds.size });
+                            ifcStoreyElementMap[sId] = sIds;
+                            return;
+                        }
+                        if (node.children && node.children.length > 0) {
+                            node.children.forEach(traverseSpatial);
+                        }
+                    }
+                    traverseSpatial(spatial);
+                } catch (e) {
+                    console.warn('Could not extract spatial tree from IFC:', e);
+                }
+            }
+
+            // =====================================================================
+            // 8. Universal Filter Application (Storey + Categories + Exploded View)
+            // =====================================================================
+            function applyFilters() {
+                var selectedStorey = selectStoreyFilter.value;
+                var explodeVal = parseFloat(document.getElementById('slider-explode').value) || 0;
+
+                // Case A: User uploaded custom IFC model
+                if (currentCustomModel && currentIFCLoader) {
+                    var allowed = [];
+
+                    for (var catId in categoryState) {
+                        if (categoryState[catId] && ifcCategoryMap[catId]) {
+                            ifcCategoryMap[catId].forEach(function(elemId) {
+                                if (selectedStorey === 'all') {
+                                    allowed.push(elemId);
+                                } else if (ifcStoreyElementMap[selectedStorey] && ifcStoreyElementMap[selectedStorey].has(elemId)) {
+                                    allowed.push(elemId);
+                                }
+                            });
+                        }
+                    }
+
+                    if (allowed.length > 0) {
+                        currentCustomModel.visible = false;
+                        var subset = currentIFCLoader.ifcManager.createSubset({
+                            modelID: currentCustomModel.modelID,
+                            ids: allowed,
+                            scene: scene,
+                            removePrevious: true,
+                            customID: 'user_active_subset'
+                        });
+                        activeSubsetMesh = subset;
+
+                        // Exploded view vertical offset
+                        if (explodeVal > 0 && selectedStorey === 'all' && ifcStoreysList.length > 1) {
+                            // Subsets per storey explosion
+                            ifcStoreysList.forEach(function(st, idx) {
+                                var stAllowed = allowed.filter(function(id) {
+                                    return ifcStoreyElementMap[st.id] && ifcStoreyElementMap[st.id].has(id);
+                                });
+                                if (stAllowed.length > 0) {
+                                    var stMesh = currentIFCLoader.ifcManager.createSubset({
+                                        modelID: currentCustomModel.modelID,
+                                        ids: stAllowed,
+                                        scene: scene,
+                                        removePrevious: true,
+                                        customID: 'exploded_' + st.id
+                                    });
+                                    stMesh.position.y = idx * explodeVal;
+                                }
+                            });
+                            if (activeSubsetMesh) activeSubsetMesh.visible = false;
+                        } else {
+                            if (activeSubsetMesh) activeSubsetMesh.visible = true;
+                        }
+                    } else {
+                        if (activeSubsetMesh) {
+                            scene.remove(activeSubsetMesh);
+                            activeSubsetMesh = null;
+                        }
+                    }
+                }
+                // Case B: Default WebXR Lab Environment
+                else if (webxrLabGroup.visible) {
+                    wallGroup.visible = categoryState.walls && (selectedStorey !== 'lab_upper');
+                    floorMesh.visible = categoryState.slabs && (selectedStorey !== 'lab_upper');
+                    door.visible = categoryState.doors && (selectedStorey !== 'lab_upper');
+                    
+                    ceilingGroup.visible = categoryState.slabs && (selectedStorey !== 'lab_lower');
+                    mainDuct.visible = categoryState.hvac && (selectedStorey !== 'lab_lower');
+                    oxygenPipe.visible = categoryState.pipes && (selectedStorey !== 'lab_lower');
+                    chwPipe.visible = categoryState.pipes && (selectedStorey !== 'lab_lower');
+                    valve.visible = categoryState.pipes && (selectedStorey !== 'lab_lower');
+                    sprPipe.visible = categoryState.pipes && (selectedStorey !== 'lab_lower');
+                    clashBeacon.visible = (categoryState.hvac && categoryState.pipes) && (selectedStorey !== 'lab_lower');
+
+                    // Exploded View movement in WebXR Lab
+                    ceilingGroup.position.y = 3.2 + explodeVal;
+                    mainDuct.position.y = 2.5 + explodeVal * 0.55;
+                    oxygenPipe.position.y = 2.52 + explodeVal * 0.55;
+                    clashBeacon.position.y = 2.52 + explodeVal * 0.55;
+                    chwPipe.position.y = 2.7 + explodeVal * 0.65;
+                    valve.position.y = 2.7 + explodeVal * 0.65;
+                    sprPipe.position.y = 2.85 + explodeVal * 0.75;
+                }
+            }
+
+            // Event Listeners for Filters
+            selectStoreyFilter.addEventListener('change', applyFilters);
+
+            var sliderExplode = document.getElementById('slider-explode');
+            var labelExplodeVal = document.getElementById('label-explode-val');
+            sliderExplode.addEventListener('input', function() {
+                labelExplodeVal.innerText = sliderExplode.value + ' م';
+                applyFilters();
+            });
+
+            // Quick Preset: Select All
+            document.getElementById('btn-filter-all').addEventListener('click', function() {
+                BIM_CATEGORIES.forEach(function(cat) {
+                    categoryState[cat.id] = true;
+                    if (catCheckboxes[cat.id]) catCheckboxes[cat.id].checked = true;
+                });
+                selectStoreyFilter.value = 'all';
+                sliderExplode.value = 0;
+                labelExplodeVal.innerText = '0 م';
+                applyFilters();
+            });
+
+            // Quick Preset: Isolate MEP Only (Clash Detection Mode)
+            document.getElementById('btn-filter-mep-only').addEventListener('click', function() {
+                BIM_CATEGORIES.forEach(function(cat) {
+                    var isMep = cat.isMEP;
+                    categoryState[cat.id] = isMep;
+                    if (catCheckboxes[cat.id]) catCheckboxes[cat.id].checked = isMep;
+                });
+                applyFilters();
+            });
+
+            // Toggle Panel Open/Close
+            var filterPanel = document.getElementById('bim-filter-panel');
+            var btnToggleFilter = document.getElementById('btn-toggle-filters-panel');
+            btnToggleFilter.addEventListener('click', function() {
+                if (filterPanel.style.display === 'block') {
+                    filterPanel.style.display = 'none';
+                } else {
+                    filterPanel.style.display = 'block';
+                }
+            });
+            document.getElementById('btn-close-filter-panel').addEventListener('click', function() {
+                filterPanel.style.display = 'none';
+            });
+
+            // =====================================================================
+            // 9. Center Model Button Action
             // =====================================================================
             document.getElementById('btn-center-model').addEventListener('click', function() {
                 if (currentCustomModel) {
@@ -816,7 +1212,7 @@
             });
 
             // =====================================================================
-            // 7. Drag and Drop Support
+            // 10. Drag and Drop Support
             // =====================================================================
             window.addEventListener('dragenter', function(e) { e.preventDefault(); dropOverlay.style.display = 'flex'; });
             window.addEventListener('dragover', function(e) { e.preventDefault(); });
@@ -840,7 +1236,7 @@
             });
 
             // =====================================================================
-            // 8. View Switcher (WebXR Lab as Primary vs Speckle Cloud)
+            // 11. View Switcher (WebXR Lab as Primary vs Speckle Cloud)
             // =====================================================================
             var tabLab = document.getElementById('tab-lab-view');
             var tabSpeckle = document.getElementById('tab-speckle-view');
@@ -851,6 +1247,7 @@
                     speckleContainer.style.display = 'block';
                     tabSpeckle.className = 'btn btn-lab-active';
                     tabLab.className = 'btn btn-outline';
+                    filterPanel.style.display = 'none';
                 } else {
                     speckleContainer.style.display = 'none';
                     tabLab.className = 'btn btn-lab-active';
@@ -870,7 +1267,7 @@
             tabSpeckle.addEventListener('click', function() { switchView('speckle'); });
 
             // =====================================================================
-            // 9. Click Selection & Metadata Inspection
+            // 12. Click Selection & Metadata Inspection
             // =====================================================================
             var raycaster = new THREE.Raycaster();
             var mouse = new THREE.Vector2();
@@ -884,7 +1281,7 @@
             var valStatus = document.getElementById('val-status');
 
             window.addEventListener('click', function(e) {
-                if (e.target.closest('#header-bar') || e.target.closest('#desktop-info-panel') || e.target.closest('#loading-toast') || e.target.closest('#VRButton')) {
+                if (e.target.closest('#header-bar') || e.target.closest('#desktop-info-panel') || e.target.closest('#bim-filter-panel') || e.target.closest('#loading-toast') || e.target.closest('#VRButton')) {
                     return;
                 }
                 mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -923,7 +1320,7 @@
             });
 
             // =====================================================================
-            // 10. Clash Reporting & CSV Export
+            // 13. Clash Reporting & CSV Export
             // =====================================================================
             var flaggedIssues = [];
             var clashCounter = document.getElementById('clash-counter');
@@ -966,15 +1363,8 @@
                 document.body.removeChild(a);
             });
 
-            // Toggle Ceiling
-            var ceilingVisible = true;
-            document.getElementById('btn-toggle-ceiling').addEventListener('click', function() {
-                ceilingVisible = !ceilingVisible;
-                ceilingGroup.visible = ceilingVisible;
-            });
-
             // =====================================================================
-            // 11. Render Loop & Window Resize
+            // 14. Render Loop & Window Resize
             // =====================================================================
             window.addEventListener('resize', function() {
                 camera.aspect = window.innerWidth / window.innerHeight;
@@ -982,11 +1372,10 @@
                 renderer.setSize(window.innerWidth, window.innerHeight);
             });
 
-            // Continuous animation loop (rotates beacon slightly for attention)
             var clock = new THREE.Clock();
             renderer.setAnimationLoop(function() {
                 var delta = clock.getDelta();
-                if (clashBeacon) {
+                if (clashBeacon && clashBeacon.visible) {
                     clashBeacon.rotation.z += delta * 0.8;
                 }
                 controls.update();
