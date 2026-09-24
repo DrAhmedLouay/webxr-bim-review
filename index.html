@@ -693,12 +693,12 @@
                 { id: 'windows', label: 'الشبابيك والزجاج (Windows)', hex: '#38bdf8', types: ['IFCWINDOW', 'IFCWINDOWSTANDARDCASE'], icon: '🪟', badge: 'Glass', badgeBg: '#0284c7', isMEP: false },
                 { id: 'walls', label: 'الجدران والقواطع (Walls)', hex: '#94a3b8', types: ['IFCWALL', 'IFCWALLSTANDARDCASE', 'IFCCURTAINWALL'], icon: '🧱', badge: 'Arch', badgeBg: '#475569', isMEP: false },
                 { id: 'slabs', label: 'السقوف والأرضيات (Slabs / Ceilings)', hex: '#475569', types: ['IFCSLAB', 'IFCROOF', 'IFCCOVERING'], icon: '🏢', badge: 'Arch', badgeBg: '#334155', isMEP: false },
-                { id: 'structure', label: 'الأعمدة والكمرات الإنشائية (Structure)', hex: '#8b5cf6', types: ['IFCCOLUMN', 'IFCBEAM', 'IFCMEMBER', 'IFCFOOTING'], icon: '🏛️', badge: 'Struct', badgeBg: '#7c3aed', isMEP: false },
+                { id: 'structure', label: 'الأعمدة والكمرات الإنشائية (Structure)', hex: '#8b5cf6', types: ['IFCCOLUMN', 'IFCBEAM', 'IFCMEMBER', 'IFCFOOTING', 'IFCPLATE'], icon: '🏛️', badge: 'Struct', badgeBg: '#7c3aed', isMEP: false },
                 { id: 'equipment', label: 'الأجهزة والمعدات والأثاث (Equipment)', hex: '#10b981', types: ['IFCFURNISHINGELEMENT', 'IFCFURNITURE', 'IFCEQUIPMENTELEMENT', 'IFCSANITARYTERMINAL'], icon: '🛋️', badge: 'FF&E', badgeBg: '#059669', isMEP: false },
-                { id: 'pipes', label: 'الأنابيب والسباكة (Piping & Plumbing)', hex: '#0284c7', types: ['IFCPIPESEGMENT', 'IFCPIPEFITTING', 'IFCFLOWSEGMENT', 'IFCFLOWFITTING', 'IFCVALVE', 'IFCFLOWTERMINAL'], icon: '🚰', badge: 'MEP', badgeBg: '#0284c7', isMEP: true },
-                { id: 'hvac', label: 'التكييف ومجاري الهواء (HVAC & Ducts)', hex: '#06b6d4', types: ['IFCDUCTSEGMENT', 'IFCDUCTFITTING', 'IFCAIRTERMINAL', 'IFCDAMPER', 'IFCFAN'], icon: '💨', badge: 'MEP', badgeBg: '#0891b2', isMEP: true },
-                { id: 'electrical', label: 'الكهربائيات وحوامل الكابلات (Electrical)', hex: '#f59e0b', types: ['IFCCABLECARRIERSEGMENT', 'IFCCABLECARRIERFITTING', 'IFCELECTRICALELEMENT', 'IFCLIGHTFIXTURE', 'IFCOUTLET', 'IFCJUNCTIONBOX'], icon: '⚡', badge: 'MEP', badgeBg: '#d97706', isMEP: true },
-                { id: 'other', label: 'عناصر ومكونات إضافية (Stairs / Misc)', hex: '#64748b', types: ['IFCSTAIR', 'IFCRAILING', 'IFCRAMP', 'IFCBUILDINGELEMENTPROXY'], icon: '🪜', badge: 'General', badgeBg: '#475569', isMEP: false }
+                { id: 'pipes', label: 'الأنابيب والسباكة (Piping & Plumbing)', hex: '#0284c7', types: ['IFCPIPESEGMENT', 'IFCPIPEFITTING', 'IFCFLOWSEGMENT', 'IFCFLOWFITTING', 'IFCVALVE', 'IFCFLOWTERMINAL', 'IFCPIPE'], icon: '🚰', badge: 'MEP', badgeBg: '#0284c7', isMEP: true },
+                { id: 'hvac', label: 'التكييف ومجاري الهواء (HVAC & Ducts)', hex: '#06b6d4', types: ['IFCDUCTSEGMENT', 'IFCDUCTFITTING', 'IFCAIRTERMINAL', 'IFCDAMPER', 'IFCFAN', 'IFCDUCT'], icon: '💨', badge: 'MEP', badgeBg: '#0891b2', isMEP: true },
+                { id: 'electrical', label: 'الكهربائيات وحوامل الكابلات (Electrical)', hex: '#f59e0b', types: ['IFCCABLECARRIERSEGMENT', 'IFCCABLECARRIERFITTING', 'IFCELECTRICALELEMENT', 'IFCLIGHTFIXTURE', 'IFCOUTLET', 'IFCJUNCTIONBOX', 'IFCCABLESEGMENT'], icon: '⚡', badge: 'MEP', badgeBg: '#d97706', isMEP: true },
+                { id: 'other', label: 'عناصر ومكونات إضافية (Stairs / Misc)', hex: '#64748b', types: ['IFCSTAIR', 'IFCRAILING', 'IFCRAMP', 'IFCBUILDINGELEMENTPROXY', 'IFCSTAIRFLIGHT'], icon: '🪜', badge: 'General', badgeBg: '#475569', isMEP: false }
             ];
 
             var BIM_CATEGORY_MATERIALS = {
@@ -1226,6 +1226,7 @@
 
                             // Build pre-cached subsets for categories and storeys (ensures 0ms toggle speed)
                             await buildIFCSubsets(ifcModel, ifcLoader);
+                            applyFilters();
 
                             registerBIM(ifcModel, {
                                 elementId: file.name,
@@ -1347,24 +1348,29 @@
                 try {
                     var spatial = await loader.ifcManager.getSpatialStructure(modelID);
 
-                    function traverseSpatial(node, currentStoreyId) {
+                    async function traverseSpatial(node, currentStoreyId) {
                         if (!node) return;
 
+                        var upperType = String(node.type || '').toUpperCase();
                         var activeStoreyId = currentStoreyId;
 
-                        if (node.type === 'IFCBUILDINGSTOREY') {
-                            var sName = node.Name ? (node.Name.value || node.Name) : ('طابق ' + (ifcStoreysList.length + 1));
+                        if (upperType === 'IFCBUILDINGSTOREY') {
                             var sId = String(node.expressID);
                             activeStoreyId = sId;
                             if (!ifcStoreyElementMap[sId]) {
                                 ifcStoreyElementMap[sId] = new Set();
+                                var sName = 'طابق ' + (ifcStoreysList.length + 1);
+                                try {
+                                    var props = await loader.ifcManager.getItemProperties(modelID, node.expressID);
+                                    if (props && props.Name) sName = props.Name.value || props.Name;
+                                } catch(e) {}
                                 ifcStoreysList.push({ id: sId, name: sName, count: 0 });
                             }
-                        } else if (node.expressID && node.type !== 'IFCPROJECT' && node.type !== 'IFCSITE' && node.type !== 'IFCBUILDING' && node.type !== 'IFCSPACE' && node.type !== 'IFCOPENINGELEMENT') {
+                        } else if (node.expressID && upperType !== 'IFCPROJECT' && upperType !== 'IFCSITE' && upperType !== 'IFCBUILDING' && upperType !== 'IFCSPACE' && upperType !== 'IFCOPENINGELEMENT') {
                             var elemId = node.expressID;
                             ifcAllIds.add(elemId);
 
-                            var cat = getCategoryForType(node.type);
+                            var cat = getCategoryForType(upperType);
                             if (ifcCategoryMap[cat]) {
                                 ifcCategoryMap[cat].add(elemId);
                             }
@@ -1376,12 +1382,12 @@
 
                         if (node.children && node.children.length > 0) {
                             for (var c = 0; c < node.children.length; c++) {
-                                traverseSpatial(node.children[c], activeStoreyId);
+                                await traverseSpatial(node.children[c], activeStoreyId);
                             }
                         }
                     }
 
-                    traverseSpatial(spatial, null);
+                    await traverseSpatial(spatial, null);
 
                     // Update storey element counts
                     ifcStoreysList.forEach(function(s) {
@@ -1487,8 +1493,12 @@
                                     sMesh.userData = {
                                         storeyId: s.id,
                                         storeyName: s.name,
-                                        basePosY: model.position.y
+                                        basePosY: model.position.y,
+                                        originalMaterial: sMesh.material
                                     };
+                                    if (colorCodingMode === 'clay') {
+                                        sMesh.material = clayMaterial;
+                                    }
                                     ifcStoreyMeshes[s.id] = sMesh;
                                 }
                             } catch(e) {
@@ -1526,6 +1536,18 @@
                             mesh.material = clayMaterial;
                         } else if (mode === 'original') {
                             mesh.material = mesh.userData.originalMaterial || BIM_CATEGORY_MATERIALS[catId];
+                        }
+                    }
+                }
+
+                // Update storey meshes
+                for (var sid in ifcStoreyMeshes) {
+                    var sMesh = ifcStoreyMeshes[sid];
+                    if (sMesh) {
+                        if (mode === 'clay') {
+                            sMesh.material = clayMaterial;
+                        } else {
+                            sMesh.material = sMesh.userData.originalMaterial || sMesh.material;
                         }
                     }
                 }
