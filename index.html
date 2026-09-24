@@ -124,7 +124,7 @@
             position: absolute;
             top: 72px;
             right: 18px;
-            width: 350px;
+            width: 380px;
             max-height: calc(100vh - 95px);
             background: rgba(15, 23, 42, 0.96);
             backdrop-filter: blur(18px);
@@ -403,6 +403,11 @@
                 <button id="btn-filter-mep-only" class="btn" style="flex: 1.2; padding: 5px 8px; font-size: 0.72rem; justify-content: center; background: #0284c7; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);">⚡ عزل MEP فقط</button>
             </div>
 
+            <!-- Notice Banner for Model Analysis -->
+            <div id="filter-model-notice" style="display:none; font-size:0.73rem; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; color: #bae6fd; line-height: 1.35;">
+                📊 <strong>فحص عناصر الملف:</strong> تم جرد وتصنيف عناصر الموديل. الفئات الموسومة بـ <span style="color:#f87171; font-weight:bold;">(0 غير متوفر)</span> لا يتضمنها ملف الـ IFC المعماري الحالي.
+            </div>
+
             <!-- Categories Checkbox List -->
             <div id="category-checkbox-container" style="display: flex; flex-direction: column; gap: 4px; max-height: 250px; overflow-y: auto; padding-right: 2px;">
                 <!-- Populated dynamically via JS -->
@@ -523,7 +528,11 @@
                 categoryState[cat.id] = true;
                 var row = document.createElement('label');
                 row.className = 'cat-item';
-                row.innerHTML = '<span><input type="checkbox" id="chk-cat-' + cat.id + '" checked style="margin-left: 8px;"> ' + cat.icon + ' ' + cat.label + '</span><span class="cat-badge" style="background: ' + cat.badgeBg + '; color: white;">' + cat.badge + '</span>';
+                row.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px;"><input type="checkbox" id="chk-cat-' + cat.id + '" checked> ' + cat.icon + ' ' + cat.label + '</span>' +
+                                '<div style="display:inline-flex; align-items:center; gap:4px;">' +
+                                '<span id="cat-count-' + cat.id + '" class="cat-badge" style="background: rgba(255,255,255,0.08); color: #94a3b8; font-size: 10px;">-</span>' +
+                                '<span class="cat-badge" style="background: ' + cat.badgeBg + '; color: white;">' + cat.badge + '</span>' +
+                                '</div>';
                 catContainer.appendChild(row);
 
                 var chk = row.querySelector('input');
@@ -533,6 +542,36 @@
                     applyFilters();
                 });
             });
+
+            function updateCategoryCounters() {
+                var notice = document.getElementById('filter-model-notice');
+                if (notice) notice.style.display = currentCustomModel ? 'block' : 'none';
+
+                BIM_CATEGORIES.forEach(function(cat) {
+                    var countBadge = document.getElementById('cat-count-' + cat.id);
+                    if (!countBadge) return;
+
+                    if (currentCustomModel) {
+                        var count = (ifcCategoryMap[cat.id] ? ifcCategoryMap[cat.id].size : 0);
+                        if (count > 0) {
+                            countBadge.innerText = count + ' عنصر';
+                            countBadge.style.background = 'rgba(16, 185, 129, 0.25)';
+                            countBadge.style.color = '#34d399';
+                            countBadge.style.border = '1px solid rgba(16, 185, 129, 0.5)';
+                        } else {
+                            countBadge.innerText = '0 (غير متوفر)';
+                            countBadge.style.background = 'rgba(239, 68, 68, 0.15)';
+                            countBadge.style.color = '#fca5a5';
+                            countBadge.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+                        }
+                    } else {
+                        countBadge.innerText = 'عينة تجريبية';
+                        countBadge.style.background = 'rgba(255,255,255,0.08)';
+                        countBadge.style.color = '#94a3b8';
+                        countBadge.style.border = 'none';
+                    }
+                });
+            }
 
             // =====================================================================
             // 4. WebXR Coordination Lab Room & Multi-Disciplinary Clashes
@@ -758,6 +797,23 @@
             var ifcCategoryMap = {};      // catKey -> Set of expressIDs
             var ifcAllIds = new Set();
             var activeSubsetMesh = null;
+            var explodedSubsets = [];
+
+            function clearExplodedSubsets() {
+                if (explodedSubsets && explodedSubsets.length > 0) {
+                    explodedSubsets.forEach(function(mesh) {
+                        if (mesh) {
+                            scene.remove(mesh);
+                            if (currentIFCLoader && currentCustomModel) {
+                                try {
+                                    currentIFCLoader.ifcManager.removeSubset(currentCustomModel.modelID, null, mesh.customID);
+                                } catch(e) {}
+                            }
+                        }
+                    });
+                    explodedSubsets = [];
+                }
+            }
 
             var gltfLoader = new THREE.GLTFLoader();
             if (THREE.DRACOLoader) {
@@ -786,8 +842,14 @@
             });
 
             function clearCustomModel() {
+                clearExplodedSubsets();
                 if (activeSubsetMesh) {
                     scene.remove(activeSubsetMesh);
+                    if (currentIFCLoader && currentCustomModel) {
+                        try {
+                            currentIFCLoader.ifcManager.removeSubset(currentCustomModel.modelID, null, 'user_active_subset');
+                        } catch(e) {}
+                    }
                     activeSubsetMesh = null;
                 }
                 if (currentCustomModel) {
@@ -811,6 +873,7 @@
                 ifcStoreyElementMap = {};
                 ifcCategoryMap = {};
                 ifcAllIds.clear();
+                updateCategoryCounters();
             }
 
             // Populate Storeys dropdown
@@ -1009,61 +1072,99 @@
                 ifcStoreysList = [];
                 ifcStoreyElementMap = {};
                 ifcCategoryMap = {};
+                BIM_CATEGORIES.forEach(function(cat) {
+                    ifcCategoryMap[cat.id] = new Set();
+                });
 
-                // 1. Index Categories
-                for (var i = 0; i < BIM_CATEGORIES.length; i++) {
-                    var cat = BIM_CATEGORIES[i];
-                    var catIds = new Set();
-                    for (var j = 0; j < cat.types.length; j++) {
-                        var typeName = cat.types[j];
-                        if (window.WebIFC && window.WebIFC[typeName] !== undefined) {
-                            try {
-                                var lines = await loader.ifcManager.getAllItemsOfType(modelID, window.WebIFC[typeName], false);
-                                if (lines && lines.length > 0) {
-                                    for (var k = 0; k < lines.length; k++) {
-                                        catIds.add(lines[k]);
-                                        ifcAllIds.add(lines[k]);
-                                    }
-                                }
-                            } catch (e) {}
-                        }
-                    }
-                    ifcCategoryMap[cat.id] = catIds;
+                function getCategoryForType(typeStr) {
+                    if (!typeStr) return 'other';
+                    var t = String(typeStr).toUpperCase();
+                    if (t.indexOf('DOOR') !== -1) return 'doors';
+                    if (t.indexOf('WINDOW') !== -1) return 'windows';
+                    if (t.indexOf('WALL') !== -1) return 'walls';
+                    if (t.indexOf('SLAB') !== -1 || t.indexOf('ROOF') !== -1 || t.indexOf('COVERING') !== -1 || t.indexOf('CEILING') !== -1) return 'slabs';
+                    if (t.indexOf('COLUMN') !== -1 || t.indexOf('BEAM') !== -1 || t.indexOf('MEMBER') !== -1 || t.indexOf('FOOTING') !== -1 || t.indexOf('PLATE') !== -1) return 'structure';
+                    if (t.indexOf('FURNISHING') !== -1 || t.indexOf('FURNITURE') !== -1 || t.indexOf('EQUIPMENT') !== -1 || t.indexOf('SANITARY') !== -1) return 'equipment';
+                    if (t.indexOf('PIPE') !== -1 || t.indexOf('VALVE') !== -1 || t.indexOf('FLOWSEGMENT') !== -1 || t.indexOf('FLOWFITTING') !== -1) return 'pipes';
+                    if (t.indexOf('DUCT') !== -1 || t.indexOf('AIRTERMINAL') !== -1 || t.indexOf('DAMPER') !== -1 || t.indexOf('FAN') !== -1) return 'hvac';
+                    if (t.indexOf('CABLE') !== -1 || t.indexOf('ELECTRICAL') !== -1 || t.indexOf('LIGHT') !== -1 || t.indexOf('OUTLET') !== -1 || t.indexOf('JUNCTION') !== -1) return 'electrical';
+                    return 'other';
                 }
 
-                // 2. Index Storeys via Spatial Structure
+                // 1. Index via Spatial Structure (Direct string entity names from IFC tree)
                 try {
                     var spatial = await loader.ifcManager.getSpatialStructure(modelID);
-                    function traverseSpatial(node) {
+
+                    function traverseSpatial(node, currentStoreyId) {
                         if (!node) return;
+
+                        var activeStoreyId = currentStoreyId;
+
                         if (node.type === 'IFCBUILDINGSTOREY') {
                             var sName = node.Name ? (node.Name.value || node.Name) : ('طابق ' + (ifcStoreysList.length + 1));
                             var sId = String(node.expressID);
-                            var sIds = new Set();
-
-                            function collectIds(n) {
-                                if (!n) return;
-                                if (n.expressID && n.type !== 'IFCBUILDINGSTOREY') {
-                                    sIds.add(n.expressID);
-                                }
-                                if (n.children && n.children.length > 0) {
-                                    n.children.forEach(collectIds);
-                                }
+                            activeStoreyId = sId;
+                            if (!ifcStoreyElementMap[sId]) {
+                                ifcStoreyElementMap[sId] = new Set();
+                                ifcStoreysList.push({ id: sId, name: sName, count: 0 });
                             }
-                            collectIds(node);
+                        } else if (node.expressID && node.type !== 'IFCPROJECT' && node.type !== 'IFCSITE' && node.type !== 'IFCBUILDING') {
+                            var elemId = node.expressID;
+                            ifcAllIds.add(elemId);
 
-                            ifcStoreysList.push({ id: sId, name: sName, count: sIds.size });
-                            ifcStoreyElementMap[sId] = sIds;
-                            return;
+                            var cat = getCategoryForType(node.type);
+                            if (ifcCategoryMap[cat]) {
+                                ifcCategoryMap[cat].add(elemId);
+                            }
+
+                            if (activeStoreyId && ifcStoreyElementMap[activeStoreyId]) {
+                                ifcStoreyElementMap[activeStoreyId].add(elemId);
+                            }
                         }
+
                         if (node.children && node.children.length > 0) {
-                            node.children.forEach(traverseSpatial);
+                            for (var c = 0; c < node.children.length; c++) {
+                                traverseSpatial(node.children[c], activeStoreyId);
+                            }
                         }
                     }
-                    traverseSpatial(spatial);
+
+                    traverseSpatial(spatial, null);
+
+                    // Update storey element counts
+                    ifcStoreysList.forEach(function(s) {
+                        if (ifcStoreyElementMap[s.id]) {
+                            s.count = ifcStoreyElementMap[s.id].size;
+                        }
+                    });
+
                 } catch (e) {
                     console.warn('Could not extract spatial tree from IFC:', e);
                 }
+
+                // 2. Query extra elements via WebIFC constants or API if available
+                try {
+                    var apiTypes = (window.WebIFC) || (loader.ifcManager && loader.ifcManager.state && loader.ifcManager.state.api) || {};
+                    for (var i = 0; i < BIM_CATEGORIES.length; i++) {
+                        var cat = BIM_CATEGORIES[i];
+                        for (var j = 0; j < cat.types.length; j++) {
+                            var typeName = cat.types[j];
+                            if (apiTypes[typeName] !== undefined) {
+                                try {
+                                    var lines = await loader.ifcManager.getAllItemsOfType(modelID, apiTypes[typeName], false);
+                                    if (lines && lines.length > 0) {
+                                        for (var k = 0; k < lines.length; k++) {
+                                            ifcCategoryMap[cat.id].add(lines[k]);
+                                            ifcAllIds.add(lines[k]);
+                                        }
+                                    }
+                                } catch (e) {}
+                            }
+                        }
+                    }
+                } catch(e) {}
+
+                updateCategoryCounters();
             }
 
             // =====================================================================
@@ -1075,8 +1176,27 @@
 
                 // Case A: User uploaded custom IFC model
                 if (currentCustomModel && currentIFCLoader) {
-                    var allowed = [];
+                    var isAllCatsChecked = true;
+                    for (var cId in categoryState) {
+                        if (!categoryState[cId]) {
+                            isAllCatsChecked = false;
+                            break;
+                        }
+                    }
 
+                    // Condition for full untouched model:
+                    // All categories checked, all storeys selected, and no vertical explosion
+                    if (isAllCatsChecked && selectedStorey === 'all' && explodeVal === 0) {
+                        currentCustomModel.visible = true;
+                        if (activeSubsetMesh) {
+                            activeSubsetMesh.visible = false;
+                        }
+                        clearExplodedSubsets();
+                        return;
+                    }
+
+                    // Collect allowed IDs based on checked categories and selected storey
+                    var allowed = [];
                     for (var catId in categoryState) {
                         if (categoryState[catId] && ifcCategoryMap[catId]) {
                             ifcCategoryMap[catId].forEach(function(elemId) {
@@ -1089,44 +1209,49 @@
                         }
                     }
 
-                    if (allowed.length > 0) {
-                        currentCustomModel.visible = false;
-                        var subset = currentIFCLoader.ifcManager.createSubset({
-                            modelID: currentCustomModel.modelID,
-                            ids: allowed,
-                            scene: scene,
-                            removePrevious: true,
-                            customID: 'user_active_subset'
-                        });
-                        activeSubsetMesh = subset;
+                    currentCustomModel.visible = false;
+                    clearExplodedSubsets();
 
-                        // Exploded view vertical offset
+                    if (allowed.length > 0) {
                         if (explodeVal > 0 && selectedStorey === 'all' && ifcStoreysList.length > 1) {
-                            // Subsets per storey explosion
+                            if (activeSubsetMesh) activeSubsetMesh.visible = false;
                             ifcStoreysList.forEach(function(st, idx) {
                                 var stAllowed = allowed.filter(function(id) {
                                     return ifcStoreyElementMap[st.id] && ifcStoreyElementMap[st.id].has(id);
                                 });
                                 if (stAllowed.length > 0) {
-                                    var stMesh = currentIFCLoader.ifcManager.createSubset({
-                                        modelID: currentCustomModel.modelID,
-                                        ids: stAllowed,
-                                        scene: scene,
-                                        removePrevious: true,
-                                        customID: 'exploded_' + st.id
-                                    });
-                                    stMesh.position.y = idx * explodeVal;
+                                    try {
+                                        var stMesh = currentIFCLoader.ifcManager.createSubset({
+                                            modelID: currentCustomModel.modelID,
+                                            ids: stAllowed,
+                                            scene: scene,
+                                            removePrevious: true,
+                                            customID: 'exploded_' + st.id
+                                        });
+                                        stMesh.position.y = idx * explodeVal;
+                                        explodedSubsets.push(stMesh);
+                                    } catch(e) {
+                                        console.error('Error creating exploded subset:', e);
+                                    }
                                 }
                             });
-                            if (activeSubsetMesh) activeSubsetMesh.visible = false;
                         } else {
-                            if (activeSubsetMesh) activeSubsetMesh.visible = true;
+                            try {
+                                var subset = currentIFCLoader.ifcManager.createSubset({
+                                    modelID: currentCustomModel.modelID,
+                                    ids: allowed,
+                                    scene: scene,
+                                    removePrevious: true,
+                                    customID: 'user_active_subset'
+                                });
+                                activeSubsetMesh = subset;
+                                if (activeSubsetMesh) activeSubsetMesh.visible = true;
+                            } catch(e) {
+                                console.error('Error creating filtered subset:', e);
+                            }
                         }
                     } else {
-                        if (activeSubsetMesh) {
-                            scene.remove(activeSubsetMesh);
-                            activeSubsetMesh = null;
-                        }
+                        if (activeSubsetMesh) activeSubsetMesh.visible = false;
                     }
                 }
                 // Case B: Default WebXR Lab Environment
@@ -1280,7 +1405,7 @@
             var valClearance = document.getElementById('val-clearance');
             var valStatus = document.getElementById('val-status');
 
-            window.addEventListener('click', function(e) {
+            window.addEventListener('click', async function(e) {
                 if (e.target.closest('#header-bar') || e.target.closest('#desktop-info-panel') || e.target.closest('#bim-filter-panel') || e.target.closest('#loading-toast') || e.target.closest('#VRButton')) {
                     return;
                 }
@@ -1288,8 +1413,48 @@
                 mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
                 raycaster.setFromCamera(mouse, camera);
-                var intersects = raycaster.intersectObjects(scene.children, true);
 
+                // 1. Inspect IFC Model Element if custom IFC model is active
+                if (currentCustomModel && currentIFCLoader) {
+                    var ifcTargets = [];
+                    if (currentCustomModel.visible) ifcTargets.push(currentCustomModel);
+                    if (activeSubsetMesh && activeSubsetMesh.visible) ifcTargets.push(activeSubsetMesh);
+                    if (explodedSubsets && explodedSubsets.length > 0) ifcTargets = ifcTargets.concat(explodedSubsets);
+
+                    var ifcHits = raycaster.intersectObjects(ifcTargets, true);
+                    if (ifcHits.length > 0) {
+                        var hit = ifcHits[0];
+                        try {
+                            var expressID = currentIFCLoader.ifcManager.getExpressId(hit.object.geometry, hit.faceIndex);
+                            if (expressID !== undefined && expressID !== null) {
+                                var props = await currentIFCLoader.ifcManager.getItemProperties(currentCustomModel.modelID, expressID);
+                                var pName = (props && props.Name && props.Name.value) || ('IFC Element #' + expressID);
+                                var pType = (props && props.__proto__ && props.__proto__.constructor && props.__proto__.constructor.name) || 'عنصر IFC';
+                                
+                                valId.innerText = '#' + expressID + ' (' + pName + ')';
+                                valCat.innerText = pType;
+                                valSys.innerText = 'نموذج الـ IFC المستورد';
+                                valDim.innerText = 'أبعاد ومناسيب هندسية أصلية';
+                                valClearance.innerText = 'مطابق لقاعدة بيانات OpenBIM';
+                                valStatus.innerText = 'جاهز للفحص والمطابقة الهندسية';
+
+                                selectedMesh = hit.object;
+                                selectedMesh.userData = {
+                                    elementId: '#' + expressID + ' - ' + pName,
+                                    category: pType,
+                                    system: 'Architectural / BIM'
+                                };
+                                panel.style.display = 'block';
+                                return;
+                            }
+                        } catch(err) {
+                            console.warn('Could not inspect clicked IFC element:', err);
+                        }
+                    }
+                }
+
+                // 2. Default WebXR Lab Environment Selection
+                var intersects = raycaster.intersectObjects(scene.children, true);
                 var hitBIM = null;
                 for (var i = 0; i < intersects.length; i++) {
                     var obj = intersects[i].object;
