@@ -186,6 +186,62 @@
             border-radius: 4px;
             font-weight: bold;
         }
+        .mode-btn-group {
+            display: flex;
+            gap: 4px;
+            background: rgba(15, 23, 42, 0.7);
+            padding: 3px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 8px;
+        }
+        .mode-btn {
+            flex: 1;
+            padding: 6px 4px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            background: transparent;
+            color: #94a3b8;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        .mode-btn:hover {
+            color: #f1f5f9;
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .mode-btn.active {
+            background: #0284c7;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+        }
+        .color-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+            flex-shrink: 0;
+        }
+        .bg-swatch {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+        .bg-swatch:hover {
+            transform: scale(1.1);
+        }
+        .bg-swatch.active {
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+        }
         /* 2D Info Panel */
         #desktop-info-panel {
             position: absolute;
@@ -354,8 +410,12 @@
             
             <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 4px;"></div>
             
+            <!-- Quick Color & Lighting Toggles -->
+            <button class="btn btn-outline" id="btn-quick-color-toggle" title="تبديل تمييز الألوان الهندسية بين ألوان التخصصات والألوان الأصلية">🎨 تمييز الألوان</button>
+            <button class="btn btn-outline" id="btn-quick-lighting" title="ضبط إضاءة بيئة العمل وخلفية المشهد">💡 إضاءة البيئة</button>
+
             <!-- BIM Filters & Storeys Button -->
-            <button class="btn btn-filter" id="btn-toggle-filters-panel" title="فصل الطوابق وتصفية عناصر المبنى والتأسيسات">🎛️ تصفية العناصر وفصل الطوابق</button>
+            <button class="btn btn-filter" id="btn-toggle-filters-panel" title="فصل الطوابق وتصفية عناصر المبنى والتأسيسات وضبط الإضاءة">🎛️ تصفية العناصر والإضاءة</button>
             <button class="btn btn-upload" id="btn-trigger-upload">📂 استيراد نموذج آخر (GLB / IFC)</button>
             <button class="btn btn-center" id="btn-center-model" title="إعادة الكاميرا وتوسيط الموديل في منتصف الشاشة">🎯 وضع المجسم في المنتصف</button>
             <button class="btn btn-outline" id="btn-export-issues">تقرير التعارضات (CSV)</button>
@@ -367,12 +427,63 @@
     <div id="bim-filter-panel">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 8px; margin-bottom: 12px;">
             <h3 style="color: #38bdf8; font-size: 0.95rem; font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                <span>🎛️ تصفية العناصر وفصل الطوابق</span>
+                <span>🎛️ تصفية العناصر وإضاءة بيئة العمل</span>
             </h3>
             <button id="btn-close-filter-panel" style="background: transparent; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 2px 6px;">✕</button>
         </div>
 
-        <!-- 1. Storeys & Levels Isolation -->
+        <!-- 1. Color Differentiation & Shading Modes -->
+        <div class="filter-box">
+            <div class="filter-section-title">
+                <span>🎨 تمييز ألوان العناصر (Color Coding):</span>
+            </div>
+            <div class="mode-btn-group">
+                <button class="mode-btn active" id="btn-mode-bim" data-mode="bim" title="تلوين العناصر حسب التخصص الهندسي مع زجاج شفاف">🎨 ألوان التخصصات</button>
+                <button class="mode-btn" id="btn-mode-original" data-mode="original" title="الألوان الأصلية المستخرجة من ملف الـ IFC">🏛️ ألوان IFC الأصلية</button>
+                <button class="mode-btn" id="btn-mode-clay" data-mode="clay" title="نمط الطين المعماري عالي التباين">📐 نمط التباين</button>
+            </div>
+            <div style="font-size: 0.72rem; color: #94a3b8; line-height: 1.35; margin-top: 4px;">
+                💡 <b>ألوان التخصصات:</b> تُميّز الجدران، الأبواب، السقوف، الأعمدة، وشبكات الـ MEP بألوان معيارية مع شفافية واقعية لزجاج النوافذ لكشف الفراغات الداخلية.
+            </div>
+        </div>
+
+        <!-- 2. Workspace Lighting & Environment -->
+        <div class="filter-box">
+            <div class="filter-section-title" style="justify-content: space-between;">
+                <span>💡 إضاءة بيئة العمل (Lighting Environment):</span>
+                <span id="label-exposure-val" style="color: #38bdf8; font-weight: bold; font-size: 0.75rem;">100%</span>
+            </div>
+            
+            <!-- Exposure / Light Intensity Slider -->
+            <div style="margin-bottom: 8px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: #94a3b8; margin-bottom: 3px;">
+                    <span>شدة السطوع والتعريض (Exposure):</span>
+                </div>
+                <input type="range" id="slider-exposure" min="0.4" max="1.8" step="0.05" value="1.0" style="width: 100%; cursor: pointer; accent-color: #38bdf8;">
+            </div>
+
+            <!-- Lighting Presets -->
+            <div style="margin-bottom: 8px;">
+                <div style="font-size: 0.72rem; color: #94a3b8; margin-bottom: 4px;">بيئة الإضاءة الهندسية:</div>
+                <div class="mode-btn-group">
+                    <button class="mode-btn preset-btn active" data-preset="daylight">☀️ نهاري</button>
+                    <button class="mode-btn preset-btn" data-preset="warm">🌅 دافئ</button>
+                    <button class="mode-btn preset-btn" data-preset="studio_dark">🌌 استوديو داكن</button>
+                </div>
+            </div>
+
+            <!-- Workspace Background Color -->
+            <div>
+                <div style="font-size: 0.72rem; color: #94a3b8; margin-bottom: 4px;">لون خلفية بيئة العمل:</div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <div class="bg-swatch active" data-color="#0b0f19" style="background: #0b0f19;" title="كحلي داكن معماري (الافتراضي)"></div>
+                    <div class="bg-swatch" data-color="#1e293b" style="background: #1e293b;" title="رمادي أردوازي هادئ"></div>
+                    <div class="bg-swatch" data-color="#f1f5f9" style="background: #f1f5f9; border: 1px solid #cbd5e1;" title="استوديو فاتح"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Storeys & Levels Isolation -->
         <div class="filter-box">
             <div class="filter-section-title">
                 <span>🏢 فصل وعزل الطوابق (Storeys / Levels):</span>
@@ -391,7 +502,7 @@
             </div>
         </div>
 
-        <!-- 2. BIM Disciplines & Categories Filtering -->
+        <!-- 4. BIM Disciplines & Categories Filtering -->
         <div class="filter-box">
             <div class="filter-section-title" style="justify-content: space-between;">
                 <span>🧱 تصفية العناصر والتخصصات:</span>
@@ -437,7 +548,8 @@
 
     <!-- Guidance Note (Bottom Left) -->
     <div id="instructions">
-        🔍 <b>تصفية وفصل الطوابق:</b> اضغط زر <b>"🎛️ تصفية العناصر وفصل الطوابق"</b> لعزل أي طابق أو إخفاء الجدران وعزل الـ MEP.<br>
+        🎨 <b>تمييز الألوان والإضاءة:</b> اضغط زر <b>"🎨 تمييز الألوان"</b> أو <b>"🎛️ تصفية العناصر والإضاءة"</b> لتلوين التخصصات وضبط شدة الإضاءة.<br>
+        🔍 <b>فصل وعزل الطوابق:</b> عزل أي طابق أو تفكيك المبنى رأسياً (Exploded View) بسلاسة فائقة 60 FPS.<br>
         🖱️ <b>التحكم:</b> انقر على أي عنصر لمعاينة مواصفاته. اسحب للدوران وحرك العجلة للتقريب.<br>
         🎯 <b>التوسيط:</b> اضغط زر <b>"وضع المجسم في المنتصف"</b> لإعادة ضبط المشهد كاملاً.<br>
         🥽 <b>الواقع الافتراضي:</b> انقر زر <b>ENTER VR</b> بالأسفل لدخول الفراغ بمقياس 1:1 بنظارة Meta Quest.
@@ -465,6 +577,11 @@
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.shadowMap.enabled = false; // Disabled for buttery-smooth 60FPS BIM navigation
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.0;
+            if (THREE.sRGBEncoding) {
+                renderer.outputEncoding = THREE.sRGBEncoding;
+            }
             renderer.xr.enabled = true;
             container.appendChild(renderer.domElement);
 
@@ -478,46 +595,133 @@
             controls.target.set(0, 1.8, 0);
 
             // =====================================================================
-            // 2. High-Performance Architectural Lighting
+            // 2. High-Performance Architectural Lighting & Environment
             // =====================================================================
-            var ambientLight = new THREE.AmbientLight(0xffffff, 1.05);
+            var ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
             scene.add(ambientLight);
 
-            var hemiLight = new THREE.HemisphereLight(0xffffff, 0x1e293b, 0.95);
+            var hemiLight = new THREE.HemisphereLight(0xe0f2fe, 0x1e293b, 0.65);
             scene.add(hemiLight);
 
-            var dirLight1 = new THREE.DirectionalLight(0xffffff, 1.25);
-            dirLight1.position.set(30, 50, 30);
+            var dirLight1 = new THREE.DirectionalLight(0xffffff, 0.85);
+            dirLight1.position.set(35, 55, 35);
             dirLight1.castShadow = false;
             scene.add(dirLight1);
 
-            var dirLight2 = new THREE.DirectionalLight(0x93c5fd, 0.85);
-            dirLight2.position.set(-30, 40, -30);
+            var dirLight2 = new THREE.DirectionalLight(0x93c5fd, 0.45);
+            dirLight2.position.set(-35, 45, -35);
+            dirLight2.castShadow = false;
             scene.add(dirLight2);
+
+            var currentLightingPreset = 'daylight';
+            var currentExposureFactor = 1.0;
+
+            var LIGHTING_PRESETS = {
+                daylight: {
+                    name: 'استوديو نهاري متوازن',
+                    ambientColor: 0xffffff,
+                    ambientIntensity: 0.45,
+                    hemiSky: 0xe0f2fe,
+                    hemiGround: 0x1e293b,
+                    hemiIntensity: 0.65,
+                    dir1Color: 0xffffff,
+                    dir1Intensity: 0.85,
+                    dir2Color: 0x93c5fd,
+                    dir2Intensity: 0.45
+                },
+                warm: {
+                    name: 'إضاءة دافئة سينمائية',
+                    ambientColor: 0xffedd5,
+                    ambientIntensity: 0.4,
+                    hemiSky: 0xfef3c7,
+                    hemiGround: 0x292524,
+                    hemiIntensity: 0.6,
+                    dir1Color: 0xfbbf24,
+                    dir1Intensity: 0.95,
+                    dir2Color: 0xf87171,
+                    dir2Intensity: 0.45
+                },
+                studio_dark: {
+                    name: 'بيئة داكنة متقدمة (Cyber BIM)',
+                    ambientColor: 0x94a3b8,
+                    ambientIntensity: 0.35,
+                    hemiSky: 0x38bdf8,
+                    hemiGround: 0x0f172a,
+                    hemiIntensity: 0.7,
+                    dir1Color: 0xf8fafc,
+                    dir1Intensity: 0.8,
+                    dir2Color: 0x0284c7,
+                    dir2Intensity: 0.6
+                }
+            };
+
+            function applyLightingPreset(presetKey) {
+                var p = LIGHTING_PRESETS[presetKey];
+                if (!p) return;
+                currentLightingPreset = presetKey;
+
+                ambientLight.color.setHex(p.ambientColor);
+                ambientLight.intensity = p.ambientIntensity * currentExposureFactor;
+
+                hemiLight.color.setHex(p.hemiSky);
+                hemiLight.groundColor.setHex(p.hemiGround);
+                hemiLight.intensity = p.hemiIntensity * currentExposureFactor;
+
+                dirLight1.color.setHex(p.dir1Color);
+                dirLight1.intensity = p.dir1Intensity * currentExposureFactor;
+
+                dirLight2.color.setHex(p.dir2Color);
+                dirLight2.intensity = p.dir2Intensity * currentExposureFactor;
+
+                document.querySelectorAll('.preset-btn').forEach(function(b) {
+                    b.classList.toggle('active', b.dataset.preset === presetKey);
+                });
+            }
 
             function adjustLighting(radius) {
                 var d = Math.max(25, radius * 2.5);
-                ambientLight.intensity = 1.0;
-                hemiLight.intensity = 0.85;
                 dirLight1.position.set(d, d * 1.4, d);
                 dirLight2.position.set(-d, d * 1.0, -d);
+                applyLightingPreset(currentLightingPreset);
             }
 
             // =====================================================================
-            // 3. BIM Categories Definition & Mapping
+            // 3. BIM Categories Definition & PBR Engineering Materials
             // =====================================================================
             var BIM_CATEGORIES = [
-                { id: 'doors', label: 'الأبواب (Doors)', types: ['IFCDOOR', 'IFCDOORSTANDARDCASE'], icon: '🚪', badge: 'Arch', badgeBg: '#475569', isMEP: false },
-                { id: 'windows', label: 'الشبابيك (Windows)', types: ['IFCWINDOW', 'IFCWINDOWSTANDARDCASE'], icon: '🪟', badge: 'Arch', badgeBg: '#475569', isMEP: false },
-                { id: 'walls', label: 'الجدران والقواطع (Walls)', types: ['IFCWALL', 'IFCWALLSTANDARDCASE', 'IFCCURTAINWALL'], icon: '🧱', badge: 'Arch', badgeBg: '#475569', isMEP: false },
-                { id: 'slabs', label: 'السقوف والأرضيات (Slabs / Ceilings)', types: ['IFCSLAB', 'IFCROOF', 'IFCCOVERING'], icon: '🏢', badge: 'Arch', badgeBg: '#475569', isMEP: false },
-                { id: 'structure', label: 'الأعمدة والكمرات الإنشائية (Columns / Beams)', types: ['IFCCOLUMN', 'IFCBEAM', 'IFCMEMBER', 'IFCFOOTING'], icon: '🏛️', badge: 'Struct', badgeBg: '#7c3aed', isMEP: false },
-                { id: 'equipment', label: 'الأجهزة والمعدات والأثاث (Equipment)', types: ['IFCFURNISHINGELEMENT', 'IFCFURNITURE', 'IFCEQUIPMENTELEMENT', 'IFCSANITARYTERMINAL'], icon: '🛋️', badge: 'FF&E', badgeBg: '#64748b', isMEP: false },
-                { id: 'pipes', label: 'الأنابيب والسباكة (Piping & Plumbing)', types: ['IFCPIPESEGMENT', 'IFCPIPEFITTING', 'IFCFLOWSEGMENT', 'IFCFLOWFITTING', 'IFCVALVE', 'IFCFLOWTERMINAL'], icon: '🚰', badge: 'MEP', badgeBg: '#0284c7', isMEP: true },
-                { id: 'hvac', label: 'التكييف ومجاري الهواء (HVAC & Ducts)', types: ['IFCDUCTSEGMENT', 'IFCDUCTFITTING', 'IFCAIRTERMINAL', 'IFCDAMPER', 'IFCFAN'], icon: '💨', badge: 'MEP', badgeBg: '#0891b2', isMEP: true },
-                { id: 'electrical', label: 'الكهربائيات وحوامل الكابلات (Electrical)', types: ['IFCCABLECARRIERSEGMENT', 'IFCCABLECARRIERFITTING', 'IFCELECTRICALELEMENT', 'IFCLIGHTFIXTURE', 'IFCOUTLET', 'IFCJUNCTIONBOX'], icon: '⚡', badge: 'MEP', badgeBg: '#d97706', isMEP: true },
-                { id: 'other', label: 'عناصر ومكونات إضافية (Stairs / Misc)', types: ['IFCSTAIR', 'IFCRAILING', 'IFCRAMP', 'IFCBUILDINGELEMENTPROXY'], icon: '🪜', badge: 'General', badgeBg: '#334155', isMEP: false }
+                { id: 'doors', label: 'الأبواب (Doors)', hex: '#d97706', types: ['IFCDOOR', 'IFCDOORSTANDARDCASE'], icon: '🚪', badge: 'Arch', badgeBg: '#d97706', isMEP: false },
+                { id: 'windows', label: 'الشبابيك والزجاج (Windows)', hex: '#38bdf8', types: ['IFCWINDOW', 'IFCWINDOWSTANDARDCASE'], icon: '🪟', badge: 'Glass', badgeBg: '#0284c7', isMEP: false },
+                { id: 'walls', label: 'الجدران والقواطع (Walls)', hex: '#94a3b8', types: ['IFCWALL', 'IFCWALLSTANDARDCASE', 'IFCCURTAINWALL'], icon: '🧱', badge: 'Arch', badgeBg: '#475569', isMEP: false },
+                { id: 'slabs', label: 'السقوف والأرضيات (Slabs / Ceilings)', hex: '#475569', types: ['IFCSLAB', 'IFCROOF', 'IFCCOVERING'], icon: '🏢', badge: 'Arch', badgeBg: '#334155', isMEP: false },
+                { id: 'structure', label: 'الأعمدة والكمرات الإنشائية (Structure)', hex: '#8b5cf6', types: ['IFCCOLUMN', 'IFCBEAM', 'IFCMEMBER', 'IFCFOOTING'], icon: '🏛️', badge: 'Struct', badgeBg: '#7c3aed', isMEP: false },
+                { id: 'equipment', label: 'الأجهزة والمعدات والأثاث (Equipment)', hex: '#10b981', types: ['IFCFURNISHINGELEMENT', 'IFCFURNITURE', 'IFCEQUIPMENTELEMENT', 'IFCSANITARYTERMINAL'], icon: '🛋️', badge: 'FF&E', badgeBg: '#059669', isMEP: false },
+                { id: 'pipes', label: 'الأنابيب والسباكة (Piping & Plumbing)', hex: '#0284c7', types: ['IFCPIPESEGMENT', 'IFCPIPEFITTING', 'IFCFLOWSEGMENT', 'IFCFLOWFITTING', 'IFCVALVE', 'IFCFLOWTERMINAL'], icon: '🚰', badge: 'MEP', badgeBg: '#0284c7', isMEP: true },
+                { id: 'hvac', label: 'التكييف ومجاري الهواء (HVAC & Ducts)', hex: '#06b6d4', types: ['IFCDUCTSEGMENT', 'IFCDUCTFITTING', 'IFCAIRTERMINAL', 'IFCDAMPER', 'IFCFAN'], icon: '💨', badge: 'MEP', badgeBg: '#0891b2', isMEP: true },
+                { id: 'electrical', label: 'الكهربائيات وحوامل الكابلات (Electrical)', hex: '#f59e0b', types: ['IFCCABLECARRIERSEGMENT', 'IFCCABLECARRIERFITTING', 'IFCELECTRICALELEMENT', 'IFCLIGHTFIXTURE', 'IFCOUTLET', 'IFCJUNCTIONBOX'], icon: '⚡', badge: 'MEP', badgeBg: '#d97706', isMEP: true },
+                { id: 'other', label: 'عناصر ومكونات إضافية (Stairs / Misc)', hex: '#64748b', types: ['IFCSTAIR', 'IFCRAILING', 'IFCRAMP', 'IFCBUILDINGELEMENTPROXY'], icon: '🪜', badge: 'General', badgeBg: '#475569', isMEP: false }
             ];
+
+            var BIM_CATEGORY_MATERIALS = {
+                doors: new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.45, metalness: 0.1, side: THREE.DoubleSide }),
+                windows: new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.15, metalness: 0.1, opacity: 0.48, transparent: true, side: THREE.DoubleSide, depthWrite: false }),
+                walls: new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.72, metalness: 0.05, side: THREE.DoubleSide }),
+                slabs: new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.8, metalness: 0.05, side: THREE.DoubleSide }),
+                structure: new THREE.MeshStandardMaterial({ color: 0x8b5cf6, roughness: 0.5, metalness: 0.25, side: THREE.DoubleSide }),
+                equipment: new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.4, metalness: 0.15, side: THREE.DoubleSide }),
+                pipes: new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.35, metalness: 0.5, side: THREE.DoubleSide }),
+                hvac: new THREE.MeshStandardMaterial({ color: 0x06b6d4, roughness: 0.35, metalness: 0.55, side: THREE.DoubleSide }),
+                electrical: new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.35, metalness: 0.35, side: THREE.DoubleSide }),
+                other: new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6, metalness: 0.1, side: THREE.DoubleSide })
+            };
+
+            var clayMaterial = new THREE.MeshStandardMaterial({
+                color: 0xcbd5e1,
+                roughness: 0.65,
+                metalness: 0.05,
+                side: THREE.DoubleSide
+            });
+
+            var colorCodingMode = 'bim'; // 'bim' | 'original' | 'clay'
 
             var categoryState = {};
             var catCheckboxes = {};
@@ -527,7 +731,10 @@
                 categoryState[cat.id] = true;
                 var row = document.createElement('label');
                 row.className = 'cat-item';
-                row.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px;"><input type="checkbox" id="chk-cat-' + cat.id + '" checked> ' + cat.icon + ' ' + cat.label + '</span>' +
+                row.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px;">' +
+                                '<input type="checkbox" id="chk-cat-' + cat.id + '" checked> ' +
+                                '<span class="color-dot" style="background:' + cat.hex + ';"></span>' +
+                                cat.icon + ' ' + cat.label + '</span>' +
                                 '<div style="display:inline-flex; align-items:center; gap:4px;">' +
                                 '<span id="cat-count-' + cat.id + '" class="cat-badge" style="background: rgba(255,255,255,0.08); color: #94a3b8; font-size: 10px;">-</span>' +
                                 '<span class="cat-badge" style="background: ' + cat.badgeBg + '; color: white;">' + cat.badge + '</span>' +
@@ -1241,6 +1448,15 @@
                                 catMesh.rotation.copy(model.rotation);
                                 catMesh.scale.copy(model.scale);
                                 catMesh.visible = !!categoryState[cat.id];
+                                catMesh.userData.originalMaterial = catMesh.material;
+                                catMesh.userData.categoryColorMaterial = BIM_CATEGORY_MATERIALS[cat.id];
+
+                                // Apply active color coding mode (defaults to distinct BIM engineering colors)
+                                if (colorCodingMode === 'bim') {
+                                    catMesh.material = BIM_CATEGORY_MATERIALS[cat.id] || BIM_CATEGORY_MATERIALS.other;
+                                } else if (colorCodingMode === 'clay') {
+                                    catMesh.material = clayMaterial;
+                                }
                                 ifcCategoryMeshes[cat.id] = catMesh;
                             }
                         } catch(e) {
@@ -1289,6 +1505,46 @@
                 } else {
                     model.visible = true;
                 }
+            }
+
+            // =====================================================================
+            // 9. Color Differentiation & Shading Switcher
+            // =====================================================================
+            function applyColorCodingMode(mode) {
+                colorCodingMode = mode;
+
+                document.querySelectorAll('.mode-btn[data-mode]').forEach(function(b) {
+                    b.classList.toggle('active', b.dataset.mode === mode);
+                });
+
+                for (var catId in ifcCategoryMeshes) {
+                    var mesh = ifcCategoryMeshes[catId];
+                    if (mesh) {
+                        if (mode === 'bim') {
+                            mesh.material = BIM_CATEGORY_MATERIALS[catId] || BIM_CATEGORY_MATERIALS.other;
+                        } else if (mode === 'clay') {
+                            mesh.material = clayMaterial;
+                        } else if (mode === 'original') {
+                            mesh.material = mesh.userData.originalMaterial || BIM_CATEGORY_MATERIALS[catId];
+                        }
+                    }
+                }
+
+                // If active single storey subset is active
+                if (activeSubsetMesh) {
+                    if (mode === 'bim') {
+                        activeSubsetMesh.material = BIM_CATEGORY_MATERIALS.walls;
+                    } else if (mode === 'clay') {
+                        activeSubsetMesh.material = clayMaterial;
+                    }
+                }
+            }
+
+            function setWorkspaceBackground(hexStr) {
+                scene.background = new THREE.Color(hexStr);
+                document.querySelectorAll('.bg-swatch').forEach(function(sw) {
+                    sw.classList.toggle('active', sw.dataset.color.toLowerCase() === hexStr.toLowerCase());
+                });
             }
 
             // =====================================================================
@@ -1497,6 +1753,56 @@
             });
             document.getElementById('btn-close-filter-panel').addEventListener('click', function() {
                 filterPanel.style.display = 'none';
+            });
+
+            // Color Coding Mode Selection
+            document.querySelectorAll('.mode-btn[data-mode]').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    applyColorCodingMode(btn.dataset.mode);
+                });
+            });
+
+            // Quick Toggle in Top Bar (cycles through BIM -> Original -> Clay)
+            document.getElementById('btn-quick-color-toggle').addEventListener('click', function() {
+                var nextMode = (colorCodingMode === 'bim') ? 'original' : (colorCodingMode === 'original' ? 'clay' : 'bim');
+                applyColorCodingMode(nextMode);
+                filterPanel.style.display = 'block';
+            });
+
+            // Lighting Exposure Slider
+            var sliderExposure = document.getElementById('slider-exposure');
+            var labelExposureVal = document.getElementById('label-exposure-val');
+            sliderExposure.addEventListener('input', function() {
+                var factor = parseFloat(sliderExposure.value) || 1.0;
+                currentExposureFactor = factor;
+                renderer.toneMappingExposure = factor;
+                labelExposureVal.innerText = Math.round(factor * 100) + '%';
+                applyLightingPreset(currentLightingPreset);
+            });
+
+            // Lighting Presets Selection
+            document.querySelectorAll('.preset-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    applyLightingPreset(btn.dataset.preset);
+                });
+            });
+
+            // Quick Lighting Button in Top Bar
+            document.getElementById('btn-quick-lighting').addEventListener('click', function() {
+                if (filterPanel.style.display === 'block') {
+                    filterPanel.style.display = 'none';
+                } else {
+                    filterPanel.style.display = 'block';
+                    var expSection = document.getElementById('slider-exposure');
+                    if (expSection) expSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+
+            // Workspace Background Swatches
+            document.querySelectorAll('.bg-swatch').forEach(function(swatch) {
+                swatch.addEventListener('click', function() {
+                    setWorkspaceBackground(swatch.dataset.color);
+                });
             });
 
             // =====================================================================
