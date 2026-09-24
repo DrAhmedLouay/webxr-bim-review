@@ -2780,7 +2780,10 @@
                                 '<span style="font-size: 0.72rem; color: #94a3b8;">' + (issue.timestamp ? issue.timestamp.substring(11, 19) : '') + '</span>' +
                             '</div>' +
                             '<div style="font-size: 0.78rem; color: #94a3b8; margin-bottom: 8px;">التصنيف: ' + issue.category + ' | النظام: ' + issue.system + '</div>' +
-                            '<button class="btn btn-outline btn-fly-flagged" data-idx="' + idx + '" style="font-size: 0.76rem; padding: 4px 10px;">🎯 انتقال للعنصر في الفراغ</button>' +
+                            '<div style="display: flex; gap: 8px;">' +
+                                '<button class="btn btn-outline btn-fly-flagged" data-idx="' + idx + '" style="font-size: 0.76rem; padding: 4px 10px;">🎯 انتقال للعنصر في الفراغ</button>' +
+                                '<button class="btn btn-outline btn-del-flagged" data-idx="' + idx + '" style="font-size: 0.76rem; padding: 4px 8px; color: #fca5a5; border-color: rgba(239, 68, 68, 0.4);" title="حذف التعارض">🗑️ حذف</button>' +
+                            '</div>' +
                         '</div>';
                     });
                 }
@@ -2817,6 +2820,21 @@
                         }
                     });
                 });
+                document.querySelectorAll('.btn-del-flagged').forEach(function(b) {
+                    b.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        var idx = parseInt(b.dataset.idx, 10);
+                        var itm = flaggedIssues[idx];
+                        if (itm) {
+                            if (itm.sphere && itm.sphere.parent) {
+                                itm.sphere.parent.remove(itm.sphere);
+                            }
+                            flaggedIssues.splice(idx, 1);
+                            updateClashCounter();
+                            renderClashModalList();
+                        }
+                    });
+                });
             }
 
             // Button "مشاهدة التعارضات" Action
@@ -2838,10 +2856,31 @@
                 });
             }
 
-            // Flag Clash Button in Info Panel
+            // Flag Clash Button in Info Panel (Checks for duplicates)
             document.getElementById('btn-flag-clash').addEventListener('click', function() {
                 if (!selectedMesh) return;
                 var data = selectedMesh.userData || {};
+                var targetId = data.elementId || selectedMesh.name || 'ID-UNKNOWN';
+
+                // Check if element is already registered in flaggedIssues
+                var isDuplicate = flaggedIssues.some(function(issue) {
+                    if (issue.mesh && issue.mesh === selectedMesh) return true;
+                    if (issue.elementId && targetId !== 'ID-UNKNOWN' && issue.elementId === targetId) return true;
+                    return false;
+                });
+
+                // Also check if already present in WebXR Lab default clashes
+                if (!isDuplicate && (!currentCustomModel || (webxrLabGroup && webxrLabGroup.visible))) {
+                    if (targetId === 'MEP-MEDGAS-O2-108' || targetId === 'MEP-HVAC-DUCT-401' || targetId === 'MEP-HVAC-VLV-302') {
+                        isDuplicate = true;
+                    }
+                }
+
+                if (isDuplicate) {
+                    alert('⚠️ تنبيه: هذا العنصر مكرر!\n\nتم تسجيل هذا العنصر وتوثيقه مسبقاً في سجل التعارضات (' + targetId + ')، ولا يمكن إضافته أكثر من مرة.');
+                    return;
+                }
+
                 var clashSphere = new THREE.Mesh(
                     new THREE.SphereGeometry(0.16, 16, 16),
                     new THREE.MeshBasicMaterial({ color: 0xef4444 })
@@ -2853,19 +2892,20 @@
 
                 flaggedIssues.push({
                     timestamp: new Date().toISOString(),
-                    elementId: data.elementId || 'ID-UNKNOWN',
+                    elementId: targetId,
                     category: data.category || 'General',
                     system: data.system || 'Architecture',
                     description: 'تعارض فراغي / تشغيلي تم رصده وتوثيقه في جلسة المراجعة',
                     pos: worldPos,
-                    mesh: selectedMesh
+                    mesh: selectedMesh,
+                    sphere: clashSphere
                 });
 
                 updateClashCounter();
                 if (clashModal.style.display === 'block') {
                     renderClashModalList();
                 }
-                alert('✅ تم توثيق التعارض بنجاح: ' + (data.elementId || 'العنصر المختار'));
+                alert('✅ تم توثيق التعارض بنجاح: ' + targetId);
             });
 
             // Export CSV (Handles both lab predefined clashes and custom flagged issues)
