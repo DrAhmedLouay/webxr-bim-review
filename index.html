@@ -1085,7 +1085,7 @@
                     if (t.indexOf('SLAB') !== -1 || t.indexOf('ROOF') !== -1 || t.indexOf('COVERING') !== -1 || t.indexOf('CEILING') !== -1) return 'slabs';
                     if (t.indexOf('COLUMN') !== -1 || t.indexOf('BEAM') !== -1 || t.indexOf('MEMBER') !== -1 || t.indexOf('FOOTING') !== -1 || t.indexOf('PLATE') !== -1) return 'structure';
                     if (t.indexOf('FURNISHING') !== -1 || t.indexOf('FURNITURE') !== -1 || t.indexOf('EQUIPMENT') !== -1 || t.indexOf('SANITARY') !== -1) return 'equipment';
-                    if (t.indexOf('PIPE') !== -1 || t.indexOf('VALVE') !== -1 || t.indexOf('FLOWSEGMENT') !== -1 || t.indexOf('FLOWFITTING') !== -1) return 'pipes';
+                    if (t.indexOf('PIPE') !== -1 || t.indexOf('VALVE') !== -1 || t.indexOf('FLOW') !== -1) return 'pipes';
                     if (t.indexOf('DUCT') !== -1 || t.indexOf('AIRTERMINAL') !== -1 || t.indexOf('DAMPER') !== -1 || t.indexOf('FAN') !== -1) return 'hvac';
                     if (t.indexOf('CABLE') !== -1 || t.indexOf('ELECTRICAL') !== -1 || t.indexOf('LIGHT') !== -1 || t.indexOf('OUTLET') !== -1 || t.indexOf('JUNCTION') !== -1) return 'electrical';
                     return 'other';
@@ -1108,7 +1108,7 @@
                                 ifcStoreyElementMap[sId] = new Set();
                                 ifcStoreysList.push({ id: sId, name: sName, count: 0 });
                             }
-                        } else if (node.expressID && node.type !== 'IFCPROJECT' && node.type !== 'IFCSITE' && node.type !== 'IFCBUILDING') {
+                        } else if (node.expressID && node.type !== 'IFCPROJECT' && node.type !== 'IFCSITE' && node.type !== 'IFCBUILDING' && node.type !== 'IFCSPACE' && node.type !== 'IFCOPENINGELEMENT') {
                             var elemId = node.expressID;
                             ifcAllIds.add(elemId);
 
@@ -1228,8 +1228,14 @@
                                             removePrevious: true,
                                             customID: 'exploded_' + st.id
                                         });
-                                        stMesh.position.y = idx * explodeVal;
-                                        explodedSubsets.push(stMesh);
+                                        if (stMesh) {
+                                            stMesh.position.copy(currentCustomModel.position);
+                                            stMesh.position.y += idx * explodeVal;
+                                            stMesh.rotation.copy(currentCustomModel.rotation);
+                                            stMesh.scale.copy(currentCustomModel.scale);
+                                            stMesh.visible = true;
+                                            explodedSubsets.push(stMesh);
+                                        }
                                     } catch(e) {
                                         console.error('Error creating exploded subset:', e);
                                     }
@@ -1245,7 +1251,12 @@
                                     customID: 'user_active_subset'
                                 });
                                 activeSubsetMesh = subset;
-                                if (activeSubsetMesh) activeSubsetMesh.visible = true;
+                                if (activeSubsetMesh) {
+                                    activeSubsetMesh.position.copy(currentCustomModel.position);
+                                    activeSubsetMesh.rotation.copy(currentCustomModel.rotation);
+                                    activeSubsetMesh.scale.copy(currentCustomModel.scale);
+                                    activeSubsetMesh.visible = true;
+                                }
                             } catch(e) {
                                 console.error('Error creating filtered subset:', e);
                             }
@@ -1284,9 +1295,13 @@
 
             var sliderExplode = document.getElementById('slider-explode');
             var labelExplodeVal = document.getElementById('label-explode-val');
+            var explodeDebounceTimer = null;
             sliderExplode.addEventListener('input', function() {
                 labelExplodeVal.innerText = sliderExplode.value + ' م';
-                applyFilters();
+                if (explodeDebounceTimer) clearTimeout(explodeDebounceTimer);
+                explodeDebounceTimer = setTimeout(function() {
+                    applyFilters();
+                }, 100);
             });
 
             // Quick Preset: Select All
@@ -1303,6 +1318,15 @@
 
             // Quick Preset: Isolate MEP Only (Clash Detection Mode)
             document.getElementById('btn-filter-mep-only').addEventListener('click', function() {
+                var mepTotalCount = (ifcCategoryMap['pipes'] ? ifcCategoryMap['pipes'].size : 0) +
+                                    (ifcCategoryMap['hvac'] ? ifcCategoryMap['hvac'].size : 0) +
+                                    (ifcCategoryMap['electrical'] ? ifcCategoryMap['electrical'].size : 0);
+
+                if (currentCustomModel && mepTotalCount === 0) {
+                    alert('⚠️ تنبيه فحص التعارضات:\n\nالملف الحالي (' + (currentCustomModel.userData && currentCustomModel.userData.elementId || 'الملف المستورد') + ') هو نموذج معماري/إنشائي، ولا يحتوي على شبكات كهروميكانيكية (MEP).\n\nلفحص شبكات MEP، يرجى استيراد ملف MEP مخصص أو ملف BIM مشترك متعدد التخصصات.');
+                    return;
+                }
+
                 BIM_CATEGORIES.forEach(function(cat) {
                     var isMep = cat.isMEP;
                     categoryState[cat.id] = isMep;
