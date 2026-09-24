@@ -462,10 +462,9 @@
             camera.position.set(0, 2.2, 5.8);
 
             var renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.shadowMap.enabled = false; // Disabled for buttery-smooth 60FPS BIM navigation
             renderer.xr.enabled = true;
             container.appendChild(renderer.domElement);
 
@@ -475,21 +474,21 @@
 
             var controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
+            controls.dampingFactor = 0.08;
             controls.target.set(0, 1.8, 0);
 
             // =====================================================================
             // 2. High-Performance Architectural Lighting
             // =====================================================================
-            var ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
+            var ambientLight = new THREE.AmbientLight(0xffffff, 1.05);
             scene.add(ambientLight);
 
-            var hemiLight = new THREE.HemisphereLight(0xffffff, 0x1e293b, 0.85);
+            var hemiLight = new THREE.HemisphereLight(0xffffff, 0x1e293b, 0.95);
             scene.add(hemiLight);
 
-            var dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
+            var dirLight1 = new THREE.DirectionalLight(0xffffff, 1.25);
             dirLight1.position.set(30, 50, 30);
-            dirLight1.castShadow = true;
+            dirLight1.castShadow = false;
             scene.add(dirLight1);
 
             var dirLight2 = new THREE.DirectionalLight(0x93c5fd, 0.85);
@@ -514,7 +513,7 @@
                 { id: 'slabs', label: 'السقوف والأرضيات (Slabs / Ceilings)', types: ['IFCSLAB', 'IFCROOF', 'IFCCOVERING'], icon: '🏢', badge: 'Arch', badgeBg: '#475569', isMEP: false },
                 { id: 'structure', label: 'الأعمدة والكمرات الإنشائية (Columns / Beams)', types: ['IFCCOLUMN', 'IFCBEAM', 'IFCMEMBER', 'IFCFOOTING'], icon: '🏛️', badge: 'Struct', badgeBg: '#7c3aed', isMEP: false },
                 { id: 'equipment', label: 'الأجهزة والمعدات والأثاث (Equipment)', types: ['IFCFURNISHINGELEMENT', 'IFCFURNITURE', 'IFCEQUIPMENTELEMENT', 'IFCSANITARYTERMINAL'], icon: '🛋️', badge: 'FF&E', badgeBg: '#64748b', isMEP: false },
-                { id: 'pipes', label: 'الأنابيب والسباكة (Piping & Plumbing)', types: ['IFCPIPESEGMENT', 'IFCPIPEFITTING', 'IFCFLOWSEGMENT', 'IFCFLOWFITTING', 'IFCVALVE'], icon: '🚰', badge: 'MEP', badgeBg: '#0284c7', isMEP: true },
+                { id: 'pipes', label: 'الأنابيب والسباكة (Piping & Plumbing)', types: ['IFCPIPESEGMENT', 'IFCPIPEFITTING', 'IFCFLOWSEGMENT', 'IFCFLOWFITTING', 'IFCVALVE', 'IFCFLOWTERMINAL'], icon: '🚰', badge: 'MEP', badgeBg: '#0284c7', isMEP: true },
                 { id: 'hvac', label: 'التكييف ومجاري الهواء (HVAC & Ducts)', types: ['IFCDUCTSEGMENT', 'IFCDUCTFITTING', 'IFCAIRTERMINAL', 'IFCDAMPER', 'IFCFAN'], icon: '💨', badge: 'MEP', badgeBg: '#0891b2', isMEP: true },
                 { id: 'electrical', label: 'الكهربائيات وحوامل الكابلات (Electrical)', types: ['IFCCABLECARRIERSEGMENT', 'IFCCABLECARRIERFITTING', 'IFCELECTRICALELEMENT', 'IFCLIGHTFIXTURE', 'IFCOUTLET', 'IFCJUNCTIONBOX'], icon: '⚡', badge: 'MEP', badgeBg: '#d97706', isMEP: true },
                 { id: 'other', label: 'عناصر ومكونات إضافية (Stairs / Misc)', types: ['IFCSTAIR', 'IFCRAILING', 'IFCRAMP', 'IFCBUILDINGELEMENTPROXY'], icon: '🪜', badge: 'General', badgeBg: '#334155', isMEP: false }
@@ -798,6 +797,40 @@
             var ifcAllIds = new Set();
             var activeSubsetMesh = null;
             var explodedSubsets = [];
+            var ifcCategoryMeshes = {};   // catId -> THREE.Mesh subset (Pre-cached for 60FPS instant toggles)
+            var ifcStoreyMeshes = {};     // storeyId -> THREE.Mesh subset (Pre-cached for 60FPS instant isolation & explode)
+
+            function clearCategorySubsets() {
+                for (var catId in ifcCategoryMeshes) {
+                    var mesh = ifcCategoryMeshes[catId];
+                    if (mesh) {
+                        scene.remove(mesh);
+                        if (currentIFCLoader && currentCustomModel) {
+                            try {
+                                currentIFCLoader.ifcManager.removeSubset(currentCustomModel.modelID, null, 'cat_' + catId);
+                            } catch(e) {}
+                        }
+                        if (mesh.geometry) mesh.geometry.dispose();
+                    }
+                }
+                ifcCategoryMeshes = {};
+            }
+
+            function clearStoreySubsets() {
+                for (var sId in ifcStoreyMeshes) {
+                    var mesh = ifcStoreyMeshes[sId];
+                    if (mesh) {
+                        scene.remove(mesh);
+                        if (currentIFCLoader && currentCustomModel) {
+                            try {
+                                currentIFCLoader.ifcManager.removeSubset(currentCustomModel.modelID, null, 'storey_' + sId);
+                            } catch(e) {}
+                        }
+                        if (mesh.geometry) mesh.geometry.dispose();
+                    }
+                }
+                ifcStoreyMeshes = {};
+            }
 
             function clearExplodedSubsets() {
                 if (explodedSubsets && explodedSubsets.length > 0) {
@@ -842,6 +875,8 @@
             });
 
             function clearCustomModel() {
+                clearCategorySubsets();
+                clearStoreySubsets();
                 clearExplodedSubsets();
                 if (activeSubsetMesh) {
                     scene.remove(activeSubsetMesh);
@@ -850,6 +885,7 @@
                             currentIFCLoader.ifcManager.removeSubset(currentCustomModel.modelID, null, 'user_active_subset');
                         } catch(e) {}
                     }
+                    if (activeSubsetMesh.geometry) activeSubsetMesh.geometry.dispose();
                     activeSubsetMesh = null;
                 }
                 if (currentCustomModel) {
@@ -971,17 +1007,26 @@
 
                             fitCameraToObject(camera, ifcModel, controls);
 
+                            toastStatus.innerText = '⚙️ جاري قراءة الهيكل الفضائي وفهرسة الطوابق والتخصصات...';
+                            await new Promise(function(resolve) { setTimeout(resolve, 30); });
+
                             // Index Storeys and Categories from IFC
                             await indexIFCStructure(ifcModel, ifcLoader);
                             refreshStoreyDropdown();
+
+                            toastStatus.innerText = '⚙️ جاري تجهيز طبقات الفرز السريع (60 FPS)...';
+                            await new Promise(function(resolve) { setTimeout(resolve, 30); });
+
+                            // Build pre-cached subsets for categories and storeys (ensures 0ms toggle speed)
+                            await buildIFCSubsets(ifcModel, ifcLoader);
 
                             registerBIM(ifcModel, {
                                 elementId: file.name,
                                 category: 'نموذج IFC متكامل (OpenBIM)',
                                 system: 'Architectural / Structural / MEP',
                                 dimensions: 'أبعاد ومناسيب هندسية أصلية',
-                                clearance: 'جاهز للفحص والتصفية الفراغية',
-                                status: 'تم التوسيط وفهرسة الطوابق بنجاح'
+                                clearance: 'جاهز للفحص والتصفية الفراغية السريعة (60 FPS)',
+                                status: 'تم التوسيط وتجهيز طبقات الفرز الفوري بنجاح'
                             }, false);
 
                             toast.style.display = 'none';
@@ -1142,33 +1187,112 @@
                     console.warn('Could not extract spatial tree from IFC:', e);
                 }
 
-                // 2. Query extra elements via WebIFC constants or API if available
-                try {
-                    var apiTypes = (window.WebIFC) || (loader.ifcManager && loader.ifcManager.state && loader.ifcManager.state.api) || {};
-                    for (var i = 0; i < BIM_CATEGORIES.length; i++) {
-                        var cat = BIM_CATEGORIES[i];
-                        for (var j = 0; j < cat.types.length; j++) {
-                            var typeName = cat.types[j];
-                            if (apiTypes[typeName] !== undefined) {
-                                try {
-                                    var lines = await loader.ifcManager.getAllItemsOfType(modelID, apiTypes[typeName], false);
-                                    if (lines && lines.length > 0) {
-                                        for (var k = 0; k < lines.length; k++) {
-                                            ifcCategoryMap[cat.id].add(lines[k]);
-                                            ifcAllIds.add(lines[k]);
+                // 2. Fallback query only if spatial tree returned 0 elements
+                if (ifcAllIds.size === 0) {
+                    try {
+                        var apiTypes = (window.WebIFC) || (loader.ifcManager && loader.ifcManager.state && loader.ifcManager.state.api) || {};
+                        for (var i = 0; i < BIM_CATEGORIES.length; i++) {
+                            var cat = BIM_CATEGORIES[i];
+                            for (var j = 0; j < cat.types.length; j++) {
+                                var typeName = cat.types[j];
+                                if (apiTypes[typeName] !== undefined) {
+                                    try {
+                                        var lines = await loader.ifcManager.getAllItemsOfType(modelID, apiTypes[typeName], false);
+                                        if (lines && lines.length > 0) {
+                                            for (var k = 0; k < lines.length; k++) {
+                                                ifcCategoryMap[cat.id].add(lines[k]);
+                                                ifcAllIds.add(lines[k]);
+                                            }
                                         }
-                                    }
-                                } catch (e) {}
+                                    } catch (e) {}
+                                }
                             }
                         }
-                    }
-                } catch(e) {}
+                    } catch(e) {}
+                }
 
                 updateCategoryCounters();
             }
 
             // =====================================================================
-            // 8. Universal Filter Application (Storey + Categories + Exploded View)
+            // 8. Pre-Cached Subsets Builder for Instant 60 FPS BIM Toggles
+            // =====================================================================
+            async function buildIFCSubsets(model, loader) {
+                var modelID = model.modelID;
+                clearCategorySubsets();
+                clearStoreySubsets();
+
+                // 1. Build Pre-cached Category Meshes for instant 0ms element toggle
+                for (var i = 0; i < BIM_CATEGORIES.length; i++) {
+                    var cat = BIM_CATEGORIES[i];
+                    var idsSet = ifcCategoryMap[cat.id];
+                    if (idsSet && idsSet.size > 0) {
+                        var idsArr = Array.from(idsSet);
+                        try {
+                            var catMesh = loader.ifcManager.createSubset({
+                                modelID: modelID,
+                                ids: idsArr,
+                                scene: scene,
+                                removePrevious: true,
+                                customID: 'cat_' + cat.id
+                            });
+                            if (catMesh) {
+                                catMesh.position.copy(model.position);
+                                catMesh.rotation.copy(model.rotation);
+                                catMesh.scale.copy(model.scale);
+                                catMesh.visible = !!categoryState[cat.id];
+                                ifcCategoryMeshes[cat.id] = catMesh;
+                            }
+                        } catch(e) {
+                            console.warn('Error creating subset for category ' + cat.id, e);
+                        }
+                    }
+                }
+
+                // 2. Build Pre-cached Storey Meshes for smooth 60 FPS exploded view & storey isolation
+                if (ifcStoreysList && ifcStoreysList.length > 0) {
+                    ifcStoreysList.forEach(function(s) {
+                        var sIds = ifcStoreyElementMap[s.id];
+                        if (sIds && sIds.size > 0) {
+                            var sArr = Array.from(sIds);
+                            try {
+                                var sMesh = loader.ifcManager.createSubset({
+                                    modelID: modelID,
+                                    ids: sArr,
+                                    scene: scene,
+                                    removePrevious: true,
+                                    customID: 'storey_' + s.id
+                                });
+                                if (sMesh) {
+                                    sMesh.position.copy(model.position);
+                                    sMesh.rotation.copy(model.rotation);
+                                    sMesh.scale.copy(model.scale);
+                                    sMesh.visible = false;
+                                    sMesh.userData = {
+                                        storeyId: s.id,
+                                        storeyName: s.name,
+                                        basePosY: model.position.y
+                                    };
+                                    ifcStoreyMeshes[s.id] = sMesh;
+                                }
+                            } catch(e) {
+                                console.warn('Error creating subset for storey ' + s.id, e);
+                            }
+                        }
+                    });
+                }
+
+                // 3. Switch main model off since category meshes now render the entire scene
+                var hasAnyCategoryMesh = Object.keys(ifcCategoryMeshes).length > 0;
+                if (hasAnyCategoryMesh) {
+                    model.visible = false;
+                } else {
+                    model.visible = true;
+                }
+            }
+
+            // =====================================================================
+            // 9. Universal Filter Application (Storey + Categories + Exploded View)
             // =====================================================================
             function applyFilters() {
                 var selectedStorey = selectStoreyFilter.value;
@@ -1176,76 +1300,86 @@
 
                 // Case A: User uploaded custom IFC model
                 if (currentCustomModel && currentIFCLoader) {
-                    var isAllCatsChecked = true;
-                    for (var cId in categoryState) {
-                        if (!categoryState[cId]) {
-                            isAllCatsChecked = false;
-                            break;
-                        }
-                    }
+                    var hasCategoryMeshes = Object.keys(ifcCategoryMeshes).length > 0;
+                    var hasStoreyMeshes = Object.keys(ifcStoreyMeshes).length > 0;
 
-                    // Condition for full untouched model:
-                    // All categories checked, all storeys selected, and no vertical explosion
-                    if (isAllCatsChecked && selectedStorey === 'all' && explodeVal === 0) {
-                        currentCustomModel.visible = true;
-                        if (activeSubsetMesh) {
-                            activeSubsetMesh.visible = false;
+                    // Sub-case A1: Exploded View by Storeys
+                    if (explodeVal > 0 && selectedStorey === 'all' && hasStoreyMeshes && ifcStoreysList.length > 1) {
+                        currentCustomModel.visible = false;
+                        if (activeSubsetMesh) activeSubsetMesh.visible = false;
+                        
+                        // Hide all category meshes
+                        for (var cId in ifcCategoryMeshes) {
+                            if (ifcCategoryMeshes[cId]) ifcCategoryMeshes[cId].visible = false;
                         }
-                        clearExplodedSubsets();
+
+                        // Show and displace storey meshes vertically in real-time
+                        ifcStoreysList.forEach(function(st, idx) {
+                            var sMesh = ifcStoreyMeshes[st.id];
+                            if (sMesh) {
+                                sMesh.visible = true;
+                                var baseY = (sMesh.userData && sMesh.userData.basePosY !== undefined) ? sMesh.userData.basePosY : currentCustomModel.position.y;
+                                sMesh.position.y = baseY + (idx * explodeVal);
+                            }
+                        });
                         return;
                     }
 
-                    // Collect allowed IDs based on checked categories and selected storey
-                    var allowed = [];
-                    for (var catId in categoryState) {
-                        if (categoryState[catId] && ifcCategoryMap[catId]) {
-                            ifcCategoryMap[catId].forEach(function(elemId) {
-                                if (selectedStorey === 'all') {
-                                    allowed.push(elemId);
-                                } else if (ifcStoreyElementMap[selectedStorey] && ifcStoreyElementMap[selectedStorey].has(elemId)) {
-                                    allowed.push(elemId);
-                                }
-                            });
+                    // Reset storey meshes vertical displacement when explodeVal is 0
+                    for (var sKey in ifcStoreyMeshes) {
+                        var stm = ifcStoreyMeshes[sKey];
+                        if (stm && stm.userData && stm.userData.basePosY !== undefined) {
+                            stm.position.y = stm.userData.basePosY;
                         }
                     }
 
-                    currentCustomModel.visible = false;
-                    clearExplodedSubsets();
+                    // Sub-case A2: Single Storey Isolated
+                    if (selectedStorey !== 'all') {
+                        var isAllCatsChecked = BIM_CATEGORIES.every(function(cat) { return categoryState[cat.id]; });
 
-                    if (allowed.length > 0) {
-                        if (explodeVal > 0 && selectedStorey === 'all' && ifcStoreysList.length > 1) {
+                        // If all categories checked and storey mesh exists, instant 0ms isolation
+                        if (isAllCatsChecked && ifcStoreyMeshes[selectedStorey]) {
+                            currentCustomModel.visible = false;
                             if (activeSubsetMesh) activeSubsetMesh.visible = false;
-                            ifcStoreysList.forEach(function(st, idx) {
-                                var stAllowed = allowed.filter(function(id) {
-                                    return ifcStoreyElementMap[st.id] && ifcStoreyElementMap[st.id].has(id);
-                                });
-                                if (stAllowed.length > 0) {
-                                    try {
-                                        var stMesh = currentIFCLoader.ifcManager.createSubset({
-                                            modelID: currentCustomModel.modelID,
-                                            ids: stAllowed,
-                                            scene: scene,
-                                            removePrevious: true,
-                                            customID: 'exploded_' + st.id
-                                        });
-                                        if (stMesh) {
-                                            stMesh.position.copy(currentCustomModel.position);
-                                            stMesh.position.y += idx * explodeVal;
-                                            stMesh.rotation.copy(currentCustomModel.rotation);
-                                            stMesh.scale.copy(currentCustomModel.scale);
-                                            stMesh.visible = true;
-                                            explodedSubsets.push(stMesh);
-                                        }
-                                    } catch(e) {
-                                        console.error('Error creating exploded subset:', e);
-                                    }
+                            for (var cId in ifcCategoryMeshes) {
+                                if (ifcCategoryMeshes[cId]) ifcCategoryMeshes[cId].visible = false;
+                            }
+                            for (var sid in ifcStoreyMeshes) {
+                                if (ifcStoreyMeshes[sid]) {
+                                    ifcStoreyMeshes[sid].visible = (sid === selectedStorey);
                                 }
-                            });
-                        } else {
+                            }
+                            return;
+                        }
+
+                        // Specific categories unchecked within that single storey
+                        for (var cId in ifcCategoryMeshes) {
+                            if (ifcCategoryMeshes[cId]) ifcCategoryMeshes[cId].visible = false;
+                        }
+                        for (var sid in ifcStoreyMeshes) {
+                            if (ifcStoreyMeshes[sid]) ifcStoreyMeshes[sid].visible = false;
+                        }
+                        currentCustomModel.visible = false;
+
+                        var allowedStoreyIds = [];
+                        var targetStoreySet = ifcStoreyElementMap[selectedStorey];
+                        if (targetStoreySet) {
+                            for (var catId in categoryState) {
+                                if (categoryState[catId] && ifcCategoryMap[catId]) {
+                                    ifcCategoryMap[catId].forEach(function(elemId) {
+                                        if (targetStoreySet.has(elemId)) {
+                                            allowedStoreyIds.push(elemId);
+                                        }
+                                    });
+                                }
+                            }
+                        }
+
+                        if (allowedStoreyIds.length > 0) {
                             try {
                                 var subset = currentIFCLoader.ifcManager.createSubset({
                                     modelID: currentCustomModel.modelID,
-                                    ids: allowed,
+                                    ids: allowedStoreyIds,
                                     scene: scene,
                                     removePrevious: true,
                                     customID: 'user_active_subset'
@@ -1258,11 +1392,31 @@
                                     activeSubsetMesh.visible = true;
                                 }
                             } catch(e) {
-                                console.error('Error creating filtered subset:', e);
+                                console.error('Error creating filtered storey subset:', e);
+                            }
+                        } else {
+                            if (activeSubsetMesh) activeSubsetMesh.visible = false;
+                        }
+                        return;
+                    }
+
+                    // Sub-case A3: All storeys, explode = 0 -> Category visibility toggles
+                    for (var sid in ifcStoreyMeshes) {
+                        if (ifcStoreyMeshes[sid]) ifcStoreyMeshes[sid].visible = false;
+                    }
+                    if (activeSubsetMesh) activeSubsetMesh.visible = false;
+
+                    if (hasCategoryMeshes) {
+                        currentCustomModel.visible = false;
+                        // Instant 0ms toggle for every category (no WASM recomputation)
+                        for (var catId in categoryState) {
+                            if (ifcCategoryMeshes[catId]) {
+                                ifcCategoryMeshes[catId].visible = !!categoryState[catId];
                             }
                         }
                     } else {
-                        if (activeSubsetMesh) activeSubsetMesh.visible = false;
+                        // Fallback if category meshes were not created
+                        currentCustomModel.visible = true;
                     }
                 }
                 // Case B: Default WebXR Lab Environment
@@ -1295,13 +1449,9 @@
 
             var sliderExplode = document.getElementById('slider-explode');
             var labelExplodeVal = document.getElementById('label-explode-val');
-            var explodeDebounceTimer = null;
             sliderExplode.addEventListener('input', function() {
                 labelExplodeVal.innerText = sliderExplode.value + ' م';
-                if (explodeDebounceTimer) clearTimeout(explodeDebounceTimer);
-                explodeDebounceTimer = setTimeout(function() {
-                    applyFilters();
-                }, 100);
+                applyFilters();
             });
 
             // Quick Preset: Select All
@@ -1443,6 +1593,16 @@
                     var ifcTargets = [];
                     if (currentCustomModel.visible) ifcTargets.push(currentCustomModel);
                     if (activeSubsetMesh && activeSubsetMesh.visible) ifcTargets.push(activeSubsetMesh);
+                    for (var catId in ifcCategoryMeshes) {
+                        if (ifcCategoryMeshes[catId] && ifcCategoryMeshes[catId].visible) {
+                            ifcTargets.push(ifcCategoryMeshes[catId]);
+                        }
+                    }
+                    for (var sid in ifcStoreyMeshes) {
+                        if (ifcStoreyMeshes[sid] && ifcStoreyMeshes[sid].visible) {
+                            ifcTargets.push(ifcStoreyMeshes[sid]);
+                        }
+                    }
                     if (explodedSubsets && explodedSubsets.length > 0) ifcTargets = ifcTargets.concat(explodedSubsets);
 
                     var ifcHits = raycaster.intersectObjects(ifcTargets, true);
