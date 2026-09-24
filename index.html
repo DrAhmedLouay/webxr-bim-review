@@ -794,9 +794,27 @@
                             countBadge.style.border = '1px solid rgba(239, 68, 68, 0.3)';
                         }
                     } else {
-                        countBadge.innerText = 'عينة تجريبية';
-                        countBadge.style.background = 'rgba(255,255,255,0.08)';
-                        countBadge.style.color = '#94a3b8';
+                        var defaultCounts = {
+                            doors: '1 باب',
+                            walls: '3 جدران',
+                            slabs: '2 (أرضية وسقف)',
+                            structure: '3 (أعمدة وكمرة)',
+                            pipes: '4 (أنابيب ومحبس)',
+                            hvac: '1 (دكت وموزع)',
+                            electrical: '1 (حامل كابلات)',
+                            windows: '0 (غير متوفر)',
+                            equipment: '0 (غير متوفر)',
+                            other: '0 (غير متوفر)'
+                        };
+                        var dCount = defaultCounts[cat.id] || '0';
+                        countBadge.innerText = dCount;
+                        if (dCount.startsWith('0')) {
+                            countBadge.style.background = 'rgba(239, 68, 68, 0.12)';
+                            countBadge.style.color = '#fca5a5';
+                        } else {
+                            countBadge.style.background = 'rgba(16, 185, 129, 0.2)';
+                            countBadge.style.color = '#34d399';
+                        }
                         countBadge.style.border = 'none';
                     }
                 });
@@ -809,24 +827,70 @@
             var webxrLabGroup = new THREE.Group();
             var ceilingGroup = new THREE.Group();
             var wallGroup = new THREE.Group();
+            var structureGroup = new THREE.Group();
             var mepGroup = new THREE.Group();
             scene.add(webxrLabGroup);
             webxrLabGroup.add(ceilingGroup);
             webxrLabGroup.add(wallGroup);
+            webxrLabGroup.add(structureGroup);
             webxrLabGroup.add(mepGroup);
 
-            // Materials
-            var matFloor = new THREE.MeshStandardMaterial({ color: 0x172033, roughness: 0.5, metalness: 0.1 });
-            var matWall = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.85 });
-            var matCeiling = new THREE.MeshStandardMaterial({ color: 0xf8fafc, transparent: true, opacity: 0.85 });
-            var matDuct = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.85, roughness: 0.25 });
-            var matMedGas = new THREE.MeshStandardMaterial({ color: 0x10b981, metalness: 0.6, roughness: 0.35 });
-            var matWater = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.65, roughness: 0.3 });
-            var matValve = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.8, roughness: 0.25 });
-            var matFire = new THREE.MeshStandardMaterial({ color: 0xef4444, metalness: 0.5, roughness: 0.4 });
-            var matDoor = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6 });
+            // Realistic Engineering & Architectural Materials
+            var matFloor = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.65, metalness: 0.1 });
+            var matWall = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.85, metalness: 0.05 });
+            var matCeiling = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.9, metalness: 0.02, transparent: true, opacity: 0.92 });
+            var matConcrete = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.85, metalness: 0.05 });
+            var matSteelBeam = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.45, metalness: 0.8 });
 
-            // Floor & Grid
+            // HVAC Duct Materials
+            var matGalvanizedDuct = new THREE.MeshStandardMaterial({ color: 0xb0bec5, roughness: 0.35, metalness: 0.82 });
+            var matDuctFlange = new THREE.MeshStandardMaterial({ color: 0x78909c, roughness: 0.3, metalness: 0.88 });
+            var matHangerRod = new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.25, metalness: 0.92 });
+            var matDiffuser = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.4, metalness: 0.15 });
+            var matHatch = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.4, metalness: 0.7 });
+
+            // Medical Gas Materials (ASTM B819 Copper & NFPA 99 Emerald Green Bands)
+            var matMedCopper = new THREE.MeshStandardMaterial({ color: 0xb87333, roughness: 0.22, metalness: 0.9 });
+            var matMedBand = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.35, metalness: 0.25 });
+            var matWhiteStripe = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4, metalness: 0.1 });
+            var matBrazedSocket = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.28, metalness: 0.85 });
+
+            // Chilled Water Piping & Valve Materials
+            var matChwInsulation = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7, metalness: 0.12 });
+            var matAluminumBand = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.18, metalness: 0.95 });
+            var matChwLabel = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.4, metalness: 0.2 });
+            var matFlange = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4, metalness: 0.8 });
+            var matBolt = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.25, metalness: 0.92 });
+            var matValveBody = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.35, metalness: 0.55 });
+            var matValveWheel = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.35, metalness: 0.3 });
+            var matValveStem = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.15, metalness: 0.95 });
+            var matBrass = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.25, metalness: 0.85 });
+            var matGaugeDial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2, metalness: 0.1 });
+            var matGaugeNeedle = new THREE.MeshBasicMaterial({ color: 0xdc2626 });
+
+            // Fire Sprinkler Materials
+            var matSprPipeRed = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.38, metalness: 0.45 });
+            var matSprBulb = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.1, metalness: 0.2, transparent: true, opacity: 0.85 });
+            var matSprDeflector = new THREE.MeshStandardMaterial({ color: 0xca8a04, roughness: 0.28, metalness: 0.85 });
+
+            // Electrical Cable Tray Materials
+            var matTray = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.38, metalness: 0.8 });
+            var matCableL1 = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.7, metalness: 0.05 });
+            var matCableL2 = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.7, metalness: 0.05 });
+            var matCableL3 = new THREE.MeshStandardMaterial({ color: 0x1d4ed8, roughness: 0.7, metalness: 0.05 });
+            var matCableData = new THREE.MeshStandardMaterial({ color: 0xeab308, roughness: 0.7, metalness: 0.05 });
+
+            // Architectural Hospital Door Materials
+            var matDoorFrame = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4, metalness: 0.6 });
+            var matDoorLeaf = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.5, metalness: 0.1 });
+            var matDoorGlass = new THREE.MeshStandardMaterial({ color: 0x93c5fd, roughness: 0.1, metalness: 0.1, transparent: true, opacity: 0.45 });
+            var matDoorStainless = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.2, metalness: 0.92 });
+
+            // Lighting Troffer Materials
+            var matTrofferFrame = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.4, metalness: 0.5 });
+            var matTrofferDiffuser = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.6, roughness: 0.2 });
+
+            // Floor & Ground Grid
             var floorMesh = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), matFloor);
             floorMesh.rotation.x = -Math.PI / 2;
             floorMesh.receiveShadow = true;
@@ -848,116 +912,637 @@
             addWall(0.2, 3.8, 14, -7, 1.9, 0);
             addWall(0.2, 3.8, 14, 7, 1.9, 0);
 
-            // Ceiling
-            var ceiling = new THREE.Mesh(new THREE.BoxGeometry(13.8, 0.05, 13.8), matCeiling);
+            // Structural Concrete Columns & Drop Beams
+            var colGeo = new THREE.BoxGeometry(0.5, 3.8, 0.5);
+            var col1 = new THREE.Mesh(colGeo, matConcrete);
+            col1.position.set(-6.75, 1.9, -6.75);
+            structureGroup.add(col1);
+
+            var col2 = new THREE.Mesh(colGeo, matConcrete);
+            col2.position.set(6.75, 1.9, -6.75);
+            structureGroup.add(col2);
+
+            var dropBeam = new THREE.Mesh(new THREE.BoxGeometry(14.0, 0.35, 0.45), matConcrete);
+            dropBeam.position.set(0, 3.02, 0);
+            structureGroup.add(dropBeam);
+
+            var steelBeam = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 14.0), matSteelBeam);
+            steelBeam.position.set(-3.5, 3.05, 0);
+            structureGroup.add(steelBeam);
+
+            // Suspended Ceiling & Flush LED Troffers
+            var ceiling = new THREE.Mesh(new THREE.BoxGeometry(13.8, 0.04, 13.8), matCeiling);
             ceiling.position.set(0, 3.2, 0);
             ceilingGroup.add(ceiling);
 
-            // Register BIM helper
-            function registerBIM(mesh, data, isLabElem) {
-                mesh.userData = data || {};
-                mesh.userData.isBIM = true;
-                mesh.userData.isLabElem = !!isLabElem;
-                mesh.castShadow = true;
-                mesh.receiveShadow = true;
-                bimElements.push(mesh);
-                return mesh;
+            // Add 4 recessed 600x1200 LED Troffers to Ceiling
+            [[-2.5, -2.5], [2.5, -2.5], [-2.5, 2.5], [2.5, 2.5]].forEach(function(pos) {
+                var trofferFrame = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.02, 1.26), matTrofferFrame);
+                trofferFrame.position.set(pos[0], 3.19, pos[1]);
+                ceilingGroup.add(trofferFrame);
+
+                var trofferDiffuser = new THREE.Mesh(new THREE.BoxGeometry(0.60, 0.015, 1.20), matTrofferDiffuser);
+                trofferDiffuser.position.set(pos[0], 3.185, pos[1]);
+                ceilingGroup.add(trofferDiffuser);
+            });
+
+            // Register BIM helper (propagates metadata and shadows to all children)
+            function registerBIM(obj, data, isLabElem) {
+                obj.userData = data || {};
+                obj.userData.isBIM = true;
+                obj.userData.isLabElem = !!isLabElem;
+                obj.traverse(function(child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                        child.userData = child.userData || {};
+                        child.userData.isBIM = true;
+                        child.userData.parentBIM = obj;
+                    }
+                });
+                bimElements.push(obj);
+                return obj;
             }
 
-            // 1. Primary HVAC Duct
-            var ductGeo = new THREE.BoxGeometry(7.0, 0.5, 0.8);
-            var mainDuct = new THREE.Mesh(ductGeo, matDuct);
+            registerBIM(structureGroup, {
+                elementId: 'STR-RC-BEAM-COL-101',
+                category: 'أعمدة وكمرات خرسانية مسلحة (RC Columns & Drop Beam)',
+                system: 'Structural Framing / C35 Concrete',
+                dimensions: 'Columns 500x500 mm / Drop Beam 450x350 mm',
+                clearance: 'الخلوص الصافي أسفل الكمرة الإنشائية: 2.85 م',
+                status: 'عنصر إنشائي حامل رئيسي - محدد لمناسيب الـ MEP'
+            }, true);
+
+            // =====================================================================
+            // 1. Primary HVAC Supply Air Duct Assembly (High Fidelity)
+            // =====================================================================
+            var mainDuct = new THREE.Group();
             mainDuct.position.set(0, 2.5, 0);
             mepGroup.add(mainDuct);
+
+            // Galvanized Sheet Metal Duct Trunk
+            var ductBody = new THREE.Mesh(new THREE.BoxGeometry(7.2, 0.5, 0.8), matGalvanizedDuct);
+            mainDuct.add(ductBody);
+
+            // TDC / TDF Connection Flanges with Corner Cleats
+            var flangeGeo = new THREE.BoxGeometry(0.04, 0.53, 0.83);
+            var cleatGeo = new THREE.BoxGeometry(0.045, 0.05, 0.05);
+            [-2.8, -1.4, 0, 1.4, 2.8].forEach(function(xf) {
+                var flange = new THREE.Mesh(flangeGeo, matDuctFlange);
+                flange.position.set(xf, 0, 0);
+                mainDuct.add(flange);
+
+                // 4 Corner cleats
+                [[-0.24, -0.39], [0.24, -0.39], [-0.24, 0.39], [0.24, 0.39]].forEach(function(cp) {
+                    var cleat = new THREE.Mesh(cleatGeo, matDuctFlange);
+                    cleat.position.set(xf, cp[0], cp[1]);
+                    mainDuct.add(cleat);
+                });
+            });
+
+            // Unistrut Trapeze Hangers
+            [-2.1, 2.1].forEach(function(xh) {
+                var unistrut = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.04, 0.98), matHatch);
+                unistrut.position.set(xh, -0.27, 0);
+                mainDuct.add(unistrut);
+
+                [-0.46, 0.46].forEach(function(zr) {
+                    var rod = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.97, 8), matHangerRod);
+                    rod.position.set(xh, 0.215, zr);
+                    mainDuct.add(rod);
+
+                    var anchorPlate = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.015, 0.08), matHatch);
+                    anchorPlate.position.set(xh, 0.70, zr);
+                    mainDuct.add(anchorPlate);
+                });
+            });
+
+            // 4-Way Square Ceiling Diffuser (600x600 mm)
+            var diffuserNeck = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.20, 0.36), matGalvanizedDuct);
+            diffuserNeck.position.set(1.0, -0.35, 0);
+            mainDuct.add(diffuserNeck);
+
+            var diffOuter = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.02, 0.62), matDiffuser);
+            diffOuter.position.set(1.0, -0.46, 0);
+            mainDuct.add(diffOuter);
+
+            var louver1 = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.012, 0.48), matDiffuser);
+            louver1.position.set(1.0, -0.455, 0);
+            mainDuct.add(louver1);
+
+            var louver2 = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.012, 0.34), matDiffuser);
+            louver2.position.set(1.0, -0.45, 0);
+            mainDuct.add(louver2);
+
+            var louverCore = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.012, 0.16), matDiffuser);
+            louverCore.position.set(1.0, -0.445, 0);
+            mainDuct.add(louverCore);
+
+            // Duct Inspection Access Hatch
+            var hatchGasket = new THREE.Mesh(new THREE.BoxGeometry(0.40, 0.28, 0.006), matFloor);
+            hatchGasket.position.set(-1.0, 0, 0.403);
+            mainDuct.add(hatchGasket);
+
+            var hatchDoor = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.26, 0.012), matHatch);
+            hatchDoor.position.set(-1.0, 0, 0.408);
+            mainDuct.add(hatchDoor);
+
+            // Cam Lock Latches
+            [-1.13, -0.87].forEach(function(xl) {
+                var cam = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.02, 10), matValveWheel);
+                cam.rotation.x = Math.PI / 2;
+                cam.position.set(xl, 0, 0.418);
+                mainDuct.add(cam);
+            });
+
             registerBIM(mainDuct, {
                 elementId: 'MEP-HVAC-DUCT-401',
-                category: 'مجرى هواء تكييف مركزي (Supply Air Duct)',
-                system: 'HVAC Air Distribution',
-                dimensions: '800x500 mm Galvanized Sheet Metal',
-                clearance: 'يتطلب خلوص صيانة 150 مم',
-                status: 'تعارض حرج مع ماسورة الأكسجين الطبي'
+                category: 'مجرى هواء تكييف مركزي وموزع (Supply Air Duct & Diffuser)',
+                system: 'HVAC Air Distribution / SMACNA Class 4',
+                dimensions: '800x500 mm Galvanized Sheet Metal w/ TDC Flanges & 600x600 Diffuser',
+                clearance: 'يتطلب خلوص صيانة 150 مم فوق السقف المعلق',
+                status: '🔴 تعارض حرج مع ماسورة الأكسجين الطبي (اخترق جدار الدكت)'
             }, true);
 
-            // 2. Medical Oxygen Line
-            var pipeGeo = new THREE.CylinderGeometry(0.04, 0.04, 8.0, 20);
-            var oxygenPipe = new THREE.Mesh(pipeGeo, matMedGas);
-            oxygenPipe.rotation.z = Math.PI / 2;
-            oxygenPipe.position.set(0, 2.52, 0.12);
+            // =====================================================================
+            // 2. Medical Oxygen Line (Degreased Copper & NFPA 99 Emerald Bands)
+            // =====================================================================
+            var oxygenPipe = new THREE.Group();
+            oxygenPipe.position.set(0, 2.52, 0);
             mepGroup.add(oxygenPipe);
+
+            // Medical Copper Pipe Tube along Z Axis (Perpendicular crossing through duct)
+            var copperTubeGeo = new THREE.CylinderGeometry(0.021, 0.021, 8.0, 20);
+            copperTubeGeo.rotateX(Math.PI / 2);
+            var copperTube = new THREE.Mesh(copperTubeGeo, matMedCopper);
+            oxygenPipe.add(copperTube);
+
+            // Emerald Green ID Bands with White Stripes
+            var bandGeo = new THREE.CylinderGeometry(0.0225, 0.0225, 0.14, 20);
+            bandGeo.rotateX(Math.PI / 2);
+            var stripeGeo = new THREE.CylinderGeometry(0.023, 0.023, 0.016, 20);
+            stripeGeo.rotateX(Math.PI / 2);
+
+            [-3.0, -1.8, -0.9, 0.9, 1.8, 3.0].forEach(function(zb) {
+                var band = new THREE.Mesh(bandGeo, matMedBand);
+                band.position.set(0, 0, zb);
+                oxygenPipe.add(band);
+
+                [-0.07, 0.07].forEach(function(ds) {
+                    var str = new THREE.Mesh(stripeGeo, matWhiteStripe);
+                    str.position.set(0, 0, zb + ds);
+                    oxygenPipe.add(str);
+                });
+            });
+
+            // Brazed Socket Couplers
+            var socketGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.04, 20);
+            socketGeo.rotateX(Math.PI / 2);
+            [-2.2, 2.2].forEach(function(zs) {
+                var sck = new THREE.Mesh(socketGeo, matBrazedSocket);
+                sck.position.set(0, 0, zs);
+                oxygenPipe.add(sck);
+            });
+
+            // Duct Penetration Collars (Clash point on duct walls at z = ±0.40)
+            var collarGeo = new THREE.CylinderGeometry(0.035, 0.035, 0.018, 20);
+            collarGeo.rotateX(Math.PI / 2);
+            [-0.40, 0.40].forEach(function(zc) {
+                var col = new THREE.Mesh(collarGeo, matDuctFlange);
+                col.position.set(0, 0, zc);
+                oxygenPipe.add(col);
+            });
+
+            // Copper Pipe Rod Hangers to Ceiling
+            [-2.5, 2.5].forEach(function(zh) {
+                var clamp = new THREE.Mesh(new THREE.TorusGeometry(0.025, 0.005, 8, 16), matBrazedSocket);
+                clamp.position.set(0, 0, zh);
+                oxygenPipe.add(clamp);
+
+                var hrod = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.68, 8), matHangerRod);
+                hrod.position.set(0, 0.34, zh);
+                oxygenPipe.add(hrod);
+            });
+
             registerBIM(oxygenPipe, {
                 elementId: 'MEP-MEDGAS-O2-108',
-                category: 'ماسورة أكسجين طبي (Medical Gas Pipe)',
-                system: 'Life Safety / Medical Gas',
-                dimensions: 'Ø 40 mm Medical Copper (Type L)',
-                clearance: 'مخالف لكود NFPA 99 و ASHRAE 170 (حظر اختراق مجاري الهواء)',
-                status: '🔴 تعارض فراغي مباشر (Physical Interpenetration)'
-            }, true);
-
-            // 3. Chilled Water Pipe
-            var chwGeo = new THREE.CylinderGeometry(0.065, 0.065, 8.0, 20);
-            var chwPipe = new THREE.Mesh(chwGeo, matWater);
-            chwPipe.rotation.x = Math.PI / 2;
-            chwPipe.position.set(1.5, 2.7, 0);
-            mepGroup.add(chwPipe);
-            registerBIM(chwPipe, {
-                elementId: 'MEP-PLUMB-CHW-204',
-                category: 'ماسورة مياه مثلجة (Chilled Water Supply)',
-                system: 'HVAC Hydronics',
-                dimensions: 'Ø 65 mm Welded Steel',
-                clearance: 'يتطلب عزل حراري 50 مم ضد التكثيف',
-                status: 'تم الفحص - خلوص العزل محقق'
-            }, true);
-
-            // 4. Isolation Valve
-            var valveGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.25, 16);
-            var valve = new THREE.Mesh(valveGeo, matValve);
-            valve.position.set(1.5, 2.7, 0.8);
-            mepGroup.add(valve);
-            registerBIM(valve, {
-                elementId: 'MEP-HVAC-VLV-302',
-                category: 'محبس عزل ميكانيكي (Chilled Water Gate Valve)',
-                system: 'HVAC Piping Specialties',
-                dimensions: 'DN 65 Flanged',
-                clearance: 'يتطلب خلوص يدوي 300 مم لتشغيل ذراع الصمام',
-                status: '⚠️ تعارض تشغيلي (Operational Clearance Clash)'
-            }, true);
-
-            // 5. Fire Sprinkler Branch
-            var sprGeo = new THREE.CylinderGeometry(0.03, 0.03, 7.0, 16);
-            var sprPipe = new THREE.Mesh(sprGeo, matFire);
-            sprPipe.rotation.z = Math.PI / 2;
-            sprPipe.position.set(0, 2.85, -1.5);
-            mepGroup.add(sprPipe);
-            registerBIM(sprPipe, {
-                elementId: 'MEP-FIRE-SPR-101',
-                category: 'ماسورة شبكة إطفاء حريق (Fire Sprinkler Line)',
-                system: 'Fire Protection / NFPA 13',
-                dimensions: 'Ø 32 mm Black Carbon Steel',
-                clearance: 'تغطية رأس الرشاش خالية من العوائق',
-                status: 'تم الفحص - مطابق للمواصفات'
-            }, true);
-
-            // 6. Architectural Door
-            var doorGeo = new THREE.BoxGeometry(1.2, 2.4, 0.08);
-            var door = new THREE.Mesh(doorGeo, matDoor);
-            door.position.set(0, 1.2, -6.88);
-            webxrLabGroup.add(door);
-            registerBIM(door, {
-                elementId: 'ARCH-DOOR-SINGLE-105',
-                category: 'باب معماري (Single Flush Hospital Door)',
-                system: 'Architectural / ADA Compliant',
-                dimensions: '1200x2400 mm Fire-Rated',
-                clearance: 'خلوص فتح 90 درجة محقق بالكامل',
-                status: 'مطابق للكود المعماري'
+                category: 'ماسورة أكسجين طبي مع حزم ترميز (Medical Oxygen Pipe)',
+                system: 'Life Safety / Medical Gas (NFPA 99 / HTM 02-01)',
+                dimensions: 'Ø 42 mm Degreased Medical Copper (Type L) w/ Brazed Sockets',
+                clearance: 'مخالف لكود NFPA 99 و ASHRAE 170 (حظر اختراق مجاري الهواء تماماً)',
+                status: '🔴 تعارض فراغي مباشر (Physical Interpenetration through Duct)'
             }, true);
 
             // Visual Halo around Critical Clash
-            var clashBeaconGeo = new THREE.RingGeometry(0.18, 0.24, 32);
+            var clashBeaconGeo = new THREE.RingGeometry(0.035, 0.08, 32);
             var clashBeaconMat = new THREE.MeshBasicMaterial({ color: 0xef4444, side: THREE.DoubleSide });
             var clashBeacon = new THREE.Mesh(clashBeaconGeo, clashBeaconMat);
-            clashBeacon.rotation.x = Math.PI / 2;
-            clashBeacon.position.set(0, 2.52, 0.12);
+            clashBeacon.position.set(0, 2.52, 0.41);
             mepGroup.add(clashBeacon);
+
+            // =====================================================================
+            // 3. Insulated Chilled Water Supply Line (Armaflex & Aluminum Cladding)
+            // =====================================================================
+            var chwPipe = new THREE.Group();
+            chwPipe.position.set(1.5, 2.7, 0);
+            mepGroup.add(chwPipe);
+
+            // Insulated Pipe Cylinder along Z Axis (DN65 + 45mm Armaflex)
+            var chwInsulGeo = new THREE.CylinderGeometry(0.075, 0.075, 7.6, 24);
+            chwInsulGeo.rotateX(Math.PI / 2);
+            var chwInsulMesh = new THREE.Mesh(chwInsulGeo, matChwInsulation);
+            chwPipe.add(chwInsulMesh);
+
+            // Polished Aluminum Cladding Bands
+            var bandAlGeo = new THREE.CylinderGeometry(0.078, 0.078, 0.024, 24);
+            bandAlGeo.rotateX(Math.PI / 2);
+            var clipGeo = new THREE.BoxGeometry(0.015, 0.015, 0.03);
+            [-3.2, -2.4, -1.6, -0.8, 0.0, 1.6, 2.4, 3.2].forEach(function(za) {
+                var band = new THREE.Mesh(bandAlGeo, matAluminumBand);
+                band.position.set(0, 0, za);
+                chwPipe.add(band);
+
+                var clip = new THREE.Mesh(clipGeo, matAluminumBand);
+                clip.position.set(0, 0.082, za);
+                chwPipe.add(clip);
+            });
+
+            // Blue Flow Direction & CHWS Label Bands
+            [-1.2, 2.0].forEach(function(zl) {
+                var lbl = new THREE.Mesh(new THREE.CylinderGeometry(0.077, 0.077, 0.12, 24), matChwLabel);
+                lbl.rotation.x = Math.PI / 2;
+                lbl.position.set(0, 0, zl);
+                chwPipe.add(lbl);
+            });
+
+            // Heavy-Duty Clevis Pipe Hangers
+            [-2.0, 2.0].forEach(function(zh) {
+                var saddle = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.02, 0.18), matDuctFlange);
+                saddle.position.set(0, -0.082, zh);
+                chwPipe.add(saddle);
+
+                var clevisRing = new THREE.Mesh(new THREE.TorusGeometry(0.082, 0.008, 8, 20), matDuctFlange);
+                clevisRing.position.set(0, 0, zh);
+                chwPipe.add(clevisRing);
+
+                var rod = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.50, 8), matHangerRod);
+                rod.position.set(0, 0.28, zh);
+                chwPipe.add(rod);
+            });
+
+            // ANSI Companion Flanges connecting to Gate Valve
+            var pipeFlangeGeo = new THREE.CylinderGeometry(0.125, 0.125, 0.024, 20);
+            pipeFlangeGeo.rotateX(Math.PI / 2);
+            [0.65, 0.95].forEach(function(zf) {
+                var pflange = new THREE.Mesh(pipeFlangeGeo, matFlange);
+                pflange.position.set(0, 0, zf);
+                chwPipe.add(pflange);
+            });
+
+            registerBIM(chwPipe, {
+                elementId: 'MEP-PLUMB-CHW-204',
+                category: 'ماسورة مياه مثلجة معزولة (Insulated Chilled Water Supply)',
+                system: 'HVAC Hydronics / ASTM A53 Carbon Steel',
+                dimensions: 'DN 65 (Ø 76mm Pipe + 45mm Armaflex Class 0 Foam + Al Cladding)',
+                clearance: 'يتطلب عزل حراري محكم ضد التكثيف مع أطواق تعليق Clevis Hangers',
+                status: 'تم الفحص - خلوص العزل ومسار الأنابيب محقق'
+            }, true);
+
+            // =====================================================================
+            // 4. Flanged Gate Valve & Bourdon Pressure Gauge Assembly
+            // =====================================================================
+            var valve = new THREE.Group();
+            valve.position.set(1.5, 2.7, 0.8);
+            mepGroup.add(valve);
+
+            // Valve Main Cast Body (Industrial Blue)
+            var valveBodyGeo = new THREE.CylinderGeometry(0.085, 0.085, 0.22, 16);
+            valveBodyGeo.rotateX(Math.PI / 2);
+            var vBody = new THREE.Mesh(valveBodyGeo, matValveBody);
+            valve.add(vBody);
+
+            var vSphere = new THREE.Mesh(new THREE.SphereGeometry(0.11, 16, 16), matValveBody);
+            vSphere.scale.set(1.0, 1.15, 0.85);
+            valve.add(vSphere);
+
+            // Raised Face Flanges & Perimeter Hex Bolts
+            var vFlangeGeo = new THREE.CylinderGeometry(0.13, 0.13, 0.022, 20);
+            vFlangeGeo.rotateX(Math.PI / 2);
+            var hexBoltGeo = new THREE.CylinderGeometry(0.011, 0.011, 0.016, 6);
+            hexBoltGeo.rotateX(Math.PI / 2);
+
+            [-0.11, 0.11].forEach(function(zv) {
+                var vf = new THREE.Mesh(vFlangeGeo, matFlange);
+                vf.position.set(0, 0, zv);
+                valve.add(vf);
+
+                // 6 Hex Bolts on each flange
+                for (var b = 0; b < 6; b++) {
+                    var ang = (b / 6) * Math.PI * 2;
+                    var bolt = new THREE.Mesh(hexBoltGeo, matBolt);
+                    bolt.position.set(Math.cos(ang) * 0.105, Math.sin(ang) * 0.105, zv + (zv > 0 ? 0.012 : -0.012));
+                    valve.add(bolt);
+                }
+            });
+
+            // Tapered Bonnet Neck & Bolted Bonnet Flange
+            var bonnetNeck = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.085, 0.14, 16), matValveBody);
+            bonnetNeck.position.set(0, 0.09, 0);
+            valve.add(bonnetNeck);
+
+            var bonnetFlange = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.095, 0.018, 16), matFlange);
+            bonnetFlange.position.set(0, 0.16, 0);
+            valve.add(bonnetFlange);
+
+            // Stuffing Box & Gland Follower
+            var gland = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.038, 0.04, 12), matBrass);
+            gland.position.set(0, 0.185, 0);
+            valve.add(gland);
+
+            // Rising Stainless Steel Spindle Stem
+            var stem = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.22, 12), matValveStem);
+            stem.position.set(0, 0.23, 0);
+            valve.add(stem);
+
+            // Cast Iron Red Handwheel
+            var wheelRimGeo = new THREE.TorusGeometry(0.125, 0.014, 10, 24);
+            wheelRimGeo.rotateX(Math.PI / 2);
+            var wheelRim = new THREE.Mesh(wheelRimGeo, matValveWheel);
+            wheelRim.position.set(0, 0.31, 0);
+            valve.add(wheelRim);
+
+            // Handwheel 4 Crossing Spokes
+            var spoke1 = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.24, 8), matValveWheel);
+            spoke1.rotation.z = Math.PI / 2;
+            spoke1.position.set(0, 0.31, 0);
+            valve.add(spoke1);
+
+            var spoke2 = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.24, 8), matValveWheel);
+            spoke2.rotation.x = Math.PI / 2;
+            spoke2.position.set(0, 0.31, 0);
+            valve.add(spoke2);
+
+            var wheelHub = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.03, 12), matValveWheel);
+            wheelHub.position.set(0, 0.31, 0);
+            valve.add(wheelHub);
+
+            var topNut = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.02, 6), matBrass);
+            topNut.position.set(0, 0.332, 0);
+            valve.add(topNut);
+
+            // Bourdon Tube Pressure Gauge Assembly
+            var gaugeTap = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.06, 8), matBrass);
+            gaugeTap.rotation.z = Math.PI / 2;
+            gaugeTap.position.set(0.08, 0.09, 0);
+            valve.add(gaugeTap);
+
+            var gaugeCase = new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.042, 0.018, 20), matValveStem);
+            gaugeCase.rotation.z = Math.PI / 2;
+            gaugeCase.position.set(0.13, 0.09, 0);
+            valve.add(gaugeCase);
+
+            var dialFace = new THREE.Mesh(new THREE.CircleGeometry(0.038, 20), matGaugeDial);
+            dialFace.rotation.y = Math.PI / 2;
+            dialFace.position.set(0.14, 0.09, 0);
+            valve.add(dialFace);
+
+            var needle = new THREE.Mesh(new THREE.BoxGeometry(0.002, 0.025, 0.002), matGaugeNeedle);
+            needle.position.set(0.141, 0.096, 0.004);
+            needle.rotation.x = 0.45;
+            valve.add(needle);
+
+            registerBIM(valve, {
+                elementId: 'MEP-HVAC-VLV-302',
+                category: 'محبس عزل ميكانيكي سكينة مع مقياس ضغط (Flanged Gate Valve & Gauge)',
+                system: 'HVAC Piping Specialties / Cast Iron PN16',
+                dimensions: 'DN 65 Flanged w/ Stainless Rising Stem, Red Handwheel & 0-10 Bar Gauge',
+                clearance: 'يتطلب خلوص تشغيل يدوي 300 مم لتدوير الطارة واستبدال الحشوة',
+                status: '⚠️ تعارض تشغيلي وتيسير وصول (Operational Clearance Warning)'
+            }, true);
+
+            // =====================================================================
+            // 5. Fire Protection Sprinkler Branch & Pendent Sprinkler Heads
+            // =====================================================================
+            var sprPipe = new THREE.Group();
+            sprPipe.position.set(0, 2.85, -1.5);
+            mepGroup.add(sprPipe);
+
+            // Schedule 40 Fire Red Carbon Steel Pipe along X Axis
+            var sprPipeGeo = new THREE.CylinderGeometry(0.019, 0.019, 7.2, 16);
+            sprPipeGeo.rotateZ(Math.PI / 2);
+            var sprPipeMesh = new THREE.Mesh(sprPipeGeo, matSprPipeRed);
+            sprPipe.add(sprPipeMesh);
+
+            // Victaulic Style Grooved Mechanical Couplings
+            var victaulicGeo = new THREE.CylinderGeometry(0.026, 0.026, 0.038, 16);
+            victaulicGeo.rotateZ(Math.PI / 2);
+            [-2.0, 0.0, 2.0].forEach(function(xc) {
+                var coup = new THREE.Mesh(victaulicGeo, matSprPipeRed);
+                coup.position.set(xc, 0, 0);
+                sprPipe.add(coup);
+            });
+
+            // Pipe Hanger Ring Clamps
+            [-1.2, 1.2].forEach(function(xh) {
+                var sprRing = new THREE.Mesh(new THREE.TorusGeometry(0.024, 0.004, 6, 16), matDuctFlange);
+                sprRing.position.set(xh, 0, 0);
+                sprPipe.add(sprRing);
+
+                var sprRod = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.35, 8), matHangerRod);
+                sprRod.position.set(xh, 0.175, 0);
+                sprPipe.add(sprRod);
+            });
+
+            // 3 Detailed Pendent Sprinkler Heads
+            [-2.0, 0.0, 2.0].forEach(function(xs) {
+                // Drop Nipple
+                var dropNipple = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.10, 12), matSprPipeRed);
+                dropNipple.position.set(xs, -0.05, 0);
+                sprPipe.add(dropNipple);
+
+                // Brass Hex Bushing
+                var sprBushing = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.018, 6), matBrass);
+                sprBushing.position.set(xs, -0.105, 0);
+                sprPipe.add(sprBushing);
+
+                // Brass U-Frame Arms
+                var uFrame = new THREE.Mesh(new THREE.TorusGeometry(0.015, 0.003, 6, 16), matBrass);
+                uFrame.rotation.y = Math.PI / 2;
+                uFrame.position.set(xs, -0.125, 0);
+                sprPipe.add(uFrame);
+
+                // Thermo-sensitive Red Quartzoid Glass Bulb (68°C rating)
+                var bulb = new THREE.Mesh(new THREE.CylinderGeometry(0.0035, 0.0035, 0.022, 10), matSprBulb);
+                bulb.position.set(xs, -0.125, 0);
+                sprPipe.add(bulb);
+
+                // Notched Deflector Plate
+                var deflector = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.003, 16), matSprDeflector);
+                deflector.position.set(xs, -0.142, 0);
+                sprPipe.add(deflector);
+            });
+
+            registerBIM(sprPipe, {
+                elementId: 'MEP-FIRE-SPR-101',
+                category: 'شبكة رشاشات إطفاء حريق (Fire Sprinkler Branch Line)',
+                system: 'Fire Protection / NFPA 13 Standard',
+                dimensions: 'Ø 38 mm Schedule 40 Red Steel Pipe w/ Pendent Sprinkler Heads',
+                clearance: 'خلوص رؤوس الرشاشات 450 مم من أي عائق لضمان مخروط الرش',
+                status: 'تم الفحص - توزيع رؤوس الرشاشات مطابق للمواصفات'
+            }, true);
+
+            // =====================================================================
+            // 6. Electrical Ladder Cable Tray & Feeder Bundles
+            // =====================================================================
+            var cableTray = new THREE.Group();
+            cableTray.position.set(0, 2.75, 1.8);
+            mepGroup.add(cableTray);
+
+            // Galvanized Side Rails (C-Channels)
+            var rail1 = new THREE.Mesh(new THREE.BoxGeometry(7.2, 0.08, 0.018), matTray);
+            rail1.position.set(0, 0, -0.20);
+            cableTray.add(rail1);
+
+            var rail2 = new THREE.Mesh(new THREE.BoxGeometry(7.2, 0.08, 0.018), matTray);
+            rail2.position.set(0, 0, 0.20);
+            cableTray.add(rail2);
+
+            // Welded Cross Rungs spaced every 0.3m
+            var rungGeo = new THREE.BoxGeometry(0.025, 0.012, 0.38);
+            for (var xr = -3.45; xr <= 3.45; xr += 0.30) {
+                var rung = new THREE.Mesh(rungGeo, matTray);
+                rung.position.set(xr, -0.034, 0);
+                cableTray.add(rung);
+            }
+
+            // Bundled 3-Phase XLPE Power Cables & Yellow Data Conduit
+            var cablePowerGeo = new THREE.CylinderGeometry(0.012, 0.012, 7.2, 12);
+            cablePowerGeo.rotateZ(Math.PI / 2);
+
+            var cableL1 = new THREE.Mesh(cablePowerGeo, matCableL1);
+            cableL1.position.set(0, 0.015, -0.12);
+            cableTray.add(cableL1);
+
+            var cableL2 = new THREE.Mesh(cablePowerGeo, matCableL2);
+            cableL2.position.set(0, 0.015, -0.04);
+            cableTray.add(cableL2);
+
+            var cableL3 = new THREE.Mesh(cablePowerGeo, matCableL3);
+            cableL3.position.set(0, 0.015, 0.04);
+            cableTray.add(cableL3);
+
+            var cableDataGeo = new THREE.CylinderGeometry(0.009, 0.009, 7.2, 12);
+            cableDataGeo.rotateZ(Math.PI / 2);
+            var cableData = new THREE.Mesh(cableDataGeo, matCableData);
+            cableData.position.set(0, 0.012, 0.12);
+            cableTray.add(cableData);
+
+            // Cable Zip Ties every 0.6m
+            var tieGeo = new THREE.BoxGeometry(0.012, 0.035, 0.28);
+            for (var xt = -3.0; xt <= 3.0; xt += 0.60) {
+                var tie = new THREE.Mesh(tieGeo, matFloor);
+                tie.position.set(xt, 0.015, -0.02);
+                cableTray.add(tie);
+            }
+
+            // Trapeze Hangers supporting Cable Tray
+            [-2.2, 2.2].forEach(function(xth) {
+                var crossbar = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.03, 0.54), matHatch);
+                crossbar.position.set(xth, -0.055, 0);
+                cableTray.add(crossbar);
+
+                [-0.25, 0.25].forEach(function(ztr) {
+                    var trod = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.48, 8), matHangerRod);
+                    trod.position.set(xth, 0.18, ztr);
+                    cableTray.add(trod);
+                });
+            });
+
+            registerBIM(cableTray, {
+                elementId: 'MEP-ELEC-TRAY-501',
+                category: 'حامل كابلات سلمي وحزم التغذية (Perforated Ladder Cable Tray)',
+                system: 'Electrical Power & Low Voltage / BS EN 61537',
+                dimensions: '400x80 mm Hot-Dip Galvanized w/ 3-Phase XLPE Feeders & Data Line',
+                clearance: 'يتطلب خلوص سحب كابلات 200 مم أعلى الحامل',
+                status: 'تم الفحص - مطابق لمسارات التيار القوي والخفيف'
+            }, true);
+
+            // =====================================================================
+            // 7. Architectural Hospital Door Assembly (Vision Panel & Hardware)
+            // =====================================================================
+            var door = new THREE.Group();
+            door.position.set(0, 1.2, -6.88);
+            webxrLabGroup.add(door);
+
+            // Dark Anodized Aluminum Wrap-Around Frame
+            var jambL = new THREE.Mesh(new THREE.BoxGeometry(0.06, 2.42, 0.12), matDoorFrame);
+            jambL.position.set(-0.63, 0, 0);
+            door.add(jambL);
+
+            var jambR = new THREE.Mesh(new THREE.BoxGeometry(0.06, 2.42, 0.12), matDoorFrame);
+            jambR.position.set(0.63, 0, 0);
+            door.add(jambR);
+
+            var header = new THREE.Mesh(new THREE.BoxGeometry(1.32, 0.06, 0.12), matDoorFrame);
+            header.position.set(0, 1.21, 0);
+            door.add(header);
+
+            // Flush Hospital Door Leaf
+            var doorLeaf = new THREE.Mesh(new THREE.BoxGeometry(1.20, 2.36, 0.048), matDoorLeaf);
+            door.add(doorLeaf);
+
+            // Vision Glass Safety Window & Frame
+            var visionFrame = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.94, 0.055), matDoorFrame);
+            visionFrame.position.set(0.28, 0.32, 0);
+            door.add(visionFrame);
+
+            var visionPane = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.90, 0.015), matDoorGlass);
+            visionPane.position.set(0.28, 0.32, 0);
+            door.add(visionPane);
+
+            // Stainless Steel Lever Handle & Escutcheon Backplate
+            var escutcheon = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.26, 0.008), matDoorStainless);
+            escutcheon.position.set(-0.46, -0.15, 0.028);
+            door.add(escutcheon);
+
+            var handleSpindle = new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, 0.05, 10), matDoorStainless);
+            handleSpindle.rotation.x = Math.PI / 2;
+            handleSpindle.position.set(-0.46, -0.11, 0.052);
+            door.add(handleSpindle);
+
+            var leverHandle = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.022, 0.022), matDoorStainless);
+            leverHandle.position.set(-0.40, -0.11, 0.076);
+            door.add(leverHandle);
+
+            // Key Lock Rosette
+            var lockRosette = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.01, 12), matDoorStainless);
+            lockRosette.rotation.x = Math.PI / 2;
+            lockRosette.position.set(-0.46, -0.21, 0.032);
+            door.add(lockRosette);
+
+            // Stainless Steel Bottom Kickplate (Protection Plate)
+            var kickplate = new THREE.Mesh(new THREE.BoxGeometry(1.18, 0.28, 0.006), matDoorStainless);
+            kickplate.position.set(0, -1.04, 0.026);
+            door.add(kickplate);
+
+            // Overhead Hydraulic Door Closer
+            var closerBody = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.07, 0.06), matDoorStainless);
+            closerBody.position.set(-0.25, 1.13, 0.045);
+            door.add(closerBody);
+
+            var closerArm = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.012, 0.015), matDoorStainless);
+            closerArm.rotation.z = -0.25;
+            closerArm.position.set(-0.10, 1.18, 0.045);
+            door.add(closerArm);
+
+            registerBIM(door, {
+                elementId: 'ARCH-DOOR-SINGLE-105',
+                category: 'باب مستشفى معماري مع لوح زجاجي (Flush Hospital Door w/ Vision Panel)',
+                system: 'Architectural / ADA Compliant / Fire-Rated 60 min',
+                dimensions: '1200x2400 mm w/ Aluminum Frame, Vision Glass, Kickplate & Closer',
+                clearance: 'خلوص فتح 90 درجة محقق مع خلوص ممر الإخلاء',
+                status: 'مطابق للكود المعماري وكود السلامة'
+            }, true);
 
             // =====================================================================
             // 5. Centering & Camera Framing Algorithm
@@ -1725,6 +2310,7 @@
                     wallGroup.visible = categoryState.walls && (selectedStorey !== 'lab_upper');
                     floorMesh.visible = categoryState.slabs && (selectedStorey !== 'lab_upper');
                     door.visible = categoryState.doors && (selectedStorey !== 'lab_upper');
+                    if (structureGroup) structureGroup.visible = categoryState.structure && (selectedStorey !== 'lab_upper');
                     
                     ceilingGroup.visible = categoryState.slabs && (selectedStorey !== 'lab_lower');
                     mainDuct.visible = categoryState.hvac && (selectedStorey !== 'lab_lower');
@@ -1732,16 +2318,19 @@
                     chwPipe.visible = categoryState.pipes && (selectedStorey !== 'lab_lower');
                     valve.visible = categoryState.pipes && (selectedStorey !== 'lab_lower');
                     sprPipe.visible = categoryState.pipes && (selectedStorey !== 'lab_lower');
+                    if (cableTray) cableTray.visible = categoryState.electrical && (selectedStorey !== 'lab_lower');
                     clashBeacon.visible = (categoryState.hvac && categoryState.pipes) && (selectedStorey !== 'lab_lower');
 
                     // Exploded View movement in WebXR Lab
                     ceilingGroup.position.y = 3.2 + explodeVal;
+                    if (structureGroup) structureGroup.position.y = explodeVal * 0.25;
                     mainDuct.position.y = 2.5 + explodeVal * 0.55;
                     oxygenPipe.position.y = 2.52 + explodeVal * 0.55;
                     clashBeacon.position.y = 2.52 + explodeVal * 0.55;
                     chwPipe.position.y = 2.7 + explodeVal * 0.65;
                     valve.position.y = 2.7 + explodeVal * 0.65;
                     sprPipe.position.y = 2.85 + explodeVal * 0.75;
+                    if (cableTray) cableTray.position.y = 2.75 + explodeVal * 0.70;
                 }
             }
 
@@ -1995,7 +2584,7 @@
                     var obj = intersects[i].object;
                     while (obj && obj !== scene) {
                         if (obj.userData && obj.userData.isBIM) {
-                            hitBIM = obj;
+                            hitBIM = obj.userData.parentBIM || obj;
                             break;
                         }
                         obj = obj.parent;
