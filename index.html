@@ -43,6 +43,141 @@
             border-radius: 12px;
             border: 1px solid rgba(56, 189, 248, 0.3);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        }
+        #header-bar.ui-hidden {
+            transform: translateY(-140%) !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        /* Sidebar Panels Visibility & Animation */
+        .sidebar-right-panel {
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        }
+        .sidebar-right-panel.ui-sidebar-hidden {
+            transform: translateX(130%) !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        .sidebar-left-panel {
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        }
+        .sidebar-left-panel.ui-sidebar-hidden {
+            transform: translateX(-130%) !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        /* Floating UI Dock for Restoring / Toggling Bars */
+        #floating-ui-dock {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%) translateY(0);
+            display: none;
+            align-items: center;
+            gap: 6px;
+            background: rgba(15, 23, 42, 0.94);
+            backdrop-filter: blur(16px);
+            border: 1.5px solid rgba(56, 189, 248, 0.5);
+            padding: 6px 14px;
+            border-radius: 24px;
+            z-index: 105;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            animation: fadeInDown 0.3s ease;
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        .dock-btn {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #e2e8f0;
+            padding: 5px 12px;
+            border-radius: 16px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+        }
+        .dock-btn:hover {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+        .dock-btn.active {
+            background: #0284c7;
+            color: #ffffff;
+            border-color: #38bdf8;
+        }
+
+        /* Floating Edge Toggle Tabs (Always accessible on the side edges) */
+        #floating-sidebar-toggle-right {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+            padding: 10px 6px;
+            color: #38bdf8;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 99;
+            box-shadow: -4px 0 15px rgba(0,0,0,0.5);
+            transition: all 0.2s ease;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            user-select: none;
+        }
+        #floating-sidebar-toggle-right:hover {
+            background: rgba(56, 189, 248, 0.25);
+            color: #ffffff;
+            padding-right: 9px;
+        }
+
+        #floating-sidebar-toggle-left {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            border-left: none;
+            border-radius: 0 10px 10px 0;
+            padding: 10px 6px;
+            color: #38bdf8;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 99;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.5);
+            transition: all 0.2s ease;
+            writing-mode: vertical-lr;
+            text-orientation: mixed;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            user-select: none;
+        }
+        #floating-sidebar-toggle-left:hover {
+            background: rgba(56, 189, 248, 0.25);
+            color: #ffffff;
+            padding-left: 9px;
         }
         .title-group h1 {
             font-size: 1.12rem;
@@ -532,7 +667,42 @@
             <button class="btn btn-outline" id="btn-export-bcf" title="تصدير تقرير التعارضات بتنسيق BCF المتوافق مع Revit و Navisworks">📋 تقرير BCF</button>
             <button class="btn btn-outline" id="btn-export-issues">تقرير (CSV)</button>
             <span class="status-pill" id="clash-counter">🔴 التعارضات المرصودة: 0</span>
+
+            <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 4px;"></div>
+
+            <!-- UI Visibility & Viewport Controls -->
+            <button class="btn btn-outline" id="btn-toggle-topbar" title="إخفاء الشريط العلوي لتوسيع المشهد الثلاثي الأبعاد (اختصار: T)" style="border-color: rgba(56, 189, 248, 0.5); color: #38bdf8;">🔼 إخفاء الشريط</button>
+            <button class="btn btn-outline" id="btn-toggle-sidebars" title="إخفاء أو إظهار كافة القوائم واللوحات الجانبية (اختصار: S)">📑 القوائم الجانبية</button>
+            <button class="btn btn-outline" id="btn-toggle-zen" title="وضع العرض الفراغي الكامل والتركيز (إخفاء كافة الشرائط) (اختصار: H أو Z)">🔲 عرض كامل</button>
         </div>
+    </div>
+
+    <!-- Floating UI Dock (Active when Header Bar is hidden or for quick toggles) -->
+    <div id="floating-ui-dock">
+        <button class="dock-btn" id="dock-btn-show-topbar" title="إظهار شريط الأدوات العلوي (اختصار: T)">
+            <span>🔽</span>
+            <span>إظهار الشريط العلوي</span>
+        </button>
+        <button class="dock-btn" id="dock-btn-toggle-sidebars" title="إظهار / إخفاء القوائم الجانبية (اختصار: S)">
+            <span>📑</span>
+            <span>القوائم الجانبية</span>
+        </button>
+        <button class="dock-btn" id="dock-btn-toggle-zen" title="الخروج من العرض الكامل (اختصار: H)">
+            <span>🔲</span>
+            <span>عرض عادي</span>
+        </button>
+    </div>
+
+    <!-- Floating Edge Toggle for Right Sidebars -->
+    <div id="floating-sidebar-toggle-right" title="إظهار / إخفاء اللوحات الجانبية اليمنى (الخصائص والتصفية) [S]">
+        <span id="label-right-toggle-arrow">◀</span>
+        <span>اللوحات الجانبية</span>
+    </div>
+
+    <!-- Floating Edge Toggle for Left Sidebars / Instructions -->
+    <div id="floating-sidebar-toggle-left" title="إظهار / إخفاء التعليمات واللوحات اليسرى">
+        <span id="label-left-toggle-arrow">▶</span>
+        <span>التعليمات</span>
     </div>
 
     <!-- 3D Measurement HUD Floating Bar -->
@@ -544,7 +714,7 @@
     </div>
 
     <!-- 3D Dynamic Sectioning Panel -->
-    <div id="section-panel">
+    <div id="section-panel" class="sidebar-left-panel">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 8px; margin-bottom: 12px;">
             <h3 style="color: #38bdf8; font-size: 0.95rem; font-weight: bold; margin: 0; display: flex; align-items: center; gap: 6px;">
                 <span>✂️ أداة القطاع الفراغي الديناميكي</span>
@@ -582,7 +752,7 @@
     </div>
 
     <!-- Scientific Research Telemetry Panel -->
-    <div id="telemetry-panel">
+    <div id="telemetry-panel" class="sidebar-left-panel">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 8px; margin-bottom: 10px;">
             <div style="display: flex; align-items: center; gap: 6px;">
                 <span style="font-size: 1.1rem;">📊</span>
@@ -700,7 +870,7 @@
     </div>
 
     <!-- Floating BIM Elements & Storeys Filter Panel -->
-    <div id="bim-filter-panel">
+    <div id="bim-filter-panel" class="sidebar-right-panel">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 8px; margin-bottom: 12px;">
             <h3 style="color: #38bdf8; font-size: 0.95rem; font-weight: bold; display: flex; align-items: center; gap: 6px;">
                 <span>🎛️ تصفية العناصر وإضاءة بيئة العمل</span>
@@ -812,7 +982,7 @@
     </div>
 
     <!-- 2D Element Inspection Panel -->
-    <div id="desktop-info-panel">
+    <div id="desktop-info-panel" class="sidebar-right-panel">
         <h3>
             <span id="panel-elem-name">بيانات العنصر المختار</span>
             <span style="display: flex; align-items: center; gap: 8px;">
@@ -859,8 +1029,13 @@
     </div>
 
     <!-- Guidance Note (Bottom Left) -->
-    <div id="instructions">
+    <div id="instructions" class="sidebar-left-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 4px;">
+            <span style="font-weight: bold; color: #38bdf8; font-size: 0.82rem;">📌 إرشادات الاستخدام والاختصارات:</span>
+            <button id="btn-close-instructions" title="إخفاء لوحة الإرشادات" style="background: transparent; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 0 4px; line-height: 1;">✕</button>
+        </div>
         🎨 <b>تمييز الألوان والإضاءة:</b> اضغط زر <b>"🎨 تمييز الألوان"</b> أو <b>"🎛️ تصفية العناصر والإضاءة"</b> لتلوين التخصصات وضبط شدة الإضاءة.<br>
+        ⌨️ <b>إظهار/إخفاء الواجهة:</b> [T] للشريط العلوي، [S] للقوائم الجانبية، [H] للعرض الكامل.<br>
         🔍 <b>فصل وعزل الطوابق:</b> عزل أي طابق أو تفكيك المبنى رأسياً (Exploded View) بسلاسة فائقة 60 FPS.<br>
         🖱️ <b>التحكم:</b> انقر على أي عنصر لمعاينة مواصفاته. اسحب للدوران وحرك العجلة للتقريب.<br>
         🎯 <b>التوسيط:</b> اضغط زر <b>"وضع المجسم في المنتصف"</b> لإعادة ضبط المشهد كاملاً.<br>
@@ -2959,7 +3134,7 @@
             });
 
             window.addEventListener('click', async function(e) {
-                if (e.target.closest('#header-bar') || e.target.closest('#desktop-info-panel') || e.target.closest('#bim-filter-panel') || e.target.closest('#loading-toast') || e.target.closest('#VRButton') || e.target.closest('#clash-review-modal') || e.target.closest('#measure-hud') || e.target.closest('#section-panel') || e.target.closest('#telemetry-panel') || e.target.closest('#vr-guide-modal')) {
+                if (e.target.closest('#header-bar') || e.target.closest('#desktop-info-panel') || e.target.closest('#bim-filter-panel') || e.target.closest('#loading-toast') || e.target.closest('#VRButton') || e.target.closest('#clash-review-modal') || e.target.closest('#measure-hud') || e.target.closest('#section-panel') || e.target.closest('#telemetry-panel') || e.target.closest('#vr-guide-modal') || e.target.closest('#floating-ui-dock') || e.target.closest('#floating-sidebar-toggle-right') || e.target.closest('#floating-sidebar-toggle-left')) {
                     return;
                 }
 
@@ -4007,6 +4182,193 @@
                         if (elWasm) {
                             elWasm.innerText = currentCustomModel ? 'OpenBIM WASM' : 'WebXR MEP';
                         }
+                    }
+                }
+            });
+
+            // =====================================================================
+            // 20. UI Taskbars Show / Hide System (الشريط العلوي والقوائم الجانبية)
+            // =====================================================================
+            var isTopBarVisible = true;
+            var areSidebarsVisible = true;
+
+            var headerBar = document.getElementById('header-bar');
+            var floatingUiDock = document.getElementById('floating-ui-dock');
+            var btnToggleTopbar = document.getElementById('btn-toggle-topbar');
+            var dockBtnShowTopbar = document.getElementById('dock-btn-show-topbar');
+
+            var btnToggleSidebars = document.getElementById('btn-toggle-sidebars');
+            var dockBtnToggleSidebars = document.getElementById('dock-btn-toggle-sidebars');
+            var floatingSidebarToggleRight = document.getElementById('floating-sidebar-toggle-right');
+            var floatingSidebarToggleLeft = document.getElementById('floating-sidebar-toggle-left');
+            var labelRightToggleArrow = document.getElementById('label-right-toggle-arrow');
+            var labelLeftToggleArrow = document.getElementById('label-left-toggle-arrow');
+
+            var btnToggleZen = document.getElementById('btn-toggle-zen');
+            var dockBtnToggleZen = document.getElementById('dock-btn-toggle-zen');
+
+            var btnCloseInstructions = document.getElementById('btn-close-instructions');
+            var instructionsEl = document.getElementById('instructions');
+
+            function updateTopbarState(visible, notify) {
+                isTopBarVisible = visible;
+                if (!visible) {
+                    if (headerBar) headerBar.classList.add('ui-hidden');
+                    if (floatingUiDock) floatingUiDock.style.display = 'flex';
+                    if (notify) showPlatformNotification('تم إخفاء الشريط العلوي. اضغط [T] أو الزر العائم بالأعلى للإظهار.');
+                } else {
+                    if (headerBar) headerBar.classList.remove('ui-hidden');
+                    if (floatingUiDock) floatingUiDock.style.display = 'none';
+                    if (notify) showPlatformNotification('تم إظهار الشريط العلوي.');
+                }
+            }
+
+            function updateSidebarsState(visible, notify) {
+                areSidebarsVisible = visible;
+                var rightPanels = document.querySelectorAll('.sidebar-right-panel');
+                var leftPanels = document.querySelectorAll('.sidebar-left-panel');
+
+                rightPanels.forEach(function(el) {
+                    if (!visible) el.classList.add('ui-sidebar-hidden');
+                    else el.classList.remove('ui-sidebar-hidden');
+                });
+
+                leftPanels.forEach(function(el) {
+                    if (!visible) el.classList.add('ui-sidebar-hidden');
+                    else el.classList.remove('ui-sidebar-hidden');
+                });
+
+                if (btnToggleSidebars) {
+                    btnToggleSidebars.innerText = visible ? '📑 إخفاء القوائم' : '📑 إظهار القوائم';
+                }
+                if (dockBtnToggleSidebars) {
+                    dockBtnToggleSidebars.innerHTML = visible ? '<span>📑</span><span>إخفاء القوائم</span>' : '<span>📑</span><span>إظهار القوائم</span>';
+                }
+                if (labelRightToggleArrow) {
+                    labelRightToggleArrow.innerText = visible ? '▶' : '◀';
+                }
+                if (labelLeftToggleArrow) {
+                    labelLeftToggleArrow.innerText = visible ? '◀' : '▶';
+                }
+
+                if (notify) {
+                    showPlatformNotification(visible ? 'تم إظهار القوائم الجانبية.' : 'تم إخفاء القوائم والشرائط الجانبية (S).');
+                }
+            }
+
+            function toggleZenMode() {
+                var isZenActive = (!isTopBarVisible && !areSidebarsVisible);
+                if (!isZenActive) {
+                    updateTopbarState(false, false);
+                    updateSidebarsState(false, false);
+                    if (dockBtnToggleZen) {
+                        dockBtnToggleZen.innerHTML = '<span>🔲</span><span>خروج من العرض الكامل</span>';
+                    }
+                    showPlatformNotification('🔲 تم تفعيل وضع العرض الكامل (Zen Mode). اضغط [H] أو [Esc] لاستعادة الواجهة.');
+                } else {
+                    updateTopbarState(true, false);
+                    updateSidebarsState(true, false);
+                    if (dockBtnToggleZen) {
+                        dockBtnToggleZen.innerHTML = '<span>🔲</span><span>عرض عادي</span>';
+                    }
+                    showPlatformNotification('تمت استعادة كافة شرائط وقوائم المنصة.');
+                }
+            }
+
+            // Topbar event listeners
+            if (btnToggleTopbar) {
+                btnToggleTopbar.addEventListener('click', function() { updateTopbarState(false, true); });
+            }
+            if (dockBtnShowTopbar) {
+                dockBtnShowTopbar.addEventListener('click', function() { updateTopbarState(true, true); });
+            }
+
+            // Sidebars event listeners
+            if (btnToggleSidebars) {
+                btnToggleSidebars.addEventListener('click', function() { updateSidebarsState(!areSidebarsVisible, true); });
+            }
+            if (dockBtnToggleSidebars) {
+                dockBtnToggleSidebars.addEventListener('click', function() { updateSidebarsState(!areSidebarsVisible, true); });
+            }
+
+            // Edge tabs
+            if (floatingSidebarToggleRight) {
+                floatingSidebarToggleRight.addEventListener('click', function() {
+                    var filterP = document.getElementById('bim-filter-panel');
+                    var infoP = document.getElementById('desktop-info-panel');
+                    var isAnyRightOpen = (filterP && filterP.style.display !== 'none' && !filterP.classList.contains('ui-sidebar-hidden')) ||
+                                         (infoP && infoP.style.display !== 'none' && !infoP.classList.contains('ui-sidebar-hidden'));
+
+                    if (isAnyRightOpen) {
+                        if (filterP) filterP.classList.add('ui-sidebar-hidden');
+                        if (infoP) infoP.classList.add('ui-sidebar-hidden');
+                        if (labelRightToggleArrow) labelRightToggleArrow.innerText = '◀';
+                        showPlatformNotification('تم إخفاء اللوحات الجانبية اليمنى.');
+                    } else {
+                        if (filterP) {
+                            filterP.classList.remove('ui-sidebar-hidden');
+                            filterP.style.display = 'block';
+                        }
+                        if (infoP) infoP.classList.remove('ui-sidebar-hidden');
+                        if (labelRightToggleArrow) labelRightToggleArrow.innerText = '▶';
+                        showPlatformNotification('تم إظهار لوحة التصفية والخصائص.');
+                    }
+                });
+            }
+
+            if (floatingSidebarToggleLeft) {
+                floatingSidebarToggleLeft.addEventListener('click', function() {
+                    if (instructionsEl) {
+                        var isInstHidden = instructionsEl.style.display === 'none' || instructionsEl.classList.contains('ui-sidebar-hidden');
+                        if (isInstHidden) {
+                            instructionsEl.style.display = 'block';
+                            instructionsEl.classList.remove('ui-sidebar-hidden');
+                            if (labelLeftToggleArrow) labelLeftToggleArrow.innerText = '◀';
+                            showPlatformNotification('تم إظهار لوحة التعليمات.');
+                        } else {
+                            instructionsEl.classList.add('ui-sidebar-hidden');
+                            if (labelLeftToggleArrow) labelLeftToggleArrow.innerText = '▶';
+                            showPlatformNotification('تم إخفاء لوحة التعليمات.');
+                        }
+                    }
+                });
+            }
+
+            if (btnCloseInstructions && instructionsEl) {
+                btnCloseInstructions.addEventListener('click', function() {
+                    instructionsEl.classList.add('ui-sidebar-hidden');
+                    if (labelLeftToggleArrow) labelLeftToggleArrow.innerText = '▶';
+                    showPlatformNotification('تم إخفاء لوحة التعليمات. يمكنك إظهارها من الشريط الجانبي الأيسر.');
+                });
+            }
+
+            // Zen mode listeners
+            if (btnToggleZen) {
+                btnToggleZen.addEventListener('click', toggleZenMode);
+            }
+            if (dockBtnToggleZen) {
+                dockBtnToggleZen.addEventListener('click', toggleZenMode);
+            }
+
+            // Keyboard Shortcuts
+            window.addEventListener('keydown', function(e) {
+                var tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+                if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+
+                var key = e.key ? e.key.toLowerCase() : '';
+                if (key === 't') {
+                    e.preventDefault();
+                    updateTopbarState(!isTopBarVisible, true);
+                } else if (key === 's') {
+                    e.preventDefault();
+                    updateSidebarsState(!areSidebarsVisible, true);
+                } else if (key === 'h' || key === 'z') {
+                    e.preventDefault();
+                    toggleZenMode();
+                } else if (key === 'escape') {
+                    if (!isTopBarVisible || !areSidebarsVisible) {
+                        updateTopbarState(true, false);
+                        updateSidebarsState(true, true);
                     }
                 }
             });
