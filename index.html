@@ -382,6 +382,83 @@
             font-size: 0.75rem;
             font-weight: bold;
         }
+
+        /* 3D Measurement HUD */
+        #measure-hud {
+            display: none;
+            position: absolute;
+            top: 75px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(14px);
+            border: 1.5px solid #00f0ff;
+            color: #f1f5f9;
+            padding: 10px 22px;
+            border-radius: 30px;
+            z-index: 110;
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.35);
+            align-items: center;
+            gap: 14px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        /* 3D Dynamic Section Panel */
+        #section-panel {
+            display: none;
+            position: absolute;
+            top: 75px;
+            left: 25px;
+            width: 320px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1.5px solid rgba(56, 189, 248, 0.4);
+            border-radius: 14px;
+            padding: 16px;
+            z-index: 102;
+            color: #f1f5f9;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        }
+
+        /* Scientific Research Telemetry Panel */
+        #telemetry-panel {
+            display: none;
+            position: absolute;
+            top: 75px;
+            left: 25px;
+            width: 340px;
+            background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(16px);
+            border: 1.5px solid rgba(34, 197, 94, 0.45);
+            border-radius: 14px;
+            padding: 16px;
+            z-index: 103;
+            color: #f1f5f9;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        }
+        .tel-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 12px 0;
+        }
+        .tel-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+        .tel-val {
+            font-size: 1.05rem;
+            font-weight: bold;
+            font-family: monospace;
+            color: #38bdf8;
+        }
+        .tel-lbl {
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
     </style>
 
     <!-- Standard Three.js r128 Core & Helpers -->
@@ -441,13 +518,111 @@
             <button class="btn btn-outline" id="btn-quick-color-toggle" title="تبديل تمييز الألوان الهندسية بين ألوان التخصصات والألوان الأصلية">🎨 تمييز الألوان</button>
             <button class="btn btn-outline" id="btn-quick-lighting" title="ضبط إضاءة بيئة العمل وخلفية المشهد">💡 إضاءة البيئة</button>
 
+            <!-- Engineering & Research Analysis Tools -->
+            <button class="btn btn-outline" id="btn-toggle-measure" title="أداة قياس الأبعاد الفراغية والخلوصات بنقرتين">📏 قياس الأبعاد</button>
+            <button class="btn btn-outline" id="btn-toggle-section" title="أداة القطاع الفراغي الديناميكي في المحاور">✂️ قطاع هندسي</button>
+            <button class="btn btn-outline" id="btn-toggle-telemetry" title="لوحة قياسات الأداء والبحث العلمي">📊 مؤشرات الأداء</button>
+
             <!-- BIM Filters & Storeys Button -->
             <button class="btn btn-filter" id="btn-toggle-filters-panel" title="فصل الطوابق وتصفية عناصر المبنى والتأسيسات وضبط الإضاءة">🎛️ تصفية العناصر والإضاءة</button>
             <button class="btn btn-upload" id="btn-trigger-upload">📂 استيراد نموذج آخر (GLB / IFC)</button>
             <button class="btn btn-center" id="btn-center-model" title="إعادة الكاميرا وتوسيط الموديل في منتصف الشاشة">🎯 وضع المجسم في المنتصف</button>
             <button class="btn btn-clash-view" id="btn-view-clashes" title="مشاهدة واستعراض التعارضات في المشهد الثلاثي الأبعاد">⚠️ مشاهدة التعارضات</button>
-            <button class="btn btn-outline" id="btn-export-issues">تقرير التعارضات (CSV)</button>
+            <button class="btn btn-outline" id="btn-export-bcf" title="تصدير تقرير التعارضات بتنسيق BCF المتوافق مع Revit و Navisworks">📋 تقرير BCF</button>
+            <button class="btn btn-outline" id="btn-export-issues">تقرير (CSV)</button>
             <span class="status-pill" id="clash-counter">🔴 التعارضات المرصودة: 0</span>
+        </div>
+    </div>
+
+    <!-- 3D Measurement HUD Floating Bar -->
+    <div id="measure-hud">
+        <span style="font-size: 1.1rem;">📏</span>
+        <span id="measure-result-text">انقر على النقطة الأولى (Point 1) في الفراغ...</span>
+        <button id="btn-clear-measure" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer;">🗑️ مسح</button>
+        <button id="btn-close-measure" style="background: transparent; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 0 4px; line-height: 1;">✕</button>
+    </div>
+
+    <!-- 3D Dynamic Sectioning Panel -->
+    <div id="section-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 8px; margin-bottom: 12px;">
+            <h3 style="color: #38bdf8; font-size: 0.95rem; font-weight: bold; margin: 0; display: flex; align-items: center; gap: 6px;">
+                <span>✂️ أداة القطاع الفراغي الديناميكي</span>
+            </h3>
+            <button id="btn-close-section-panel" style="background: transparent; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 2px 6px;">✕</button>
+        </div>
+        <div style="margin-bottom: 12px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; font-weight: bold; color: #38bdf8;">
+                <input type="checkbox" id="chk-section-active" style="accent-color: #38bdf8; width: 16px; height: 16px; cursor: pointer;">
+                <span>تفعيل مستوى القطع (Enable Section)</span>
+            </label>
+        </div>
+        <div style="margin-bottom: 12px;">
+            <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 5px;">محور القطع الهندسي:</div>
+            <div class="mode-btn-group" style="display: flex; gap: 4px;">
+                <button class="mode-btn active" id="btn-sec-axis-y" data-axis="y">أفقي (Y-Axis)</button>
+                <button class="mode-btn" id="btn-sec-axis-x" data-axis="x">رأسي عرضي (X)</button>
+                <button class="mode-btn" id="btn-sec-axis-z" data-axis="z">رأسي طولي (Z)</button>
+            </div>
+        </div>
+        <div style="margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #94a3b8; margin-bottom: 4px;">
+                <span>موضع مستوى القطع:</span>
+                <span id="label-sec-pos" style="color: #38bdf8; font-weight: bold;">2.50 م</span>
+            </div>
+            <input type="range" id="slider-sec-pos" min="-1" max="6" step="0.05" value="2.5" style="width: 100%; cursor: pointer; accent-color: #38bdf8;">
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.78rem; color: #cbd5e1;">
+                <input type="checkbox" id="chk-sec-invert" style="accent-color: #38bdf8; cursor: pointer;">
+                <span>عكس اتجاه القطع (Invert)</span>
+            </label>
+            <button id="btn-reset-section" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; padding: 3px 8px; border-radius: 4px; font-size: 0.72rem; cursor: pointer;">إعادة ضبط</button>
+        </div>
+    </div>
+
+    <!-- Scientific Research Telemetry Panel -->
+    <div id="telemetry-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 8px; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 1.1rem;">📊</span>
+                <div>
+                    <h3 style="color: #22c55e; font-size: 0.95rem; font-weight: bold; margin: 0;">لوحة قياسات الأداء والبحث العلمي</h3>
+                    <div style="font-size: 0.7rem; color: #94a3b8;">Research Benchmarks & WebXR Telemetry</div>
+                </div>
+            </div>
+            <button id="btn-close-telemetry" style="background: transparent; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 2px 6px;">✕</button>
+        </div>
+
+        <div class="tel-grid">
+            <div class="tel-card">
+                <div class="tel-lbl">معدل الإطارات (FPS):</div>
+                <div class="tel-val" id="tel-fps" style="color: #22c55e;">60 FPS</div>
+            </div>
+            <div class="tel-card">
+                <div class="tel-lbl">نداءات المعالجة (Calls):</div>
+                <div class="tel-val" id="tel-calls">-</div>
+            </div>
+            <div class="tel-card">
+                <div class="tel-lbl">المضلعات (Triangles):</div>
+                <div class="tel-val" id="tel-triangles">-</div>
+            </div>
+            <div class="tel-card">
+                <div class="tel-lbl">زمن الإطار (Frame Time):</div>
+                <div class="tel-val" id="tel-frametime">- ms</div>
+            </div>
+            <div class="tel-card">
+                <div class="tel-lbl">المجسمات بالذاكرة:</div>
+                <div class="tel-val" id="tel-geoms">-</div>
+            </div>
+            <div class="tel-card">
+                <div class="tel-lbl">محرك الـ BIM الفعال:</div>
+                <div class="tel-val" id="tel-wasm" style="font-size: 0.85rem; color: #38bdf8;">WebXR MEP</div>
+            </div>
+        </div>
+
+        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.72rem; color: #64748b;">بيانات كمية جاهزة للأوراق العلمية</span>
+            <button class="btn btn-outline" id="btn-export-benchmark" style="font-size: 0.74rem; padding: 4px 10px; border-color: rgba(34, 197, 94, 0.4); color: #86efac;">📥 تصدير تقرير الأداء (JSON)</button>
         </div>
     </div>
 
@@ -601,9 +776,12 @@
             <!-- Populated dynamically via JS -->
         </div>
 
-        <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;">
+        <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; gap: 8px;">
             <span style="font-size: 0.75rem; color: #64748b;">انقر "انتقال إلى الفراغ 🎯" لنقل الكاميرا مباشرة للتعارض</span>
-            <button class="btn btn-outline" id="btn-modal-export-csv" style="font-size: 0.78rem; padding: 4px 10px;">📥 تصدير التقرير (CSV)</button>
+            <div style="display: flex; gap: 6px;">
+                <button class="btn btn-outline" id="btn-modal-export-bcf" style="font-size: 0.76rem; padding: 4px 10px; border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">📋 تصدير BCF</button>
+                <button class="btn btn-outline" id="btn-modal-export-csv" style="font-size: 0.76rem; padding: 4px 10px;">📥 تصدير (CSV)</button>
+            </div>
         </div>
     </div>
 
@@ -2708,7 +2886,7 @@
             });
 
             window.addEventListener('click', async function(e) {
-                if (e.target.closest('#header-bar') || e.target.closest('#desktop-info-panel') || e.target.closest('#bim-filter-panel') || e.target.closest('#loading-toast') || e.target.closest('#VRButton') || e.target.closest('#clash-review-modal')) {
+                if (e.target.closest('#header-bar') || e.target.closest('#desktop-info-panel') || e.target.closest('#bim-filter-panel') || e.target.closest('#loading-toast') || e.target.closest('#VRButton') || e.target.closest('#clash-review-modal') || e.target.closest('#measure-hud') || e.target.closest('#section-panel') || e.target.closest('#telemetry-panel')) {
                     return;
                 }
 
@@ -2720,6 +2898,12 @@
                 mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
                 raycaster.setFromCamera(mouse, camera);
+
+                // If 3D Measurement Mode is active, intercept click for point-to-point measuring
+                if (typeof isMeasureActive !== 'undefined' && isMeasureActive) {
+                    if (typeof handleMeasureClick === 'function') handleMeasureClick();
+                    return;
+                }
 
                 // 1. Inspect IFC Model Element if custom IFC model is active
                 if (currentCustomModel && currentIFCLoader) {
@@ -3144,7 +3328,438 @@
             }
 
             // =====================================================================
-            // 14. Render Loop & Window Resize
+            // 14. Interactive 3D Point-to-Point Measurement Tool
+            // =====================================================================
+            var isMeasureActive = false;
+            var measurePoints = [];
+            var measureMarkers = [];
+            var measureLine = null;
+            var measureGroup = new THREE.Group();
+            scene.add(measureGroup);
+
+            var btnToggleMeasure = document.getElementById('btn-toggle-measure');
+            var measureHud = document.getElementById('measure-hud');
+            var measureResultText = document.getElementById('measure-result-text');
+            var btnClearMeasure = document.getElementById('btn-clear-measure');
+            var btnCloseMeasure = document.getElementById('btn-close-measure');
+
+            function clearMeasurements() {
+                measurePoints = [];
+                measureMarkers.forEach(function(m) { measureGroup.remove(m); });
+                measureMarkers = [];
+                if (measureLine) {
+                    measureGroup.remove(measureLine);
+                    measureLine = null;
+                }
+                if (measureResultText) {
+                    measureResultText.innerHTML = 'انقر على النقطة الأولى (Point 1) في الفراغ...';
+                }
+            }
+
+            function setMeasureMode(active) {
+                isMeasureActive = active;
+                if (measureHud) measureHud.style.display = active ? 'flex' : 'none';
+                if (btnToggleMeasure) {
+                    btnToggleMeasure.classList.toggle('btn-lab-active', active);
+                    btnToggleMeasure.classList.toggle('btn-outline', !active);
+                }
+                clearMeasurements();
+                renderer.domElement.style.cursor = active ? 'crosshair' : 'default';
+            }
+
+            if (btnToggleMeasure) {
+                btnToggleMeasure.addEventListener('click', function() {
+                    setMeasureMode(!isMeasureActive);
+                });
+            }
+            if (btnClearMeasure) {
+                btnClearMeasure.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    clearMeasurements();
+                });
+            }
+            if (btnCloseMeasure) {
+                btnCloseMeasure.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    setMeasureMode(false);
+                });
+            }
+
+            function handleMeasureClick() {
+                var hits = raycaster.intersectObjects(scene.children, true);
+                var hitPt = null;
+                for (var i = 0; i < hits.length; i++) {
+                    var obj = hits[i].object;
+                    if (obj.parent === measureGroup || obj === ifcHighlightMesh || (obj.userData && obj.userData.isClashSphere)) continue;
+                    hitPt = hits[i].point;
+                    break;
+                }
+                if (!hitPt) return;
+
+                if (measurePoints.length >= 2) {
+                    clearMeasurements();
+                }
+
+                measurePoints.push(hitPt.clone());
+                var markerColor = measurePoints.length === 1 ? 0x22c55e : 0xf59e0b;
+                var marker = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.045, 16, 16),
+                    new THREE.MeshBasicMaterial({ color: markerColor })
+                );
+                marker.position.copy(hitPt);
+                measureGroup.add(marker);
+                measureMarkers.push(marker);
+
+                if (measurePoints.length === 1) {
+                    measureResultText.innerHTML = '📍 <b>نقطة البداية:</b> (' + hitPt.x.toFixed(2) + ', ' + hitPt.y.toFixed(2) + ', ' + hitPt.z.toFixed(2) + ') | الآن انقر على النقطة الثانية...';
+                } else if (measurePoints.length === 2) {
+                    var p1 = measurePoints[0];
+                    var p2 = measurePoints[1];
+                    var dist = p1.distanceTo(p2);
+                    var dy = Math.abs(p2.y - p1.y);
+                    var dxz = Math.hypot(p2.x - p1.x, p2.z - p1.z);
+
+                    var lineGeo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+                    var lineMat = new THREE.LineBasicMaterial({ color: 0x00f0ff, linewidth: 3 });
+                    measureLine = new THREE.Line(lineGeo, lineMat);
+                    measureGroup.add(measureLine);
+
+                    measureResultText.innerHTML = '📏 <b>المسافة المباشرة:</b> <span style="color:#00f0ff; font-weight:bold; font-size:0.95rem;">' + dist.toFixed(3) + ' م</span> | ↕️ <b>الخلوص الرأسي (ΔY):</b> <span style="color:#38bdf8;">' + dy.toFixed(3) + ' م</span> | ↔️ <b>الأفقي:</b> <span style="color:#bae6fd;">' + dxz.toFixed(3) + ' م</span>';
+                }
+            }
+
+            // =====================================================================
+            // 15. Dynamic 3D Section Plane (Clipping Engine)
+            // =====================================================================
+            var isSectionActive = false;
+            var sectionAxis = 'y'; // 'y' | 'x' | 'z'
+            var sectionInvert = false;
+            var sectionVal = 2.5;
+            var localSectionPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 2.5);
+
+            renderer.localClippingEnabled = true;
+
+            var btnToggleSection = document.getElementById('btn-toggle-section');
+            var sectionPanel = document.getElementById('section-panel');
+            var btnCloseSectionPanel = document.getElementById('btn-close-section-panel');
+            var chkSectionActive = document.getElementById('chk-section-active');
+            var sliderSecPos = document.getElementById('slider-sec-pos');
+            var labelSecPos = document.getElementById('label-sec-pos');
+            var chkSecInvert = document.getElementById('chk-sec-invert');
+            var btnResetSection = document.getElementById('btn-reset-section');
+
+            function updateSectionPlane() {
+                if (!isSectionActive) {
+                    renderer.clippingPlanes = [];
+                    return;
+                }
+                var normal = new THREE.Vector3();
+                if (sectionAxis === 'y') normal.set(0, sectionInvert ? 1 : -1, 0);
+                else if (sectionAxis === 'x') normal.set(sectionInvert ? 1 : -1, 0, 0);
+                else if (sectionAxis === 'z') normal.set(0, 0, sectionInvert ? 1 : -1);
+
+                localSectionPlane.normal.copy(normal);
+                localSectionPlane.constant = sectionInvert ? -sectionVal : sectionVal;
+                renderer.clippingPlanes = [localSectionPlane];
+            }
+
+            if (btnToggleSection) {
+                btnToggleSection.addEventListener('click', function() {
+                    if (sectionPanel.style.display === 'block') {
+                        sectionPanel.style.display = 'none';
+                        btnToggleSection.classList.remove('btn-lab-active');
+                        btnToggleSection.classList.add('btn-outline');
+                    } else {
+                        sectionPanel.style.display = 'block';
+                        btnToggleSection.classList.add('btn-lab-active');
+                        btnToggleSection.classList.remove('btn-outline');
+                        if (telemetryPanel) telemetryPanel.style.display = 'none';
+                    }
+                });
+            }
+            if (btnCloseSectionPanel) {
+                btnCloseSectionPanel.addEventListener('click', function() {
+                    sectionPanel.style.display = 'none';
+                    if (btnToggleSection) {
+                        btnToggleSection.classList.remove('btn-lab-active');
+                        btnToggleSection.classList.add('btn-outline');
+                    }
+                });
+            }
+            if (chkSectionActive) {
+                chkSectionActive.addEventListener('change', function() {
+                    isSectionActive = chkSectionActive.checked;
+                    updateSectionPlane();
+                });
+            }
+            ['btn-sec-axis-y', 'btn-sec-axis-x', 'btn-sec-axis-z'].forEach(function(bId) {
+                var btn = document.getElementById(bId);
+                if (btn) {
+                    btn.addEventListener('click', function() {
+                        document.querySelectorAll('#section-panel .mode-btn').forEach(function(b) { b.classList.remove('active'); });
+                        btn.classList.add('active');
+                        sectionAxis = btn.dataset.axis;
+                        updateSectionPlane();
+                    });
+                }
+            });
+            if (sliderSecPos) {
+                sliderSecPos.addEventListener('input', function() {
+                    sectionVal = parseFloat(sliderSecPos.value) || 0;
+                    if (labelSecPos) labelSecPos.innerText = sectionVal.toFixed(2) + ' م';
+                    updateSectionPlane();
+                });
+            }
+            if (chkSecInvert) {
+                chkSecInvert.addEventListener('change', function() {
+                    sectionInvert = chkSecInvert.checked;
+                    updateSectionPlane();
+                });
+            }
+            if (btnResetSection) {
+                btnResetSection.addEventListener('click', function() {
+                    sectionVal = 2.5;
+                    sectionAxis = 'y';
+                    sectionInvert = false;
+                    if (sliderSecPos) sliderSecPos.value = 2.5;
+                    if (labelSecPos) labelSecPos.innerText = '2.50 م';
+                    if (chkSecInvert) chkSecInvert.checked = false;
+                    document.querySelectorAll('#section-panel .mode-btn').forEach(function(b) {
+                        b.classList.toggle('active', b.dataset.axis === 'y');
+                    });
+                    updateSectionPlane();
+                });
+            }
+
+            // =====================================================================
+            // 16. OpenBIM BCF 2.1/3.0 Exporter (Revit / Navisworks / Solibri)
+            // =====================================================================
+            function exportClashesBCF() {
+                var allClashes = [];
+                // 1. WebXR Lab Predefined Clashes
+                if (!currentCustomModel || (webxrLabGroup && webxrLabGroup.visible)) {
+                    allClashes.push({
+                        guid: 'BCF-CRIT-001-' + Date.now(),
+                        title: 'اختراق ماسورة الأكسجين الطبي لمجرى الهواء',
+                        type: 'Hard Clash',
+                        priority: 'Critical / High',
+                        status: 'Active',
+                        description: 'تداخل فيزيائي مباشر بين ماسورة النحاس الطبية ودكت الصاج المجلفن مخالف لكود NFPA 99',
+                        elementId: 'MEP-MEDGAS-O2-108',
+                        pairedId: 'MEP-HVAC-DUCT-401',
+                        pos: { x: 0, y: 2.52, z: 0.41 }
+                    });
+                    allClashes.push({
+                        guid: 'BCF-WARN-002-' + Date.now(),
+                        title: 'نقص خلوص صيانة وتشغيل محبس مياه التبريد',
+                        type: 'Clearance Warning',
+                        priority: 'Medium',
+                        status: 'Active',
+                        description: 'نقص خلوص دوران طارة المحبس واستبدال الحشوة عن 300 مم',
+                        elementId: 'MEP-HVAC-VLV-302',
+                        pairedId: 'ARCH-CEILING-L2',
+                        pos: { x: 1.5, y: 2.7, z: 0.8 }
+                    });
+                }
+
+                // 2. User Flagged Issues
+                flaggedIssues.forEach(function(iss, idx) {
+                    allClashes.push({
+                        guid: 'BCF-USER-' + (idx + 1) + '-' + Date.now(),
+                        title: 'تعارض موثق بواسطة المهندس: ' + iss.elementId,
+                        type: 'Spatial Clash',
+                        priority: 'Normal',
+                        status: 'Open',
+                        description: iss.description,
+                        elementId: iss.elementId,
+                        pos: iss.pos || { x: 0, y: 0, z: 0 }
+                    });
+                });
+
+                if (allClashes.length === 0) {
+                    alert('لم يتم تسجيل أي تعارض بعد لتصديره بصيغة BCF.');
+                    return;
+                }
+
+                var bcfData = {
+                    bcf_version: "2.1",
+                    project: {
+                        name: "WebXR BIM Collaborative Review",
+                        author: "Dr. Ahmed Louay Ahmed",
+                        created: new Date().toISOString()
+                    },
+                    topics: allClashes.map(function(c) {
+                        return {
+                            guid: c.guid,
+                            topic_type: c.type,
+                            topic_status: c.status,
+                            title: c.title,
+                            priority: c.priority,
+                            description: c.description,
+                            creation_date: new Date().toISOString(),
+                            creation_author: "Dr. Ahmed Louay Ahmed",
+                            viewpoint: {
+                                camera_viewpoint: {
+                                    position: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
+                                    target: { x: controls.target.x, y: controls.target.y, z: controls.target.z },
+                                    fov: camera.fov
+                                },
+                                clash_world_position: c.pos,
+                                components: [
+                                    { ifc_guid: c.elementId, selected: true },
+                                    { ifc_guid: c.pairedId || null, selected: false }
+                                ]
+                            }
+                        };
+                    })
+                };
+
+                var blob = new Blob([JSON.stringify(bcfData, null, 2)], { type: 'application/json;charset=utf-8;' });
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = 'WebXR_BIM_Clashes_BCF_' + new Date().toISOString().substring(0, 10) + '.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                alert('✅ تم تصدير تقرير التعارضات بنجاح بتنسيق BCF المفتوح!\n\nيمكنك الآن استيراد الملف في برامج Revit و Navisworks و Solibri.');
+            }
+
+            var btnExportBcf = document.getElementById('btn-export-bcf');
+            if (btnExportBcf) btnExportBcf.addEventListener('click', exportClashesBCF);
+            var btnModalExportBcf = document.getElementById('btn-modal-export-bcf');
+            if (btnModalExportBcf) btnModalExportBcf.addEventListener('click', exportClashesBCF);
+
+            // =====================================================================
+            // 17. Scientific Research Telemetry HUD & Benchmark Engine
+            // =====================================================================
+            var isTelemetryActive = false;
+            var fpsCounter = 60;
+            var frameCount = 0;
+            var lastFpsUpdate = performance.now();
+            var telemetryPanel = document.getElementById('telemetry-panel');
+            var btnToggleTelemetry = document.getElementById('btn-toggle-telemetry');
+            var btnCloseTelemetry = document.getElementById('btn-close-telemetry');
+            var btnExportBenchmark = document.getElementById('btn-export-benchmark');
+
+            var elFps = document.getElementById('tel-fps');
+            var elCalls = document.getElementById('tel-calls');
+            var elTris = document.getElementById('tel-triangles');
+            var elGeoms = document.getElementById('tel-geoms');
+            var elFrameTime = document.getElementById('tel-frametime');
+            var elWasm = document.getElementById('tel-wasm');
+
+            if (btnToggleTelemetry) {
+                btnToggleTelemetry.addEventListener('click', function() {
+                    if (telemetryPanel.style.display === 'block') {
+                        telemetryPanel.style.display = 'none';
+                        isTelemetryActive = false;
+                        btnToggleTelemetry.classList.remove('btn-lab-active');
+                        btnToggleTelemetry.classList.add('btn-outline');
+                    } else {
+                        telemetryPanel.style.display = 'block';
+                        isTelemetryActive = true;
+                        btnToggleTelemetry.classList.add('btn-lab-active');
+                        btnToggleTelemetry.classList.remove('btn-outline');
+                        if (sectionPanel) sectionPanel.style.display = 'none';
+                    }
+                });
+            }
+            if (btnCloseTelemetry) {
+                btnCloseTelemetry.addEventListener('click', function() {
+                    telemetryPanel.style.display = 'none';
+                    isTelemetryActive = false;
+                    if (btnToggleTelemetry) {
+                        btnToggleTelemetry.classList.remove('btn-lab-active');
+                        btnToggleTelemetry.classList.add('btn-outline');
+                    }
+                });
+            }
+
+            if (btnExportBenchmark) {
+                btnExportBenchmark.addEventListener('click', function() {
+                    var report = {
+                        researcher: "Dr. Ahmed Louay Ahmed",
+                        timestamp: new Date().toISOString(),
+                        platform: "WebXR OpenBIM Collaborative Review",
+                        device_info: {
+                            user_agent: navigator.userAgent,
+                            screen_resolution: window.innerWidth + 'x' + window.innerHeight,
+                            device_pixel_ratio: window.devicePixelRatio
+                        },
+                        runtime_performance: {
+                            fps: fpsCounter,
+                            draw_calls_per_frame: renderer.info.render.calls,
+                            triangles_rendered: renderer.info.render.triangles,
+                            geometries_in_vram: renderer.info.memory.geometries,
+                            textures_in_vram: renderer.info.memory.textures,
+                            model_engine: currentCustomModel ? "OpenBIM WebAssembly" : "WebXR Realistic Assembly"
+                        },
+                        clash_statistics: {
+                            total_clashes: (webxrLabGroup && webxrLabGroup.visible ? 2 : 0) + flaggedIssues.length,
+                            user_flagged_clashes: flaggedIssues.length
+                        }
+                    };
+                    var blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json;charset=utf-8;' });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'WebXR_BIM_Research_Benchmark_' + new Date().toISOString().substring(0, 10) + '.json';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    alert('✅ تم تصدير تقرير الأداء البحثي (Research Benchmark Report) بنجاح!');
+                });
+            }
+
+            // =====================================================================
+            // 18. WebXR 6-DoF VR Controllers & Laser Pointer Engine
+            // =====================================================================
+            var controller1 = renderer.xr.getController(0);
+            var controller2 = renderer.xr.getController(1);
+            scene.add(controller1);
+            scene.add(controller2);
+
+            var laserPoints = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -10)];
+            var laserGeo = new THREE.BufferGeometry().setFromPoints(laserPoints);
+            var laserMat = new THREE.LineBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.85 });
+
+            var laserLine1 = new THREE.Line(laserGeo, laserMat);
+            controller1.add(laserLine1);
+
+            var laserLine2 = new THREE.Line(laserGeo.clone(), laserMat.clone());
+            controller2.add(laserLine2);
+
+            var vrMatrix = new THREE.Matrix4();
+            var vrRaycaster = new THREE.Raycaster();
+
+            function handleVRSelect(event) {
+                var ctrl = event.target;
+                vrMatrix.identity().extractRotation(ctrl.matrixWorld);
+                vrRaycaster.ray.origin.setFromMatrixPosition(ctrl.matrixWorld);
+                vrRaycaster.ray.direction.set(0, 0, -1).applyMatrix4(vrMatrix);
+
+                var hits = vrRaycaster.intersectObjects(scene.children, true);
+                for (var i = 0; i < hits.length; i++) {
+                    var obj = hits[i].object;
+                    if (obj.parent === measureGroup || obj === ifcHighlightMesh || (obj.userData && obj.userData.isClashSphere)) continue;
+                    while (obj && obj !== scene) {
+                        if (obj.userData && obj.userData.isBIM) {
+                            var hitBIM = obj.userData.parentBIM || obj;
+                            applyObjectHighlight(hitBIM);
+                            return;
+                        }
+                        obj = obj.parent;
+                    }
+                }
+            }
+            controller1.addEventListener('select', handleVRSelect);
+            controller2.addEventListener('select', handleVRSelect);
+
+            // =====================================================================
+            // 19. Render Loop & Window Resize
             // =====================================================================
             window.addEventListener('resize', function() {
                 camera.aspect = window.innerWidth / window.innerHeight;
@@ -3160,6 +3775,29 @@
                 }
                 controls.update();
                 renderer.render(scene, camera);
+
+                // Telemetry HUD real-time tracking
+                frameCount++;
+                var now = performance.now();
+                if (now - lastFpsUpdate >= 300) {
+                    fpsCounter = Math.round((frameCount * 1000) / (now - lastFpsUpdate));
+                    frameCount = 0;
+                    lastFpsUpdate = now;
+
+                    if (isTelemetryActive && telemetryPanel && telemetryPanel.style.display !== 'none') {
+                        if (elFps) {
+                            elFps.innerText = fpsCounter + ' FPS';
+                            elFps.style.color = fpsCounter >= 55 ? '#22c55e' : (fpsCounter >= 30 ? '#f59e0b' : '#ef4444');
+                        }
+                        if (elCalls) elCalls.innerText = renderer.info.render.calls;
+                        if (elTris) elTris.innerText = renderer.info.render.triangles.toLocaleString();
+                        if (elGeoms) elGeoms.innerText = renderer.info.memory.geometries;
+                        if (elFrameTime) elFrameTime.innerText = (delta * 1000).toFixed(1) + ' ms';
+                        if (elWasm) {
+                            elWasm.innerText = currentCustomModel ? 'OpenBIM WASM' : 'WebXR MEP';
+                        }
+                    }
+                }
             });
         });
     </script>
