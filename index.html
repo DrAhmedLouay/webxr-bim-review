@@ -511,6 +511,7 @@
         <div class="actions-group">
             <button class="btn btn-lab-active" id="tab-lab-view">🥽 غرفة التعارضات (WebXR Lab)</button>
             <button class="btn btn-outline" id="tab-speckle-view">🏢 نموذج Speckle السحابي</button>
+            <button class="btn btn-outline" id="btn-vr-guide" style="border-color: rgba(56, 189, 248, 0.6); color: #38bdf8; background: rgba(56, 189, 248, 0.1);" title="دليل تشغيل الواقع الافتراضي بنظارة Meta Quest ومحاكاة أشعة الليزر">🥽 دليل الواقع الافتراضي (VR)</button>
             
             <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 4px;"></div>
             
@@ -623,6 +624,78 @@
         <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 0.72rem; color: #64748b;">بيانات كمية جاهزة للأوراق العلمية</span>
             <button class="btn btn-outline" id="btn-export-benchmark" style="font-size: 0.74rem; padding: 4px 10px; border-color: rgba(34, 197, 94, 0.4); color: #86efac;">📥 تصدير تقرير الأداء (JSON)</button>
+        </div>
+    </div>
+
+    <!-- VR & Meta Quest Guide Modal (المحور الثالث) -->
+    <div id="vr-guide-modal" style="display: none; position: absolute; top: 75px; left: 50%; transform: translateX(-50%); width: 640px; max-width: 92vw; max-height: calc(100vh - 100px); background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(20px); padding: 22px 24px; border-radius: 16px; border: 1.5px solid rgba(56, 189, 248, 0.5); z-index: 120; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85); overflow-y: auto; color: #f8fafc;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 12px; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.5rem;">🥽</span>
+                <div>
+                    <h3 style="color: #38bdf8; font-size: 1.1rem; font-weight: bold; margin: 0;">دليل تشغيل الواقع الافتراضي الغامر (WebXR & Meta Quest)</h3>
+                    <div style="font-size: 0.75rem; color: #94a3b8;">المحور الثالث: تجربة الفحص الفراغي بمقياس 1:1 والتحكم بأشعة الليزر</div>
+                </div>
+            </div>
+            <button id="btn-close-vr-guide" style="background: transparent; border: none; color: #94a3b8; font-size: 1.4rem; cursor: pointer; padding: 2px 8px;">✕</button>
+        </div>
+
+        <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; line-height: 1.5;">
+            <div style="font-weight: bold; color: #38bdf8; font-size: 0.88rem; margin-bottom: 4px;">📌 أين تجد هذا التحديث وكيف يعمل؟</div>
+            <div style="font-size: 0.82rem; color: #cbd5e1;">
+                تقنية <b>WebXR</b> هي معيار الويب الموجه لأجهزة الواقع الافتراضي. التحديث مبرمج ونشط بالكامل داخل المنصة؛ ولكن عند فتح الموقع من كمبيوتر عادي (Mac / Windows)، يظهر الزر بالأسفل بحالة <code>VR NOT SUPPORTED</code> لأن المتصفح يكتشف عدم وجود نظارة موصولة بالكمبيوتر. لتشغيل التجربة الكاملة:
+            </div>
+        </div>
+
+        <!-- Steps to Access on Meta Quest -->
+        <div style="margin-bottom: 16px;">
+            <div style="font-weight: bold; color: #e2e8f0; font-size: 0.9rem; margin-bottom: 10px;">🚀 خطوات التشغيل بنظارة Meta Quest (2 / 3 / Pro):</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px 12px; display: flex; gap: 10px; align-items: flex-start;">
+                    <span style="background: #0284c7; color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; flex-shrink: 0;">1</span>
+                    <div style="font-size: 0.82rem; color: #e2e8f0;">ارتدِ النظارة وافتح متصفح <b>Meta Quest Browser</b> الرسمي.</div>
+                </div>
+                <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px 12px; display: flex; gap: 10px; align-items: flex-start;">
+                    <span style="background: #0284c7; color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; flex-shrink: 0;">2</span>
+                    <div style="font-size: 0.82rem; color: #e2e8f0;">افتح رابط المنصة المباشر: <code style="color: #38bdf8; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;">https://drahmedlouay.github.io/webxr-bim-review/</code></div>
+                </div>
+                <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px 12px; display: flex; gap: 10px; align-items: flex-start;">
+                    <span style="background: #0284c7; color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; flex-shrink: 0;">3</span>
+                    <div style="font-size: 0.82rem; color: #e2e8f0;">اضغط زر <b style="color: #38bdf8;">ENTER VR</b> الأزرق في أسفل الشاشة للدخول للمجسم بمقياس إنساني حقيقي 1:1.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controller Features Inside VR -->
+        <div style="margin-bottom: 16px;">
+            <div style="font-weight: bold; color: #e2e8f0; font-size: 0.9rem; margin-bottom: 8px;">🎮 ميزات وأزرار التحكم باليد داخل النظارة (المحور 3):</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px;">
+                    <div style="color: #00f0ff; font-weight: bold; font-size: 0.82rem; margin-bottom: 3px;">✨ شعاع الليزر المزدوج (Dual Laser)</div>
+                    <div style="font-size: 0.75rem; color: #94a3b8; line-height: 1.4;">ينطلق من كل يد شعاع ليزري مشع لتوجيه واستهداف كتل الـ BIM بدقة.</div>
+                </div>
+                <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px;">
+                    <div style="color: #38bdf8; font-weight: bold; font-size: 0.82rem; margin-bottom: 3px;">🎯 زناد التحديد (Index Trigger)</div>
+                    <div style="font-size: 0.75rem; color: #94a3b8; line-height: 1.4;">اضغط الزناد لاختيار أي دكت أو صمام ليضيء فوراً باللون السماوي المشع.</div>
+                </div>
+                <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px;">
+                    <div style="color: #22c55e; font-weight: bold; font-size: 0.82rem; margin-bottom: 3px;">🕹️ عصا التحرك (Thumbstick)</div>
+                    <div style="font-size: 0.75rem; color: #94a3b8; line-height: 1.4;">للانتقال والتجول الفراغي بسلاسة في أرجاء المبنى.</div>
+                </div>
+                <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px;">
+                    <div style="color: #f59e0b; font-weight: bold; font-size: 0.82rem; margin-bottom: 3px;">🔴 فحص التعارضات 1:1</div>
+                    <div style="font-size: 0.75rem; color: #94a3b8; line-height: 1.4;">معاينة تداخل ماسورة الأكسجين مع الدكت وخلوص المحبس بحجمها الطبيعي.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulation mode on desktop -->
+        <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.35); border-radius: 10px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+            <div>
+                <div style="font-weight: bold; color: #86efac; font-size: 0.85rem;">💻 تجربة محاكي مؤشر الليزر على سطح المكتب:</div>
+                <div style="font-size: 0.75rem; color: #cbd5e1;">لتجربة أسلوب توجيه الليزر والتقاط العناصر دون الحاجة لارتداء النظارة حالياً.</div>
+            </div>
+            <button id="btn-toggle-laser-sim" class="btn btn-outline" style="border-color: #22c55e; color: #86efac; font-size: 0.78rem; padding: 6px 12px; white-space: nowrap;">⚡ تشغيل محاكي الليزر</button>
         </div>
     </div>
 
@@ -2886,7 +2959,7 @@
             });
 
             window.addEventListener('click', async function(e) {
-                if (e.target.closest('#header-bar') || e.target.closest('#desktop-info-panel') || e.target.closest('#bim-filter-panel') || e.target.closest('#loading-toast') || e.target.closest('#VRButton') || e.target.closest('#clash-review-modal') || e.target.closest('#measure-hud') || e.target.closest('#section-panel') || e.target.closest('#telemetry-panel')) {
+                if (e.target.closest('#header-bar') || e.target.closest('#desktop-info-panel') || e.target.closest('#bim-filter-panel') || e.target.closest('#loading-toast') || e.target.closest('#VRButton') || e.target.closest('#clash-review-modal') || e.target.closest('#measure-hud') || e.target.closest('#section-panel') || e.target.closest('#telemetry-panel') || e.target.closest('#vr-guide-modal')) {
                     return;
                 }
 
@@ -3757,6 +3830,144 @@
             }
             controller1.addEventListener('select', handleVRSelect);
             controller2.addEventListener('select', handleVRSelect);
+
+            // =====================================================================
+            // 18.1 VR Guide Modal & Meta Quest Guidance
+            // =====================================================================
+            var btnVrGuide = document.getElementById('btn-vr-guide');
+            var vrGuideModal = document.getElementById('vr-guide-modal');
+            var btnCloseVrGuide = document.getElementById('btn-close-vr-guide');
+
+            if (btnVrGuide && vrGuideModal) {
+                btnVrGuide.addEventListener('click', function() {
+                    vrGuideModal.style.display = (vrGuideModal.style.display === 'none' || !vrGuideModal.style.display) ? 'block' : 'none';
+                });
+            }
+            if (btnCloseVrGuide && vrGuideModal) {
+                btnCloseVrGuide.addEventListener('click', function() {
+                    vrGuideModal.style.display = 'none';
+                });
+            }
+
+            // Hook into VRButton on desktop to open the VR guide if clicked when unsupported
+            setTimeout(function() {
+                var vrButtonEl = document.getElementById('VRButton');
+                if (vrButtonEl) {
+                    vrButtonEl.style.pointerEvents = 'auto';
+                    vrButtonEl.addEventListener('click', function(e) {
+                        if (vrButtonEl.textContent.indexOf('NOT SUPPORTED') !== -1 || !navigator.xr) {
+                            if (vrGuideModal) vrGuideModal.style.display = 'block';
+                        }
+                    }, true);
+                }
+            }, 1200);
+
+            // =====================================================================
+            // 18.2 Desktop 6-DoF Laser Pointer Simulator (محاكي شعاع الليزر المكتبي)
+            // =====================================================================
+            var isLaserSimActive = false;
+            var btnToggleLaserSim = document.getElementById('btn-toggle-laser-sim');
+            var simLaserGroup = new THREE.Group();
+            scene.add(simLaserGroup);
+
+            var simLaserPoints = [new THREE.Vector3(), new THREE.Vector3()];
+            var simLaserGeo = new THREE.BufferGeometry().setFromPoints(simLaserPoints);
+            var simLaserMat = new THREE.LineBasicMaterial({ color: 0x00f0ff, linewidth: 2, transparent: true, opacity: 0.9 });
+            var simLaserLine = new THREE.Line(simLaserGeo, simLaserMat);
+            simLaserLine.frustumCulled = false;
+            simLaserGroup.add(simLaserLine);
+
+            var simReticleGeo = new THREE.RingGeometry(0.04, 0.09, 32);
+            var simReticleMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, side: THREE.DoubleSide, transparent: true, opacity: 0.95 });
+            var simReticleMesh = new THREE.Mesh(simReticleGeo, simReticleMat);
+            simReticleMesh.visible = false;
+            simLaserGroup.add(simReticleMesh);
+
+            simLaserGroup.visible = false;
+
+            function showPlatformNotification(msg) {
+                var el = document.getElementById('platform-floating-toast');
+                if (!el) {
+                    el = document.createElement('div');
+                    el.id = 'platform-floating-toast';
+                    el.style.cssText = 'position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.95); border: 1px solid #38bdf8; color: #f8fafc; padding: 10px 22px; border-radius: 12px; font-size: 0.84rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.7); z-index: 1000; pointer-events: none; transition: opacity 0.3s ease; text-align: center; max-width: 90vw; direction: rtl;';
+                    document.body.appendChild(el);
+                }
+                el.innerText = msg;
+                el.style.display = 'block';
+                el.style.opacity = '1';
+                clearTimeout(el._hideTimer);
+                el._hideTimer = setTimeout(function() {
+                    el.style.opacity = '0';
+                    setTimeout(function() { el.style.display = 'none'; }, 300);
+                }, 3500);
+            }
+
+            if (btnToggleLaserSim) {
+                btnToggleLaserSim.addEventListener('click', function() {
+                    isLaserSimActive = !isLaserSimActive;
+                    if (isLaserSimActive) {
+                        simLaserGroup.visible = true;
+                        btnToggleLaserSim.innerText = '🛑 إيقاف محاكي الليزر';
+                        btnToggleLaserSim.style.borderColor = '#ef4444';
+                        btnToggleLaserSim.style.color = '#fca5a5';
+                        if (vrGuideModal) vrGuideModal.style.display = 'none';
+                        showPlatformNotification('⚡ تم تفعيل محاكي مؤشر الليزر (WebXR Laser Sim)! حرّك الماوس للتصويب كأنك تحمل وحدة تحكم النظارة.');
+                    } else {
+                        simLaserGroup.visible = false;
+                        simReticleMesh.visible = false;
+                        btnToggleLaserSim.innerText = '⚡ تشغيل محاكي الليزر';
+                        btnToggleLaserSim.style.borderColor = '#22c55e';
+                        btnToggleLaserSim.style.color = '#86efac';
+                        showPlatformNotification('تم إيقاف محاكي مؤشر الليزر.');
+                    }
+                });
+            }
+
+            var simMouseRaycaster = new THREE.Raycaster();
+            var simPointer = new THREE.Vector2();
+
+            window.addEventListener('pointermove', function(e) {
+                if (!isLaserSimActive) return;
+
+                simPointer.x = (e.clientX / window.innerWidth) * 2 - 1;
+                simPointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+                simMouseRaycaster.setFromCamera(simPointer, camera);
+
+                // Origin near bottom-right of camera view (simulating holding a VR controller in right hand)
+                var handOrigin = new THREE.Vector3(0.25, -0.22, -0.5);
+                handOrigin.applyMatrix4(camera.matrixWorld);
+
+                var hits = simMouseRaycaster.intersectObjects(scene.children, true);
+                var validHit = null;
+                for (var i = 0; i < hits.length; i++) {
+                    var obj = hits[i].object;
+                    if (obj.parent === simLaserGroup || obj.parent === measureGroup || obj === ifcHighlightMesh || (obj.userData && obj.userData.isClashSphere)) continue;
+                    validHit = hits[i];
+                    break;
+                }
+
+                var targetPos = new THREE.Vector3();
+                if (validHit) {
+                    targetPos.copy(validHit.point);
+                    simReticleMesh.position.copy(targetPos);
+                    if (validHit.face) {
+                        simReticleMesh.lookAt(targetPos.clone().add(validHit.face.normal));
+                    } else {
+                        simReticleMesh.lookAt(camera.position);
+                    }
+                    simReticleMesh.visible = true;
+                } else {
+                    targetPos.copy(simMouseRaycaster.ray.origin).add(simMouseRaycaster.ray.direction.clone().multiplyScalar(15));
+                    simReticleMesh.visible = false;
+                }
+
+                var posAttr = simLaserLine.geometry.attributes.position;
+                posAttr.setXYZ(0, handOrigin.x, handOrigin.y, handOrigin.z);
+                posAttr.setXYZ(1, targetPos.x, targetPos.y, targetPos.z);
+                posAttr.needsUpdate = true;
+            });
 
             // =====================================================================
             // 19. Render Loop & Window Resize
