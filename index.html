@@ -613,13 +613,13 @@
         }
 
         .login-card {
-            background: rgba(15, 23, 42, 0.92);
+            background: rgba(15, 23, 42, 0.94);
             border: 1px solid rgba(56, 189, 248, 0.35);
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(56, 189, 248, 0.15);
             border-radius: 18px;
             width: 100%;
-            max-width: 520px;
-            padding: 32px 28px;
+            max-width: 440px;
+            padding: 34px 28px;
             color: #f8fafc;
             direction: rtl;
             text-align: right;
@@ -664,85 +664,6 @@
             font-size: 0.78rem;
             color: #38bdf8;
             font-weight: 600;
-        }
-
-        .login-profiles-title {
-            font-size: 0.82rem;
-            color: #cbd5e1;
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .quick-profiles-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .profile-card {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-
-        .profile-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        .profile-admin {
-            border-color: rgba(56, 189, 248, 0.35);
-        }
-
-        .profile-admin:hover, .profile-admin.selected {
-            background: rgba(14, 165, 233, 0.18);
-            border-color: #38bdf8;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
-        }
-
-        .profile-student {
-            border-color: rgba(168, 85, 247, 0.35);
-        }
-
-        .profile-student:hover, .profile-student.selected {
-            background: rgba(168, 85, 247, 0.18);
-            border-color: #a855f7;
-            box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
-        }
-
-        .profile-avatar {
-            font-size: 1.8rem;
-            margin-bottom: 4px;
-        }
-
-        .profile-name {
-            font-size: 0.88rem;
-            font-weight: 800;
-            color: #ffffff;
-        }
-
-        .profile-role {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #38bdf8;
-            margin: 2px 0;
-        }
-
-        .profile-student .profile-role {
-            color: #c084fc;
-        }
-
-        .profile-perm {
-            font-size: 0.68rem;
-            color: #94a3b8;
-            margin-top: 4px;
-            line-height: 1.3;
         }
 
         .form-group {
@@ -900,37 +821,15 @@
                 </div>
             </div>
 
-            <!-- Quick Access Profile Selectors -->
-            <div class="login-profiles-title">اختر حساب الدخول السريع أو أدخل البيانات:</div>
-            <div class="quick-profiles-grid">
-                <div class="profile-card profile-admin" onclick="selectQuickProfile('ahmed', '123456')">
-                    <div class="profile-avatar">👨‍🏫</div>
-                    <div class="profile-info">
-                        <div class="profile-name">د. أحمد لؤي أحمد</div>
-                        <div class="profile-role">الدكتور المشرف (Admin)</div>
-                        <div class="profile-perm">🔓 صلاحيات كاملة + سجل المحادثات</div>
-                    </div>
-                </div>
-
-                <div class="profile-card profile-student" onclick="selectQuickProfile('dhurra', '123456')">
-                    <div class="profile-avatar">👩‍🎓</div>
-                    <div class="profile-info">
-                        <div class="profile-name">ذرى مهدي</div>
-                        <div class="profile-role">الطالبة الباحثة (Student)</div>
-                        <div class="profile-perm">🔒 فحص الموديل والأدوات (حجب السجل)</div>
-                    </div>
-                </div>
-            </div>
-
             <form id="login-form" onsubmit="handleLoginSubmit(event)">
                 <div class="form-group">
                     <label for="login-username">👤 اسم المستخدم (Username):</label>
-                    <input type="text" id="login-username" class="form-control" placeholder="اسم المستخدم (ahmed / dhurra)" required autocomplete="username">
+                    <input type="text" id="login-username" class="form-control" placeholder="أدخل اسم المستخدم" required autocomplete="username">
                 </div>
 
                 <div class="form-group">
                     <label for="login-password">🔑 رمز المرور (Password):</label>
-                    <input type="password" id="login-password" class="form-control" placeholder="رمز المرور (123456)" required autocomplete="current-password">
+                    <input type="password" id="login-password" class="form-control" placeholder="أدخل رمز المرور" required autocomplete="current-password">
                 </div>
 
                 <div id="login-error-msg" style="display: none;"></div>
@@ -4737,23 +4636,6 @@
             }
         };
 
-        function selectQuickProfile(userKey, pass) {
-            const uInput = document.getElementById('login-username');
-            const pInput = document.getElementById('login-password');
-            if (uInput) uInput.value = userKey;
-            if (pInput) pInput.value = pass;
-            
-            document.querySelectorAll('.profile-card').forEach(function(c) { c.classList.remove('selected'); });
-            if (userKey === 'ahmed') {
-                const c = document.querySelector('.profile-admin');
-                if (c) c.classList.add('selected');
-            } else {
-                const c = document.querySelector('.profile-student');
-                if (c) c.classList.add('selected');
-            }
-            performLogin(userKey, pass);
-        }
-
         function handleLoginSubmit(event) {
             if (event) event.preventDefault();
             const u = document.getElementById('login-username').value.trim();
@@ -4764,6 +4646,7 @@
         function performLogin(usernameInput, passwordInput) {
             const errBox = document.getElementById('login-error-msg');
             const u = (usernameInput || '').toLowerCase().trim();
+            const p = (passwordInput || '').trim();
             
             let matchedAccount = null;
             for (const key in AUTH_ACCOUNTS) {
@@ -4777,16 +4660,16 @@
             if (!matchedAccount) {
                 if (errBox) {
                     errBox.style.display = 'block';
-                    errBox.textContent = '❌ اسم المستخدم غير مسجل! (المستخدمون: ahmed أو dhurra)';
+                    errBox.textContent = '❌ اسم المستخدم أو رمز المرور غير صحيح!';
                 }
                 return;
             }
             
             // Check password
-            if (passwordInput !== matchedAccount.password && passwordInput !== matchedAccount.defaultPass && passwordInput !== '123' && passwordInput !== '123456') {
+            if (p !== matchedAccount.password && p !== matchedAccount.defaultPass && p !== '123' && p !== '123456') {
                 if (errBox) {
                     errBox.style.display = 'block';
-                    errBox.textContent = '❌ رمز المرور غير صحيح! (الرمز الافتراضي: 123456)';
+                    errBox.textContent = '❌ اسم المستخدم أو رمز المرور غير صحيح!';
                 }
                 return;
             }
@@ -4849,10 +4732,12 @@
                 const errBox = document.getElementById('login-error-msg');
                 if (errBox) errBox.style.display = 'none';
                 const u = document.getElementById('login-username');
-                if (u) u.value = '';
+                if (u) {
+                    u.value = '';
+                    setTimeout(function() { u.focus(); }, 150);
+                }
                 const p = document.getElementById('login-password');
                 if (p) p.value = '';
-                document.querySelectorAll('.profile-card').forEach(function(c) { c.classList.remove('selected'); });
             }
         }
 
