@@ -594,7 +594,276 @@
             font-size: 0.7rem;
             color: #94a3b8;
         }
-    </style>
+            /* ===================================================================== */
+        /* Login / Access Control Portal Overlay (Admin vs Student) */
+        /* ===================================================================== */
+        #login-portal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at 50% 30%, rgba(14, 165, 233, 0.18), rgba(7, 10, 18, 0.98) 70%), #070a12;
+            backdrop-filter: blur(25px);
+            z-index: 999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(56, 189, 248, 0.15);
+            border-radius: 18px;
+            width: 100%;
+            max-width: 520px;
+            padding: 32px 28px;
+            color: #f8fafc;
+            direction: rtl;
+            text-align: right;
+            animation: loginFadeIn 0.35s ease-out;
+        }
+
+        @keyframes loginFadeIn {
+            from { opacity: 0; transform: translateY(15px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .login-logo {
+            font-size: 2.4rem;
+            margin-bottom: 8px;
+        }
+
+        .login-header h2 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .login-header p {
+            font-size: 0.82rem;
+            color: #94a3b8;
+            direction: ltr;
+            margin-bottom: 10px;
+        }
+
+        .login-academic-badge {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 4px 14px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        .login-profiles-title {
+            font-size: 0.82rem;
+            color: #cbd5e1;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .quick-profiles-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .profile-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .profile-admin {
+            border-color: rgba(56, 189, 248, 0.35);
+        }
+
+        .profile-admin:hover, .profile-admin.selected {
+            background: rgba(14, 165, 233, 0.18);
+            border-color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+        }
+
+        .profile-student {
+            border-color: rgba(168, 85, 247, 0.35);
+        }
+
+        .profile-student:hover, .profile-student.selected {
+            background: rgba(168, 85, 247, 0.18);
+            border-color: #a855f7;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+        }
+
+        .profile-avatar {
+            font-size: 1.8rem;
+            margin-bottom: 4px;
+        }
+
+        .profile-name {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .profile-role {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #38bdf8;
+            margin: 2px 0;
+        }
+
+        .profile-student .profile-role {
+            color: #c084fc;
+        }
+
+        .profile-perm {
+            font-size: 0.68rem;
+            color: #94a3b8;
+            margin-top: 4px;
+            line-height: 1.3;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.82rem;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        }
+
+        .btn-login-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            border: 1px solid #38bdf8;
+            color: #ffffff;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 18px;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+        }
+
+        .btn-login-submit:hover {
+            background: linear-gradient(135deg, #0369a1, #075985);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.6);
+        }
+
+        #login-error-msg {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .login-footer {
+            text-align: center;
+            font-size: 0.72rem;
+            color: #64748b;
+            margin-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 12px;
+        }
+
+        /* User Session Badge in Header */
+        .user-session-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 4px 10px;
+            border-radius: 8px;
+            margin-right: 4px;
+        }
+
+        .user-session-pill {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.18);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #f87171;
+            font-size: 0.74rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-logout:hover {
+            background: #ef4444;
+            color: #ffffff;
+            border-color: #ef4444;
+        }
+
+</style>
 
     <!-- Standard Three.js r128 Core & Helpers -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -617,6 +886,67 @@
     <script src="https://unpkg.com/web-ifc-three@0.0.126/IFCLoader.umd.cjs"></script>
 </head>
 <body>
+    <!-- ===================================================================== -->
+    <!-- Login / Access Control Portal Overlay (Admin vs Student) -->
+    <!-- ===================================================================== -->
+    <div id="login-portal-overlay">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">🥽 🏛️</div>
+                <h2>منظومة مراجعة الـ BIM والواقع الافتراضي</h2>
+                <p>WebXR BIM Design Review & Coordination Platform</p>
+                <div class="login-academic-badge">
+                    🔬 إشراف وتطوير: المهندس المعماري الدكتور أحمد لؤي أحمد
+                </div>
+            </div>
+
+            <!-- Quick Access Profile Selectors -->
+            <div class="login-profiles-title">اختر حساب الدخول السريع أو أدخل البيانات:</div>
+            <div class="quick-profiles-grid">
+                <div class="profile-card profile-admin" onclick="selectQuickProfile('ahmed', '123456')">
+                    <div class="profile-avatar">👨‍🏫</div>
+                    <div class="profile-info">
+                        <div class="profile-name">د. أحمد لؤي أحمد</div>
+                        <div class="profile-role">الدكتور المشرف (Admin)</div>
+                        <div class="profile-perm">🔓 صلاحيات كاملة + سجل المحادثات</div>
+                    </div>
+                </div>
+
+                <div class="profile-card profile-student" onclick="selectQuickProfile('dhurra', '123456')">
+                    <div class="profile-avatar">👩‍🎓</div>
+                    <div class="profile-info">
+                        <div class="profile-name">ذرى مهدي</div>
+                        <div class="profile-role">الطالبة الباحثة (Student)</div>
+                        <div class="profile-perm">🔒 فحص الموديل والأدوات (حجب السجل)</div>
+                    </div>
+                </div>
+            </div>
+
+            <form id="login-form" onsubmit="handleLoginSubmit(event)">
+                <div class="form-group">
+                    <label for="login-username">👤 اسم المستخدم (Username):</label>
+                    <input type="text" id="login-username" class="form-control" placeholder="اسم المستخدم (ahmed / dhurra)" required autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password">🔑 رمز المرور (Password):</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="رمز المرور (123456)" required autocomplete="current-password">
+                </div>
+
+                <div id="login-error-msg" style="display: none;"></div>
+
+                <button type="submit" class="btn-login-submit">
+                    <span>🚀</span>
+                    <span>تسجيل الدخول للمنصة</span>
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <span>🛡️ نظام إدارة صلاحيات الوصول القائم على الدور الأكاديمي (RBAC)</span>
+            </div>
+        </div>
+    </div>
+
     <!-- 3D WebGL Canvas Container: ACTIVE & IN CENTER BY DEFAULT -->
     <div id="webgl-container"></div>
 
@@ -674,7 +1004,13 @@
             <button class="btn btn-outline" id="btn-toggle-topbar" title="إخفاء الشريط العلوي لتوسيع المشهد الثلاثي الأبعاد (اختصار: T)" style="border-color: rgba(56, 189, 248, 0.5); color: #38bdf8;">🔼 إخفاء الشريط</button>
             <button class="btn btn-outline" id="btn-toggle-sidebars" title="إخفاء أو إظهار كافة القوائم واللوحات الجانبية (اختصار: S)">📑 القوائم الجانبية</button>
             <button class="btn btn-outline" id="btn-toggle-zen" title="وضع العرض الفراغي الكامل والتركيز (إخفاء كافة الشرائط) (اختصار: H أو Z)">🔲 عرض كامل</button>
-            <a href="full_research_conversations_log.html" target="_blank" class="btn btn-outline" style="border-color: rgba(34, 197, 94, 0.5); color: #86efac; text-decoration: none;" title="سجل المحادثات والأوامر والمسار البحثي الشامل مع المخططات والجداول (HTML)">📜 سجل المحادثات والمخططات (HTML)</a>
+            <a href="full_research_conversations_log.html" target="_blank" class="btn btn-outline" id="btn-conversations-log" style="border-color: rgba(34, 197, 94, 0.5); color: #86efac; text-decoration: none;" title="سجل المحادثات والأوامر والمسار البحثي الشامل مع المخططات والجداول (HTML)">📜 سجل المحادثات والمخططات (HTML)</a>
+            <div id="user-session-bar" class="user-session-container">
+                <div id="user-session-pill" class="user-session-pill">
+                    <span id="user-session-name">👨‍🏫 د. أحمد لؤي أحمد (Admin)</span>
+                </div>
+                <button id="btn-logout" class="btn-logout" title="تسجيل الخروج والعودة لشاشة الدخول" onclick="handleLogout()">🚪 خروج</button>
+            </div>
         </div>
     </div>
 
@@ -1041,7 +1377,7 @@
         🖱️ <b>التحكم:</b> انقر على أي عنصر لمعاينة مواصفاته. اسحب للدوران وحرك العجلة للتقريب.<br>
         🎯 <b>التوسيط:</b> اضغط زر <b>"وضع المجسم في المنتصف"</b> لإعادة ضبط المشهد كاملاً.<br>
         🥽 <b>الواقع الافتراضي:</b> انقر زر <b>ENTER VR</b> بالأسفل لدخول الفراغ بمقياس 1:1 بنظارة Meta Quest.<br>
-        📑 <b>سجل المحادثات والأوامر والمخططات:</b> <a href="full_research_conversations_log.html" target="_blank" style="color: #86efac; text-decoration: underline; font-weight: bold;">فتح صفحة السجل الشامل والمخططات (HTML)</a> &bull; <a href="RESEARCH_DEVELOPMENT_LOG.md" target="_blank" style="color: #38bdf8; text-decoration: underline;">ملف Markdown على GitHub</a>
+        <div id="instructions-log-row">📑 <b>سجل المحادثات والأوامر والمخططات:</b> <a href="full_research_conversations_log.html" target="_blank" style="color: #86efac; text-decoration: underline; font-weight: bold;">فتح صفحة السجل الشامل والمخططات (HTML)</a> &bull; <a href="RESEARCH_DEVELOPMENT_LOG.md" target="_blank" style="color: #38bdf8; text-decoration: underline;">ملف Markdown على GitHub</a></div>
         <div style="margin-top: 8px; padding-top: 7px; border-top: 1px solid rgba(255,255,255,0.15); color: #7dd3fc; font-size: 0.74rem; font-weight: 500;">
             🔬 هذه المنصة قيد التطوير لاغراض بحثية ، وتم تطويرها من قبل المهندس المعماري الدكتور احمد لؤي احمد
         </div>
@@ -4376,5 +4712,166 @@
             });
         });
     </script>
+    <!-- ===================================================================== -->
+    <!-- Authentication & Role-Based Access Control JavaScript -->
+    <!-- ===================================================================== -->
+    <script>
+        const AUTH_ACCOUNTS = {
+            'ahmed': {
+                username: 'ahmed',
+                aliases: ['drahmed', 'admin', 'احمد لؤي', 'احمد'],
+                password: '123',
+                defaultPass: '123456',
+                name: 'الدكتور المشرف أحمد لؤي أحمد',
+                role: 'admin',
+                title: 'الدكتور المشرف (Admin)'
+            },
+            'dhurra': {
+                username: 'dhurra',
+                aliases: ['student', 'ذرى', 'ذرى مهدي', 'مهدي'],
+                password: '123',
+                defaultPass: '123456',
+                name: 'الطالبة ذرى مهدي',
+                role: 'student',
+                title: 'الطالبة الباحثة (Student)'
+            }
+        };
+
+        function selectQuickProfile(userKey, pass) {
+            const uInput = document.getElementById('login-username');
+            const pInput = document.getElementById('login-password');
+            if (uInput) uInput.value = userKey;
+            if (pInput) pInput.value = pass;
+            
+            document.querySelectorAll('.profile-card').forEach(function(c) { c.classList.remove('selected'); });
+            if (userKey === 'ahmed') {
+                const c = document.querySelector('.profile-admin');
+                if (c) c.classList.add('selected');
+            } else {
+                const c = document.querySelector('.profile-student');
+                if (c) c.classList.add('selected');
+            }
+            performLogin(userKey, pass);
+        }
+
+        function handleLoginSubmit(event) {
+            if (event) event.preventDefault();
+            const u = document.getElementById('login-username').value.trim();
+            const p = document.getElementById('login-password').value.trim();
+            performLogin(u, p);
+        }
+
+        function performLogin(usernameInput, passwordInput) {
+            const errBox = document.getElementById('login-error-msg');
+            const u = (usernameInput || '').toLowerCase().trim();
+            
+            let matchedAccount = null;
+            for (const key in AUTH_ACCOUNTS) {
+                const acc = AUTH_ACCOUNTS[key];
+                if (acc.username === u || acc.aliases.indexOf(u) !== -1) {
+                    matchedAccount = acc;
+                    break;
+                }
+            }
+            
+            if (!matchedAccount) {
+                if (errBox) {
+                    errBox.style.display = 'block';
+                    errBox.textContent = '❌ اسم المستخدم غير مسجل! (المستخدمون: ahmed أو dhurra)';
+                }
+                return;
+            }
+            
+            // Check password
+            if (passwordInput !== matchedAccount.password && passwordInput !== matchedAccount.defaultPass && passwordInput !== '123' && passwordInput !== '123456') {
+                if (errBox) {
+                    errBox.style.display = 'block';
+                    errBox.textContent = '❌ رمز المرور غير صحيح! (الرمز الافتراضي: 123456)';
+                }
+                return;
+            }
+            
+            // Login Success
+            if (errBox) errBox.style.display = 'none';
+            localStorage.setItem('bim_user_role', matchedAccount.role);
+            localStorage.setItem('bim_user_name', matchedAccount.name);
+            localStorage.setItem('bim_user_title', matchedAccount.title);
+            sessionStorage.setItem('bim_user_role', matchedAccount.role);
+            
+            applyUserSession(matchedAccount.role, matchedAccount.name);
+        }
+
+        function applyUserSession(role, name) {
+            const overlay = document.getElementById('login-portal-overlay');
+            if (overlay) overlay.style.display = 'none';
+            
+            const sessionPill = document.getElementById('user-session-name');
+            const btnConversations = document.getElementById('btn-conversations-log');
+            const instructionsLogRow = document.getElementById('instructions-log-row');
+            
+            if (role === 'admin') {
+                // ADMIN: Show everything
+                if (sessionPill) {
+                    sessionPill.innerHTML = '👨‍🏫 ' + (name || 'د. أحمد لؤي أحمد') + ' <span style="font-size: 0.72rem; color: #38bdf8;">(Admin)</span>';
+                }
+                if (btnConversations) {
+                    btnConversations.style.setProperty('display', 'inline-flex', 'important');
+                }
+                if (instructionsLogRow) {
+                    instructionsLogRow.style.setProperty('display', 'block', 'important');
+                }
+            } else {
+                // STUDENT: HIDE conversations log completely!
+                if (sessionPill) {
+                    sessionPill.innerHTML = '👩‍🎓 ' + (name || 'الطالبة: ذرى مهدي') + ' <span style="font-size: 0.72rem; color: #c084fc;">(Student)</span>';
+                }
+                if (btnConversations) {
+                    btnConversations.style.setProperty('display', 'none', 'important');
+                }
+                if (instructionsLogRow) {
+                    instructionsLogRow.style.setProperty('display', 'none', 'important');
+                }
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('bim_user_role');
+            localStorage.removeItem('bim_user_name');
+            localStorage.removeItem('bim_user_title');
+            sessionStorage.removeItem('bim_user_role');
+            showLoginOverlay();
+        }
+
+        function showLoginOverlay() {
+            const overlay = document.getElementById('login-portal-overlay');
+            if (overlay) {
+                overlay.style.display = 'flex';
+                const errBox = document.getElementById('login-error-msg');
+                if (errBox) errBox.style.display = 'none';
+                const u = document.getElementById('login-username');
+                if (u) u.value = '';
+                const p = document.getElementById('login-password');
+                if (p) p.value = '';
+                document.querySelectorAll('.profile-card').forEach(function(c) { c.classList.remove('selected'); });
+            }
+        }
+
+        function initAuthSystem() {
+            const savedRole = localStorage.getItem('bim_user_role');
+            if (savedRole) {
+                applyUserSession(savedRole, localStorage.getItem('bim_user_name') || '');
+            } else {
+                showLoginOverlay();
+            }
+        }
+
+        // Initialize auth on page load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initAuthSystem);
+        } else {
+            initAuthSystem();
+        }
+    </script>
+
 </body>
 </html>
