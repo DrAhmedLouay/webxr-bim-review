@@ -4,13 +4,21 @@
 > 🔬 **هذه المنصة قيد التطوير لأغراض بحثية، وتم تطويرها من قبل المهندس المعماري الدكتور أحمد لؤي أحمد.**  
 > *(This platform is developed for scientific research purposes by Architect Dr. Ahmed Louay Ahmed)*
 
-🌐 **المنصة المباشرة (Live Demo):** [https://drahmedlouay.github.io/webxr-bim-review/](https://drahmedlouay.github.io/webxr-bim-review/)  
-📑 **سجل التطوير والمحادثات البحثية الكامل:** [RESEARCH_DEVELOPMENT_LOG.md](RESEARCH_DEVELOPMENT_LOG.md)
+---
+
+### 🌐 الروابط الرئيسية المباشرة:
+* 🥽 **المنصة المباشرة ثلاثية الأبعاد (Live WebXR Platform):** [https://drahmedlouay.github.io/webxr-bim-review/](https://drahmedlouay.github.io/webxr-bim-review/)
+* 📜 **سجل المحادثات والأوامر والمسار البحثي الشامل التفاعلي (صفحة HTML مجهزة للطباعة والمخططات):**  
+  [https://drahmedlouay.github.io/webxr-bim-review/full_research_conversations_log.html](https://drahmedlouay.github.io/webxr-bim-review/full_research_conversations_log.html)
+* 📑 **سجل المحادثات والمسار البحثي الشامل (ملف Markdown على GitHub):**  
+  [RESEARCH_DEVELOPMENT_LOG.md](RESEARCH_DEVELOPMENT_LOG.md)
 
 ---
 
 ### 1. نبذة عن المشروع والرؤية العلمية:
 تعتمد المنصة على معيار **WebXR** المفتوح ومحرك **Three.js** مع معالج الـ BIM عبر الويب **WebAssembly (Web-IFC)** للعمل مباشرة عبر أي متصفح إنترنت على الحواسيب أو داخل نظارات الواقع الافتراضي مثل **Meta Quest (2 / 3 / Pro)** دون الحاجة لتثبيت محركات ألعاب ثقيلة أو برمجيات احتكارية باهظة.
+
+تهدف المنصة إلى دراسة وإثبات تفوق بيئة الفحص الفراغي بمساعدة الإنسان بمقياس 1:1 (**Human-in-the-Loop WebXR Coordination**) في اكتشاف **التعارضات اللينة والتشغيلية والإدراكية (Soft & Operability Clashes)** التي تعجز عنها خوارزميات الفحص الآلي التقليدية في برمجيات مثل Navisworks.
 
 ---
 
@@ -25,7 +33,7 @@
 3. **أداة قياس الأبعاد الفراغية ثلاثية الأبعاد (3D Point-to-Point Measurement):**
    - قياس المسافة المباشرة ($D_{3D}$)، الخلوص الرأسي الشاقولي ($\Delta Y$)، والإزاحة الأفقية ($\Delta XZ$).
 4. **أداة القطاع الفراغي الديناميكي (Dynamic 3D Section Plane):**
-   - قطع هندسي لحظي في المحاور $X, Y, Z$ مع منزلق إزاحة دقيق وخاصية العكس (Invert).
+   - قطع هندسي لحظي في المحاور $X, Y, Z$ مع منزلق إزاحة دقيق وخخاصية العكس (Invert).
 5. **نظام رصد وتتبع التعارضات (Clash Detection Log):**
    - تسجيل التعارضات مع منع التكرار، الطيران المباشر نحو نقطة التعارض، ومنارة ضوئية نابضة.
    - تصدير تقارير **OpenBIM BCF 2.1/3.0** المتوافقة مع Revit و Navisworks و Solibri، وتقارير CSV.
@@ -48,8 +56,10 @@ python3 -m http.server 8000
 ### 4. التشغيل داخل نظارة Meta Quest (1:1 Scale):
 1. افتح متصفح **Meta Quest Browser** الرسمي داخل النظارة.
 2. توجّه للرابط المباشر: `https://drahmedlouay.github.io/webxr-bim-review/`.
-3. اضغط زر **`ENTER VR`** الأزرق في أسفل الشاشة.
+3. اضغط زر **`ENTER VR`** في أسفل الشاشة.
 
 ---
 
-> 📖 **للاطلاع على تفاصيل كل خطوة تطويرية والمحادثات الهندسية الكاملة:** راجع [سجل التطوير البحثي الشامل (RESEARCH_DEVELOPMENT_LOG.md)](RESEARCH_DEVELOPMENT_LOG.md).
+> 📖 **للاطلاع على السجل الموسوعي الكامل لكافة المحادثات والأوامر الهندسية والمخططات ومصفوفة التعارضات العشرين:**  
+> * تصفح الصفحة التفاعلية: [سجل المحادثات والمخططات (HTML)](https://drahmedlouay.github.io/webxr-bim-review/full_research_conversations_log.html)  
+> * تصفح ملف المستودع المكتبي: [سجل التطوير الشامل (RESEARCH_DEVELOPMENT_LOG.md)](RESEARCH_DEVELOPMENT_LOG.md)
