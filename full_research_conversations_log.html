@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📜 سجل المحادثات والمسار البحثي الشامل - د. أحمد لؤي أحمد</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Mermaid.js for Diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                darkMode: true,
+                background: '#0b0f19',
+                primaryColor: '#0284c7',
+                primaryTextColor: '#f8fafc',
+                primaryBorderColor: '#38bdf8',
+                lineColor: '#38bdf8',
+                secondaryColor: '#1e293b',
+                tertiaryColor: '#0f172a'
+            }
+        });
+    </script>
+    <style>
+        :root {
+            --bg-base: #070a12;
+            --bg-surface: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --border-subtle: rgba(255, 255, 255, 0.1);
+            --border-highlight: rgba(56, 189, 248, 0.4);
+            --cyan-primary: #38bdf8;
+            --cyan-glow: rgba(56, 189, 248, 0.25);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --emerald: #22c55e;
+            --amber: #f59e0b;
+            --rose: #ef4444;
+            --purple: #a855f7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            line-height: 1.8;
+            padding-bottom: 60px;
+        }
+
+        code, pre {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Top Hero Header */
+        .hero-banner {
+            background: linear-gradient(135deg, #091322 0%, #0c1a30 50%, #072540 100%);
+            border-bottom: 2px solid var(--border-highlight);
+            padding: 35px 25px 25px 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(16px);
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .hero-title-group h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--cyan-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .hero-title-group p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .author-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(14, 165, 233, 0.15);
+            border: 1px solid var(--cyan-primary);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.84rem;
+            color: #bae6fd;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--cyan-primary);
+            color: var(--cyan-primary);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: #0284c7;
+            border-color: #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+        }
+
+        .btn-primary:hover {
+            background: #0369a1;
+            color: #ffffff;
+        }
+
+        /* Main Container */
+        .content-container {
+            max-width: 1200px;
+            margin: 25px auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            border-bottom: 2px solid var(--border-subtle);
+            margin-bottom: 25px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .tab-btn.active {
+            color: var(--cyan-primary);
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--cyan-primary);
+            box-shadow: 0 0 10px var(--cyan-primary);
+        }
+
+        /* Tab Content Panes */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 22px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 14px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--cyan-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-cyan { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid #38bdf8; }
+        .badge-green { background: rgba(34, 197, 94, 0.15); color: #86efac; border: 1px solid #22c55e; }
+        .badge-amber { background: rgba(245, 158, 11, 0.15); color: #fde68a; border: 1px solid #f59e0b; }
+        .badge-purple { background: rgba(168, 85, 247, 0.15); color: #e9d5ff; border: 1px solid #a855f7; }
+
+        /* Timeline Step Container */
+        .timeline {
+            position: relative;
+            padding-right: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            bottom: 15px;
+            right: 8px;
+            width: 3px;
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 50%, #22c55e 100%);
+            border-radius: 2px;
+        }
+
+        .step-item {
+            position: relative;
+            margin-bottom: 28px;
+        }
+
+        .step-dot {
+            position: absolute;
+            right: -28px;
+            top: 22px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #0284c7;
+            border: 3px solid #070a12;
+            box-shadow: 0 0 10px #38bdf8;
+        }
+
+        .user-prompt-quote {
+            background: rgba(14, 165, 233, 0.08);
+            border-right: 4px solid var(--cyan-primary);
+            padding: 12px 18px;
+            border-radius: 0 10px 10px 0;
+            margin: 12px 0;
+            font-size: 0.95rem;
+            color: #e0f2fe;
+            font-weight: 600;
+        }
+
+        .solution-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-top: 12px;
+            font-size: 0.88rem;
+            color: #cbd5e1;
+        }
+
+        .solution-box ul {
+            padding-right: 20px;
+            margin-top: 8px;
+        }
+
+        .solution-box li {
+            margin-bottom: 6px;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin: 16px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: right;
+            vertical-align: top;
+        }
+
+        .data-table th {
+            background: rgba(14, 165, 233, 0.15);
+            color: var(--cyan-primary);
+            font-weight: 700;
+        }
+
+        .data-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .code-pill {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            color: #38bdf8;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        /* Search input */
+        .search-box {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 10px 16px;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            width: 100%;
+            margin-bottom: 20px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-box:focus {
+            border-color: var(--cyan-primary);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        }
+
+        /* Mermaid Wrapper */
+        .diagram-container {
+            background: rgba(11, 15, 25, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        /* Print media styles */
+        @media print {
+            .hero-banner { position: static; box-shadow: none; border-bottom: 2px solid #000; }
+            body { background: #fff; color: #000; }
+            .btn, .nav-tabs, .search-box { display: none; }
+            .tab-content { display: block !important; }
+            .card { border: 1px solid #ccc; box-shadow: none; page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Banner -->
+    <header class="hero-banner">
+        <div class="hero-container">
+            <div class="hero-title-group">
+                <h1>
+                    <span>📜</span>
+                    <span>سجل المحادثات والأوامر والمسار البحثي الشامل</span>
+                </h1>
+                <p>الأرشيف الكامل الموثق لكافة مراحل التطوير، الحوارات، الأكواد، المخططات الهندسية، ومصفوفة التعارضات</p>
+                <div class="author-badge">
+                    <span>🔬</span>
+                    <span>الباحث والمطور: المهندس المعماري الدكتور أحمد لؤي أحمد | Architect Dr. Ahmed Louay Ahmed</span>
+                </div>
+            </div>
+            <div class="hero-actions">
+                <button class="btn btn-primary" onclick="window.print()">
+                    <span>🖨️</span>
+                    <span>طباعة / حفظ PDF</span>
+                </button>
+                <a href="index.html" class="btn" target="_blank">
+                    <span>🥽</span>
+                    <span>فتح المنصة الحية 3D</span>
+                </a>
+                <a href="https://github.com/DrAhmedLouay/webxr-bim-review" class="btn" target="_blank">
+                    <span>💻</span>
+                    <span>المستودع على GitHub</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="content-container">
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('tab-timeline')">
+                <span>💬</span>
+                <span>سجل الأوامر والمراحل الزمنية (14 مرحلة)</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('tab-diagrams')">
+                <span>📊</span>
+                <span>المخططات المعمارية والبرمجية (Diagrams)</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('tab-tables')">
+                <span>📋</span>
+                <span>مصفوفة التعارضات والجداول العلمية (Tables)</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('tab-peer-review')">
+                <span>🎓</span>
+                <span>استشارة التحكيم وخارطة طريق Scopus Q1</span>
+            </button>
+        </nav>
+
+        <!-- ===================================================================== -->
+        <!-- TAB 1: TIMELINE OF ALL USER REQUESTS AND COMMANDS -->
+        <!-- ===================================================================== -->
+        <section id="tab-timeline" class="tab-content active">
+            <input type="text" class="search-box" id="search-input" placeholder="🔍 ابحث في المحادثات أو الأوامر أو الكلمات المفتاحية (مثلاً: IFC, ليزر, تعارضات, كراسي متحركة)..." onkeyup="filterTimeline()">
+
+            <div class="timeline" id="timeline-list">
+
+                <!-- Phase 1 -->
+                <div class="step-item">
+                    <div class="step-dot"></div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span>1️⃣</span>
+                                <span>المرحلة الأولى: تأسيس المنصة ونواة الـ WebXR Lab ومحاذاة النماذج</span>
+                            </div>
+                            <span class="badge badge-cyan">الأساس الهيكلي</span>
+                        </div>
+                        <div class="user-prompt-quote">
+                            "تحديث الواجهة الرئيسية بحيث تكون غرفة فحص التعارضات (WebXR Lab) هي الواجهة الافتراضية مع ضبط موضع المجسم والكاميرا تلقائياً"
+                        </div>
+                        <div class="solution-box">
+                            <b>الخطوات الهندسية المنفذة:</b>
+                            <ul>
+                                <li>تهيئة محرك <code>Three.js WebGL / WebXR Renderer</code> ليعمل بكفاءة 60 FPS مباشرة عبر المتصفح.</li>
+                                <li>اعتماد <code>WebXR Lab</code> كواجهة رئيسية للتقييم والتنسيق المعماري والميكانيكي.</li>
+                                <li>برمجة خوارزمية التوسيط الآلي <code>fitCameraToObject</code> لحساب الصندوق المحيط بالنموذج (Bounding Box) ونقل الكاميرا لموضع الرؤية الأمثل تلقائياً.</li>
+                                <li>الربط مع مكتبة <code>web-ifc</code> المبنية بتقنية WebAssembly لقراءة ملفات الـ IFC مباشرة على جهاز العميل.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 2 -->
+                <div class="step-item">
+                    <div class="step-dot"></div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span>2️⃣</span>
+                                <span>المرحلة الثانية: حل مشكلة البياض الفاقع لملفات IFC وتمييز الألوان والبيئة</span>
+                            </div>
+                            <span class="badge badge-amber">تحسين الإظهار والإضاءة</span>
+                        </div>
+                        <div class="user-prompt-quote">
+                            "عند استيراد ملف IFC تظهر الوان المجسم فاقعة البياض ولا يمكن تمييز العناصر، اضف خاصية تمييز الالون واضاءة بيئة العمل"
+                        </div>
+                        <div class="solution-box">
+                            <b>الخطوات الهندسية المنفذة:</b>
+                            <ul>
+                                <li>برمجة محرك <b>تمييز ألوان التخصصات المعمارية والـ MEP</b> (الجدران، الأسقف، مجاري الهواء الزرقاء، أنابيب الأكسجين الصفراء، ومواسير الصرف الخضراء).</li>
+                                <li>حقن خامات زجاج شفاف واقعي للنوافذ والواجهات (Physical Glass Shader مع إتاحة رؤية التأسيسات الداخلية).</li>
+                                <li>تفعيل نظام مطابقة الألوان السينمائي <code>ACESFilmicToneMapping</code> مع تحكم بالتعريض (Exposure) من 40% إلى 180%.</li>
+                                <li>إضافة أوضاع بيئة العمل الجاهزة: نهاري (Daylight)، دافئ (Warm)، واستوديو ليلي داكن (Studio Dark).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 3 -->
+                <div class="step-item">
+                    <div class="step-dot"></div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span>3️⃣</span>
+                                <span>المرحلة الثالثة: إصلاح تصفية العناصر وعزل الطوابق وتفكيك المبنى (Exploded View)</span>
+                            </div>
+                            <span class="badge badge-green">إصلاح وتطوير الأداء</span>
+                        </div>
+                        <div class="user-prompt-quote">
+                            "تصفية العناصر والتخصصات: لا تعمل"
+                        </div>
+                        <div class="solution-box">
+                            <b>الخطوات الهندسية المنفذة:</b>
+                            <ul>
+                                <li>معالجة حساسية الأحرف (Case Sensitivity) في قراءة كيانات IFC مثل <code>IFCWALL</code> و <code>IfcBuildingStorey</code>.</li>
+                                <li>بناء نظام <b>التخزين المسبق لطبقات الفرز (Pre-cached Subsets)</b> أثناء التحميل لتبديل الرؤية فورياً (0ms) بمعدل 60 FPS دون أي تقطيع.</li>
+                                <li>برمجة منزلق <b>تفكيك المبنى رأسياً (Exploded View Slider)</b> لرفع الطوابق عن بعضها البعض وتوضيح مسارات الدكتات والأنابيب في الفراغات البينية.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 4 -->
+                <div class="step-item">
+                    <div class="step-dot"></div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span>4️⃣</span>
+                                <span>المرحلة الرابعة: توثيق الهوية الأكاديمية والملكية الفكرية للمنصة</span>
+                            </div>
+                            <span class="badge badge-purple">التوثيق الأكاديمي</span>
+                        </div>
+                        <div class="user-prompt-quote">
+                            "اضف في مكان ما في المنصة الجملة التالية: 'هذه المنصة قيد التطوير لاغراض بحثية ، وتم تطويرها من قبل المهندس المعماري الدكتور احمد لؤي احمد'"
+                        </div>
+                        <div class="solution-box">
+                            <b>الخطوات الهندسية المنفذة:</b>
+                            <ul>
+                                <li>تضمين الشعار والعبارة التوثيقية الرسمية في صدارة <b>الشريط العلوي للمنصة (Header Bar)</b> بنمط مشع <code>research-badge</code>.</li>
+                                <li>إضافة نفس العبارة التوثيقية داخل <b>لوحة الإرشادات السريعة</b> بأسفل يسار الشاشة لترافق المستخدم أثناء الملاحة الفراغية.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 5 -->
+                <div class="step-item">
+                    <div class="step-dot"></div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span>5️⃣</span>
+                                <span>المرحلة الخامسة: محاكاة تفاصيل عناصر الـ MEP الواقعية (صاج، صمامات، كوع، خرسانة)</span>
+                            </div>
+                            <span class="badge badge-amber">الواقعية الهندسية</span>
+                        </div>
+                        <div class="user-prompt-quote">
+                            "اجعل عناصر النموذج الافتراضي في الواجهة الرئيسية (المجسم الثلاثي) من الانابيب والدكت وبقية العناصر اقرب للشكل الحقيقي لها"
+                        </div>
+                        <div class="solution-box">
+                            <b>الخطوات الهندسية المنفذة:</b>
+                            <ul>
+                                <li><b>صاج مجلفن لمجاري الهواء:</b> دكتات مستطيلة معدنية واقعية مع شفة التوصيل (Flanges) ومخمدات الاهتزاز.</li>
+                                <li><b>ماسورة أكسجين طبية:</b> أنبوب نحاسي كودي مع صمام قفل برونزي كروي ثلاثي الأبعاد ومقبض تشغيل.</li>
+                                <li><b>أنبوب الصرف الصحي:</b> مواسير PVC سميكة مع كوع ومصيدة مياه (P-Trap) متقنة الصنع.</li>
+                                <li><b>عناصر معمارية وإنشائية:</b> باب خشبي واقعي بمقبض ألمنيوم، وأعمدة وكمرات خرسانية مسلحة متباينة الألوان.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 6 -->
+                <div class="step-item">
+                    <div class="step-dot"></div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span>6️⃣</span>
+                                <span>المرحلة السادسة: إضافة نظام استعراض وتتبع التعارضات الفراغية والطيران بالكاميرا</span>
+                            </div>
+                            <span class="badge badge-cyan">إدارة التعارضات 3D</span>
+                        </div>
+                        <div class="user-prompt-quote">
+                            "اضف زر 'مشاهدة التعارضات' بجوار زر 'تقرير التعارضات (CSV)'"
+                        </div>
+                        <div class="solution-box">
+                            <b>الخطوات الهندسية المنفذة:</b>
+                            <ul>
+                                <li>إضافة زر بارز باللون الأحمر <code>⚠️ مشاهدة التعارضات</code> بجوار زر التقارير في الشريط العلوي.</li>
+                                <li>إنشاء نافذة فحص واستعراض متكاملة <code>#clash-review-modal</code> تعرض كافة التعارضات المسجلة.</li>
+                                <li>برمجة زر <b>"انتقال إلى الفراغ 🎯"</b> الذي يقوم بنقل الكاميرا بانسيابية وسلاسة تامة نحو إحداثيات التعارض الفراغية، مع تشغيل منارة كروية حمراء نابضة مضيئة.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 7 -->
+                <div class="step-item">
+                    <div class="step-dot"></div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span>7️⃣</span>
+                                <span>المرحلة السابعة: خوارزمية منع تكرار تسجيل التعارضات مع خيار المعالجة والحذف</span>
+                            </div>
+                            <span class="badge badge-green">سلامة البيانات</span>
+                        </div>
+                        <div class="user-prompt-quote">
+                            "في حالة تكرار الضغط على عنصر اكثر من مرة لتسجيل تعارض اظهر رسالة بانه العنصر مكرر ولا تقم باضافته"
+                        </div>
+                        <div class="solution-box">
+                            <b>الخطوات الهندسية المنفذة:</b>
+                            <ul>
+                                <li>فحص مصفوفة التعارضات <code>clashesList</code> ومقارنة المعرف الفريد للعنصر (Element ID) قبل الإدراج.</li>
+                                <li>إظهار تنبيه تحذيري باللغة العربية يشير إلى أن العنصر مضاف مسبقاً مع توقيت تسجيله ومواصفاته لمنع تضخم السجلات.</li>
+                                <li>إتاحة زر لحذف أو معالجة التعارض في نافذة الاستعراض لإعادة ضبط الموديل.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 8 -->
+                <div class="step-item">
+                    <div class="step-dot"></div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span>8️⃣</span>
+                                <span>المرحلة الثامنة: تمييز الكتل المختارة بالإشعاع السماوي المشع (Cyan Glow)</span>
+                            </div>
+                            <span class="badge badge-cyan">التفاعل البصري</span>
+                        </div>
+                        <div class="user-prompt-quote">
+                            "اضف خاصية عن الضغط على عنصر لتحديده يتميز لونه عن بقية العناصر"
+                        </div>
+                        <div class="solution-box">
+                            <b>الخطوات الهندسية المنفذة:</b>
+                            <ul>
+                                <li>برمجة محرك الإبراز اللحظي الموحد <code>applyObjectHighlight</code>.</li>
+                                <li>في ملفات الـ IFC: إنشاء مجسم Subset فوري بلون سماوي مشع <code>0x00f0ff</code> وتوهج ذاتي (Emissive).</li>
+                                <li>في نماذج الـ WebXR Lab: حفظ الخامات الأصلية واستبدالها مؤقتاً باللون السماوي واستعادتها بمجرد إلغاء التحديد.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 9 -->
+                <div class="step-item">
+                    <div class="step-dot"></div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span>9️⃣</span>
+                                <span>المرحلة التاسعة: دمج المحاور البحثية الخمسة الموحدة (The 5 Research Pillars)</span>
+                            </div>
+                            <span class="badge badge-purple">التكامل الأكاديمي الشامل</span>
+                        </div>
+                        <div class="user-prompt-quote">
+                            "جمع المقترحات الخمسة اعلاه"
+                        </div>
+                        <div class="solution-box">
+                            <b>الخطوات الهندسية المنفذة:</b>
+                            <ul>
+                                <li><b>المحور 1:</b> أداة قياس الأبعاد الفراغية ثلاثية الأبعاد بنقرتين مع حساب الخلوص الشاقولي $\Delta Y$ والإزاحة الأفقية $\Delta XZ$.</li>
+                                <li><b>المحور 2:</b> أداة القطاع الفراغي الديناميكي (Dynamic 3D Section Plane) في المحاور $X, Y, Z$ مع منزلق إزاحة وخاصية العكس.</li>
+                                <li><b>المحور 3:</b> محرك الواقع الافتراضي 6-DoF الغامر مع أشعة ليزر مزدوجة وزر الزناد.</li>
+                                <li><b>المحور 4:</b> تصدير تقارير OpenBIM BCF 2.1/3.0 المتوافقة عالمياً مع Revit و Navisworks.</li>
+                                <li><b>المحور 5:</b> لوحة قياسات الأداء والبحث العلمي (Telemetry HUD) لرصد FPS وتصدير تقرير JSON.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 10 -->
+                <div class="step-item">
+                    <div class="step-dot"></div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span>🔟</span>
+                                <span>المرحلة العاشرة: دليل تشغيل Meta Quest ومحاكي مؤشر الليزر على سطح المكتب</span>
+                            </div>
+                            <span class="badge badge-amber">الواقع الافتراضي WebXR</span>
+                        </div>
+                        <div class="user-prompt-quote">
+                            "اين هذا التحديث في المنصة؟"
+                        </div>
+                        <div class="solution-box">
+                            <b>الخطوات الهندسية المنفذة:</b>
+                            <ul>
+                                <li>توضيح آلية عمل WebXR: على الحواسيب يظهر الزر بحالة <code>VR NOT SUPPORTED</code> لعدم وجود خوذة متصلة، بينما يظهر زر <code>ENTER VR</code> الأزرق مباشرة داخل متصفح Meta Quest Browser.</li>
+                                <li>إضافة زر دائم في الشريط العلوي: <code>🥽 دليل الواقع الافتراضي (VR)</code> مع نافذة تفاعلية تشرح الخطوات وخريطة أزرار وحدات التحكم.</li>
+                                <li>ابتكار <b>محاكي ليزر سطح المكتب (Desktop 6-DoF Laser Simulator)</b>: شعاع ليزري ثلاثي الأبعاد مع حلقة تصويب (Reticle) يتحرك مع الفأرة لتجربة التوجيه والالتقاط دون نظارة.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 11 -->
+                <div class="step-item">
+                    <div class="step-dot"></div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span>1️⃣1️⃣</span>
+                                <span>المرحلة الحادية عشرة: نظام إظهار وإخفاء شرائط المهام (Zen Presentation Mode)</span>
+                            </div>
+                            <span class="badge badge-cyan">تجربة المستخدم والملاحة</span>
+                        </div>
+                        <div class="user-prompt-quote">
+                            "اضف امكانية اظهار / اخفاء شرائط المهام العلوية والجانبية"
+                        </div>
+                        <div class="solution-box">
+                            <b>الخطوات الهندسية المنفذة:</b>
+                            <ul>
+                                <li>أزرار مدمجة بالشريط العلوي: <code>🔼 إخفاء الشريط (T)</code>، <code>📑 القوائم الجانبية (S)</code>، و<code>🔲 عرض كامل (H/Z)</code>.</li>
+                                <li>شريط استرجاع عائم ذكي <code>#floating-ui-dock</code> ينبثق بنعومة في أعلى المنتصف لاستعادة الواجهة بنقرة واحدة.</li>
+                                <li>ألسنة تحكم مثبتة على حواف الشاشة <code>[ ◀ اللوحات الجانبية ]</code> و <code>[ ▶ التعليمات ]</code>.</li>
+                                <li>دعم اختصارات لوحة المفاتيح: <b>T</b> للشريط العلوي، <b>S</b> للقوائم الجانبية، <b>H</b> للعرض الكامل، و <b>Esc</b> للاستعادة الفورية.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 12 -->
+                <div class="step-item">
+                    <div class="step-dot"></div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span>1️⃣2️⃣</span>
+                                <span>المرحلة الثانية عشرة: أرشفة وتوثيق سجل التطوير والخطوات البحثية</span>
+                            </div>
+                            <span class="badge badge-purple">التوثيق والنشر</span>
+                        </div>
+                        <div class="user-prompt-quote">
+                            "اخزن المحادثات مع خطواتك بحيث يمكن الرجوع اليها بسهولة"
+                        </div>
+                        <div class="solution-box">
+                            <b>الخطوات الهندسية المنفذة:</b>
+                            <ul>
+                                <li>إنشاء وثيقة الماركداون الشاملة <code>RESEARCH_DEVELOPMENT_LOG.md</code> بالمستودع على GitHub.</li>
+                                <li>تسجيل الوثيقة كأرتيفاكت دائم داخل بيئة Antigravity.</li>
+                                <li>تحديث <code>README.md</code> وإضافة أزرار وصول مباشر في واجهة المنصة الثلاثية الأبعاد ولوحة الإرشادات.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 13 -->
+                <div class="step-item">
+                    <div class="step-dot"></div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span>1️⃣3️⃣</span>
+                                <span>المرحلة الثالثة عشرة: استشارة المحكّم الأكاديمي الدولي وخارطة طريق Scopus Q1</span>
+                            </div>
+                            <span class="badge badge-amber">التقييم الأكاديمي الاستراتيجي</span>
+                        </div>
+                        <div class="user-prompt-quote">
+                            "سألت الذكاء الاصطناعي Claude: بصفتك باحثاً أكاديمياً من الطراز العالمي ومحكماً في مجلة Scopus Q1... ما هي امكانية تطوير المنصة لتحقيق ما تم طرحه؟"
+                        </div>
+                        <div class="solution-box">
+                            <b>التحليل الأكاديمي والتوصيات المعتمدة:</b>
+                            <ul>
+                                <li>التصنيف العلمي الدقيق: المنصة هي "بيئة مراجعة بصرية غامرة بمساعدة الإنسان (Human-in-the-Loop)" وليست خوارزمية كشف آلي.</li>
+                                <li><b>المسار الذهبي الاستثنائي:</b> ربط المنصة ببحث د. أحمد في توليد المخططات بـ Pix2Pix ومؤشر الامتثال AGCR لإنشاء حلقة مغلقة غير مسبوقة عالمياً للتحقق الغامر من خلوصات الكراسي المتحركة.</li>
+                                <li>تصميم بروتوكول التحقق التجريبي الكمي (عينة من 30 مهندساً، نموذج Ground Truth، ومقاييس NASA-TLX و SUS).</li>
+                                <li>متطلبات العلم المفتوح: ترخيص MIT، معرف رقمي دائم DOI عبر Zenodo، وبيان إفصاح الذكاء الاصطناعي الشفاف.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 14 -->
+                <div class="step-item">
+                    <div class="step-dot"></div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span>1️⃣4️⃣</span>
+                                <span>المرحلة الرابعة عشرة: تأمين الخصوصية والعزل التام للمحادثات الخاصة محلياً</span>
+                            </div>
+                            <span class="badge badge-green">الخصوصية والأمان</span>
+                        </div>
+                        <div class="user-prompt-quote">
+                            "هل تستطيع خزن المحادثات الاخيره بمعزل عن 'سجل التطوير والخطوات' للحفاظ على الخصوصية وعدم نشرها على GITHUB؟"
+                        </div>
+                        <div class="solution-box">
+                            <b>الخطوات الهندسية المنفذة:</b>
+                            <ul>
+                                <li>تعديل ملف <code>.gitignore</code> واستثناء المجلد <code>.private_logs/</code> والامتداد <code>*.private.md</code> نهائياً من تتبع ومزامنة Git.</li>
+                                <li>إنشاء أرشيف محلي سري <code>private_conversations_archive.md</code> ولوحة عرض HTML خاصة للأوفلاين.</li>
+                                <li>ضمان أن ما يُنشر على GitHub هو الكود البرمجي وسجل التطوير الهندسي العام فقط دون أي استشارات خاصة.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- TAB 2: ARCHITECTURAL & SYSTEM DIAGRAMS (MERMAID) -->
+        <!-- ===================================================================== -->
+        <section id="tab-diagrams" class="tab-content">
+
+            <!-- Diagram 1: Full System Architecture -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>📊 المخطط 1:</span>
+                        <span>المعمارية التقنية الكلية لمنظومة WebXR OpenBIM Review Platform</span>
+                    </div>
+                    <span class="badge badge-cyan">System Architecture</span>
+                </div>
+                <div class="diagram-container">
+                    <pre class="mermaid">
+flowchart TD
+    subgraph DataLayer ["1. طبقة البيانات والمدخلات (Data Ingestion Layer)"]
+        IFC["ملفات OpenBIM (IFC2x3 / IFC4)"] --> WASM["محرك Web-IFC WebAssembly"]
+        GLB["ملفات ثلاثية الأبعاد (GLB / GLTF)"] --> DRACO["فك ضغط DRACO"]
+        SYNTH["النموذج الواقعي المدمج (WebXR Lab)"] --> ASSETS["أصول MEP والهيكل المعماري"]
+    end
+
+    subgraph CoreEngine ["2. نواة المعالجة الفراغية (Core Spatial & Rendering Engine)"]
+        WASM & DRACO & ASSETS --> T3["محرك Three.js WebGL / WebXR Pipeline"]
+        T3 --> SHAD["خامات PBR + إضاءة ACESFilmic + ألوان التخصصات"]
+        T3 --> SPATIAL["فهرسة الطوابق والتخزين المسبق للـ Subsets (60 FPS)"]
+    end
+
+    subgraph Pillars ["3. المحاور الوظيفية الخمسة المدمجة (Unified 5 Pillars)"]
+        SPATIAL --> P1["المحور 1: أدوات القياس ثلاثي الأبعاد والقطاع الديناميكي"]
+        SPATIAL --> P2["المحور 2: رصد التعارضات الفراغية وتصدير تقارير BCF"]
+        SPATIAL --> P3["المحور 3: الواقع الافتراضي 6-DoF ومحاكي الليزر المكتبي"]
+        SPATIAL --> P4["المحور 4: واجهة الاستخدام المرنة ووضع العرض النقي (Zen)"]
+        SPATIAL --> P5["المحور 5: مؤشرات الأداء الحية وتصدير تقرير JSON"]
+    end
+
+    subgraph Outputs ["4. المخرجات والربط الميداني (Interoperability & Research)"]
+        P1 & P2 & P3 & P4 & P5 --> EXP_BCF["تقارير BCF 2.1/3.0 (Revit / Navisworks)"]
+        P1 & P2 & P3 & P4 & P5 --> EXP_JSON["بيانات القياس العلمي والأداء (Benchmark JSON)"]
+        P1 & P2 & P3 & P4 & P5 --> EXP_CSV["سجل التعارضات التشغيلية (CSV Export)"]
+    end
+                    </pre>
+                </div>
+            </div>
+
+            <!-- Diagram 2: The Golden Closed-Loop Wheelchair Framework -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>♿ المخطط 2:</span>
+                        <span>الإطار الذهبي المغلق: من التصميم التوليدي بـ Pix2Pix إلى التحقق الغامر 1:1</span>
+                    </div>
+                    <span class="badge badge-purple">Q1 Breakthrough Framework</span>
+                </div>
+                <div class="diagram-container">
+                    <pre class="mermaid">
+flowchart LR
+    A["توليد المخططات السكنية الذكية\n(Pix2Pix Deep Learning GAN)"] --> B["التحقق الهندسي الرقمي الآلي\n(Automated Compliance AGCR)"]
+    B --> C["توليد مجسم الـ BIM الفراغي\n(Automated 3D IFC Model)"]
+    C --> D["منصة WebXR BIM Review\n(Immersive 1:1 Verification)"]
+    D --> E["محاكي الكرسي المتحرك 1:1\n(Wheelchair Kinematic Avatar)"]
+    E --> F["فحص خلوص الدوران 150cm\nواتساع الأبواب 90cm غامراً"]
+    F --> G["توليد تقرير التطابق النهائي\n(Validated Accessibility Dataset)"]
+    G -.->|"تغذية راجعة لتحسين التوليد"| A
+                    </pre>
+                </div>
+            </div>
+
+            <!-- Diagram 3: Clash Detection & BCF Lifecycle -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>⚠️ المخطط 3:</span>
+                        <span>دورة حياة رصد التعارضات والتنسيق التشاركي مع برامج الـ BIM العالمية</span>
+                    </div>
+                    <span class="badge badge-amber">Coordination Lifecycle</span>
+                </div>
+                <div class="diagram-container">
+                    <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    actor Arch as المهندس المعماري (د. أحمد لؤي)
+    participant Viewer as منصة WebXR BIM
+    participant Raycast as محرك الالتقاط والليزر
+    participant Modal as نافذة استعراض التعارضات
+    participant BCF as مصدر تقارير OpenBIM BCF
+    actor BIM as برامج BIM (Revit / Navisworks)
+
+    Arch->>Viewer: توجيه الليزر / النقر على العنصر المتعارض
+    Viewer->>Raycast: احتساب نقطة التقاطع وتحديد الكيان
+    Raycast-->>Viewer: إضاءة العنصر بالإشعاع السماوي المشع
+    Arch->>Viewer: الضغط على "تسجيل كتعارض تشغيلي"
+    Viewer->>Viewer: فحص منع التكرار وتخزين الإحداثيات
+    Arch->>Modal: فتح "مشاهدة التعارضات"
+    Modal->>Viewer: الطيران بالكاميرا وتفعيل المنارة النابضة
+    Arch->>BCF: تصدير تقرير BCF 2.1/3.0
+    BCF->>BIM: استيراد التعارض مع Viewpoint و IFC GUID
+    BIM-->>Arch: حل التعارض في النموذج الأصلي
+                    </pre>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- TAB 3: SCIENTIFIC TABLES & CLASH MATRIX -->
+        <!-- ===================================================================== -->
+        <section id="tab-tables" class="tab-content">
+
+            <!-- Table 1: 20-Clash Matrix -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>📑 الجدول 1:</span>
+                        <span>مصفوفة التعارضات العشرين المرجعية (The 20-Clash Experimental Matrix - LOD 350)</span>
+                    </div>
+                    <span class="badge badge-cyan">Ground Truth Matrix</span>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+                    مصفوفة قياسية موزعة على 4 فئات رئيسية بمستشفى تخصصي لدراسة المقارنة بين الفحص المكتبي (Desktop) والفحص الغامر بمقياس 1:1 (WebXR):
+                </p>
+
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>رمز التعارض</th>
+                                <th>الفئة والموقع</th>
+                                <th>العناصر المعنية في النموذج</th>
+                                <th>التوصيف الهندسي للتعارض</th>
+                                <th>الكود أو المعيار المنتهك</th>
+                                <th>الشدة والأثر</th>
+                                <th>سلوك الرصد (Desktop vs VR)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>CL-01</b></td>
+                                <td>Hard<br>Basement</td>
+                                <td>Chilled Water Supply Ø250mm & RC Beam 600x900mm</td>
+                                <td>أنبوب التبريد يخترق ساق الكمرة الخرسانية الحاملة بعمق 400 مم دون فتحة مسبقة.</td>
+                                <td>ACI 318-19</td>
+                                <td><span class="badge" style="background: rgba(239,68,68,0.2); color:#fca5a5;">🔴 كارثي</span></td>
+                                <td>يرصده الطرفان بسهولة (تداخل صلب مباشر 100%).</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-02</b></td>
+                                <td>Hard<br>Level 1</td>
+                                <td>Supply Duct 1200x500mm & Glass Curtain Wall</td>
+                                <td>مجرى الهواء الرئيسي ينزل ليتقاطع رأسياً مع القاطع الزجاجي الفاصل للبهو بعمق 350 مم.</td>
+                                <td>SMACNA / كود الواجهات</td>
+                                <td><span class="badge" style="background: rgba(245,158,11,0.2); color:#fde68a;">🟡 حرج</span></td>
+                                <td>رصد متساوٍ؛ ولكن في الـ VR يُدرك أثره البصري المشوه فوراً.</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-03</b></td>
+                                <td>Hard<br>Level 2</td>
+                                <td>RC Column 500x500mm & Elevator Shaft Opening</td>
+                                <td>ركن العمود الإنشائي يقتطع 250 مم من فتحة بئر مصعد نقالات المرضى الحرجة.</td>
+                                <td>ASME A17.1</td>
+                                <td><span class="badge" style="background: rgba(239,68,68,0.2); color:#fca5a5;">🔴 كارثي</span></td>
+                                <td>رصد قطعي بالطرفين، ويظهر جلياً عند الوقوف داخل البئر في VR.</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-04</b></td>
+                                <td>Hard<br>Basement</td>
+                                <td>Electrical Cable Tray & Storm Drainage Pipe Ø160mm</td>
+                                <td>صينية الكابلات الكهربائية تخترق مباشرة مسار ماسورة تصريف مياه الأمطار.</td>
+                                <td>NEC 392 / IPC</td>
+                                <td><span class="badge" style="background: rgba(239,68,68,0.2); color:#fca5a5;">🔴 كارثي</span></td>
+                                <td>كلاهما يرصده بسهولة في ثوانٍ معدودة.</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-05</b></td>
+                                <td>Hard<br>Level 2</td>
+                                <td>Hermetic Sliding Door & Shear Wall Boundary</td>
+                                <td>إطار انزلاق باب غرفة العمليات الرصاصي يقع بنسبة 40% داخل الجدار الخرساني الساند.</td>
+                                <td>AIA Guidelines</td>
+                                <td><span class="badge" style="background: rgba(245,158,11,0.2); color:#fde68a;">🟡 حرج</span></td>
+                                <td>تعارض هندسي مباشر في كلا البيئتين.</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-06</b></td>
+                                <td>Clearance<br>Level 1</td>
+                                <td>Exhaust Duct 900x400mm & Corridor Ceiling Grid</td>
+                                <td>مجرى الهواء يجبر السقف المستعار على الهبوط لمنسوب 2.05m فقط في ممر الإخلاء الرئيسي.</td>
+                                <td>NFPA 101 (Min 2.28m)</td>
+                                <td><span class="badge" style="background: rgba(245,158,11,0.2); color:#fde68a;">🟡 حرج</span></td>
+                                <td><b>تفوق ساحق للـ VR:</b> يشعر به المستخدم فوراً باقتراب السقف من رأسه.</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-07</b></td>
+                                <td>Clearance<br>Level 2</td>
+                                <td>Timber Door & Medical Gas Alarm Panel</td>
+                                <td>قوس دوران فتحة الباب يصطدم ببروز لوحة الإنذار ويمنع فتحه لأكثر من 75 درجة.</td>
+                                <td>NFPA 99 / IBC 1008</td>
+                                <td><span class="badge" style="background: rgba(245,158,11,0.2); color:#fde68a;">🟡 حرج</span></td>
+                                <td>في Desktop يبدو خطوط متداخلة؛ في VR يتم اختبار دوران الباب حركياً.</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-08</b></td>
+                                <td>Clearance<br>Level 2</td>
+                                <td>Fan Coil Unit (FCU) & Cable Tray Cluster</td>
+                                <td>وحدة التكييف تبعد 120 مم فقط عن صينية الكابلات بينما يتطلب سحب الفلتر 400 مم.</td>
+                                <td>ASHRAE 62.1</td>
+                                <td><span class="badge" style="background: rgba(245,158,11,0.2); color:#fde68a;">🟡 حرج</span></td>
+                                <td><b>عجز خوارزمي:</b> لا يوجد تداخل صلب، ولكن في VR يحاكي سحب الفلتر بيده فيكشفه.</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-09</b></td>
+                                <td>Clearance<br>Level 1</td>
+                                <td>Fire Hose Cabinet & Decorative Wood Wall Slats</td>
+                                <td>بروز التكسيات المعمارية يحجب زاوية فتح باب صندوق الحريق لتتوقف عند 65 درجة.</td>
+                                <td>NFPA 14</td>
+                                <td><span class="badge" style="background: rgba(239,68,68,0.2); color:#fca5a5;">🔴 كارثي</span></td>
+                                <td>يغفله الفحص الساكن، ويكتشفه المستخدم بتجربة فتح الدرفة في VR.</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-10</b></td>
+                                <td>Clearance<br>Basement</td>
+                                <td>Medical Waste Pipe Ø110mm & Main Switchboard (MDB)</td>
+                                <td>ماسورة صرف تمر أفقياً في السقف مباشرة فوق الحيز المخصص للوحة الكهرباء الرئيسية.</td>
+                                <td>NFPA 70 (Dedicated Space)</td>
+                                <td><span class="badge" style="background: rgba(239,68,68,0.2); color:#fca5a5;">🔴 كارثي</span></td>
+                                <td>في Desktop يبدو فراغاً؛ في VR تظهر كتلة الفضاء المحجوز فوق اللوحة بوضوح.</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-11</b></td>
+                                <td>Operability<br>Level 2</td>
+                                <td>Oxygen Zone Valve & Gypsum Access Hatch</td>
+                                <td>محبس عزل الأكسجين مركب على مسافة أفقية 1.8m بعيداً عن حافة فتحة التفتيش في السقف.</td>
+                                <td>NFPA 99 / HTM 02-01</td>
+                                <td><span class="badge" style="background: rgba(239,68,68,0.2); color:#fca5a5;">🔴 كارثي</span></td>
+                                <td><b>عجز خوارزمي مطلق:</b> في VR يمد المستخدم ذراعه الافتراضية فيكتشف استحالة الوصول.</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-12</b></td>
+                                <td>Operability<br>Level 2</td>
+                                <td>Surgical Scrub Sink & Side Column Projection</td>
+                                <td>حوض تعقيم الجراحين ملاصق لبروز عمود (80 مم) مما يصدم مرفق الطبيب أثناء الغسيل.</td>
+                                <td>CDC Infection Control</td>
+                                <td><span class="badge" style="background: rgba(56,189,248,0.2); color:#7dd3fc;">🔵 متوسط</span></td>
+                                <td>رصد إرجونومي حركي يلاحظه الطبيب بمجرد الوقوف أمام الحوض.</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-13</b></td>
+                                <td>Operability<br>Basement</td>
+                                <td>Motor Control Center (MCC) & Floor Pipe Rack</td>
+                                <td>حامل أنابيب أرضي يبعد 650 مم فقط أمام لوحة التحكم الكهربائية (المطلوب 1000 مم).</td>
+                                <td>OSHA 1910.303</td>
+                                <td><span class="badge" style="background: rgba(245,158,11,0.2); color:#fde68a;">🟡 حرج</span></td>
+                                <td>يتجاهله الفحص الآلي، ويشعر به المهندس لضيق ممر الوقوف في VR.</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-14</b></td>
+                                <td>Operability<br>Level 2</td>
+                                <td>AHU Motor Casing & Concrete Wall Door</td>
+                                <td>المسافة بين محرك المروحة والجدار 500 مم فقط بينما يتطلب سحب المحور التالف 1200 مم.</td>
+                                <td>AMCA Standards</td>
+                                <td><span class="badge" style="background: rgba(245,158,11,0.2); color:#fde68a;">🟡 حرج</span></td>
+                                <td>في VR يتم إظهار حجم سحب المحور وملاحظة الاصطدام بالجدار الخرساني.</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-15</b></td>
+                                <td>Operability<br>Level 1</td>
+                                <td>90-Degree Corridor & AGV Medical Cart Path</td>
+                                <td>مع زاوية الممر 90 درجة والدرابزين البارز، تعجز عربة النقل الطبية الآلية عن المناورة.</td>
+                                <td>ISO 3691-4</td>
+                                <td><span class="badge" style="background: rgba(245,158,11,0.2); color:#fde68a;">🟡 حرج</span></td>
+                                <td>رصد حركي غامر عبر محاكاة مسار الدوران.</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-16</b></td>
+                                <td>Ergonomic<br>Level 2</td>
+                                <td>Nursing Counter Desk & Main Concrete Column</td>
+                                <td>العمود الإنشائي يقع في خط النظر المباشر بين الممرض وسرير مريض العناية المركزة رقم 4.</td>
+                                <td>AIA Sightline Mandate</td>
+                                <td><span class="badge" style="background: rgba(239,68,68,0.2); color:#fca5a5;">🔴 كارثي</span></td>
+                                <td><b>مستحيل آلياً:</b> لا تداخل مادي؛ في VR يجلس المهندس على كرسي التمريض فيرى انحجاب الرؤية.</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-17</b></td>
+                                <td>Ergonomic<br>Level 2</td>
+                                <td>Recessed Troffer 4000K & Patient Bed Location</td>
+                                <td>وحدة إضاءة قوية مثبتة في السقف تسلط ضوءاً مبهراً بزاوية 90 درجة في عين المريض المستلقي.</td>
+                                <td>IES RP-29-20 Glare</td>
+                                <td><span class="badge" style="background: rgba(56,189,248,0.2); color:#7dd3fc;">🔵 متوسط</span></td>
+                                <td>في VR يجرب المهندس الاستلقاء على السرير فيشعر بالوهج المزعج.</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-18</b></td>
+                                <td>Ergonomic<br>Level 1</td>
+                                <td>Emergency Exit Sign & Drop Acoustic Baffle</td>
+                                <td>لوحة مخرج الطوارئ محجوبة بصرياً بقاطع عازل صوتي بارز لمن يأتي من البهو الرئيسي.</td>
+                                <td>NFPA 101 / ADA</td>
+                                <td><span class="badge" style="background: rgba(239,68,68,0.2); color:#fca5a5;">🔴 كارثي</span></td>
+                                <td>محاكاة المشي الواقعي في VR تكشف اختفاء اللوحة المفاجئ خلف القاطع.</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-19</b></td>
+                                <td>Ergonomic<br>Level 2</td>
+                                <td>Patient Window & Facing Admin Office Windows</td>
+                                <td>نافذة سرير المريض تكشف مكتباً إدارياً مقابلاً بمسافة تقل عن 3 أمتار دون خصوصية.</td>
+                                <td>HIPAA Privacy Rule</td>
+                                <td><span class="badge" style="background: rgba(56,189,248,0.2); color:#7dd3fc;">🔵 متوسط</span></td>
+                                <td>في VR يتم النظر من داخل الغرفة للخارج واستيعاب كشف الفضاء المجاور.</td>
+                            </tr>
+                            <tr>
+                                <td><b>CL-20</b></td>
+                                <td>Ergonomic<br>Level 1</td>
+                                <td>Manual Fire Pull Station & Ramp Handrail</td>
+                                <td>محطة إنذار الحريق موضوعة خلف درابزين المنحدر، مما يرفع مسافة الوصول لـ 650 مم فوق 1300 مم.</td>
+                                <td>ADA Sec 308 (Reach)</td>
+                                <td><span class="badge" style="background: rgba(245,158,11,0.2); color:#fde68a;">🟡 حرج</span></td>
+                                <td><b>محاكاة الكرسي المتحرك:</b> خفض الكاميرا لمنسوب 1.0m يثبت استحالة وصول اليد للمفتاح.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Table 2: Shortcuts & Controls -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>⌨️ الجدول 2:</span>
+                        <span>دليل اختصارات وأزرار التحكم السريع بالمنصة</span>
+                    </div>
+                    <span class="badge badge-green">Hotkeys Reference</span>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>المفتاح / الاختصار</th>
+                            <th>الاسم البرمجي</th>
+                            <th>الوظيفة والوصف الهندسي</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="code-pill">T</span></td>
+                            <td><code>toggleTopBar</code></td>
+                            <td>إظهار أو إخفاء شريط الأدوات العلوي لتوسيع زاوية الرؤية الفراغية للموديل.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="code-pill">S</span></td>
+                            <td><code>toggleSidebars</code></td>
+                            <td>إظهار أو إخفاء كافة القوائم واللوحات الجانبية (الخصائص، التصفية، التعليمات، والقطاع).</td>
+                        </tr>
+                        <tr>
+                            <td><span class="code-pill">H</span> أو <span class="code-pill">Z</span></td>
+                            <td><code>toggleZenMode</code></td>
+                            <td>وضع العرض الفراغي الكامل والتركيز النقي (Zen Mode - إخفاء كافة الأشرطة معاً).</td>
+                        </tr>
+                        <tr>
+                            <td><span class="code-pill">Esc</span></td>
+                            <td><code>restoreAllUI</code></td>
+                            <td>استعادة كافة شرائط ولوحات المنصة فوراً إلى وضعها الافتراضي.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="code-pill">Index Trigger</span></td>
+                            <td><code>handleVRSelect</code></td>
+                            <td>في الـ VR: زر الزناد بالسبابة لاستهداف أي عنصر وإضاءته باللون السماوي المشع.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- TAB 4: PEER-REVIEW EVALUATION & SCOPUS Q1 ROADMAP -->
+        <!-- ===================================================================== -->
+        <section id="tab-peer-review" class="tab-content">
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>🎓 التقييم الأكاديمي الصادر من المحكّم الدولي (Claude Review):</span>
+                    </div>
+                    <span class="badge badge-purple">Scopus Q1 Evaluation</span>
+                </div>
+                <div style="background: rgba(15, 23, 42, 0.7); border-right: 4px solid var(--purple); padding: 18px; border-radius: 0 10px 10px 0; font-size: 0.92rem; color: #e2e8f0; line-height: 1.8;">
+                    <p><b>خلاصة تقرير التحكيم العلمي:</b></p>
+                    <p style="margin-top: 8px;">
+                        المنصة، من الناحية العلمية الدقيقة، هي بيئة مراجعة فراغية وتسجيل تعارضات بمساعدة الإنسان <b>(Human-in-the-Loop Visual Review)</b> وليست أداة كشف تعارضات آلية خوارزمية (Automated Clash Detection) مثل Navisworks/Solibri. التمييز واجب بدقة في أي ورقة منعا لأي رفض تحكيمي مباشر.
+                    </p>
+                    <p style="margin-top: 8px;">
+                        المحرك التقني قائم وناضج، ومحورا القياس والقطع هما توظيف لمكتبات جاهزة. القيمة المضافة الفعلية تكمن في التكامل وتجربة الاستخدام والربط بالواقع الافتراضي منخفض الكلفة.
+                    </p>
+                    <p style="margin-top: 8px;">
+                        <b>المسار الاستثنائي المقترح (الورقة الرابحة):</b> بما أن بحث الدكتور أحمد يتضمن توليد المخططات السكنية المتاحة لمستخدمي الكراسي المتحركة عبر <code>Pix2Pix</code> ومقياس الامتثال <code>AGCR</code>، فإن هذه المنصة تصلح بيئة تحقق لاحقة طبيعية بمقياس 1:1 غامراً لاختبار نصف قطر الدوران واتساع الممرات والأبواب. هذا يغلق حلقة كاملة غير مسبوقة في الأدبيات بين الذكاء الاصطناعي التوليدي والتحقق التجريبي الغامر.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Q1 Roadmap Table -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>🗺️ خطة العمل الاستراتيجية للترقية إلى مجلات Scopus Q1:</span>
+                    </div>
+                    <span class="badge badge-green">Action Plan</span>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>المسار</th>
+                            <th>الهدف العلمي والمنهجي</th>
+                            <th>الإجراء التقني المقترح</th>
+                            <th>المجلة المستهدفة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>المسار A (الذهبي)</b></td>
+                            <td>حلقة مغلقة: التصميم التوليدي + الفحص الغامر للكراسي المتحركة</td>
+                            <td>بناء محاكي الكرسي المتحرك 1:1 (Wheelchair Kinematic Avatar) للتحقق الفراغي من AGCR داخل VR</td>
+                            <td><b>Automation in Construction</b> (Q1 - IF: 10.3)</td>
+                        </tr>
+                        <tr>
+                            <td><b>المسار B (الهجين)</b></td>
+                            <td>حل معضلة إرهاق التعارضات (Clash Fatigue) عبر فحص هجين ذكي</td>
+                            <td>خوارزمية BVH/AABB خفيفة بالمتصفح للكشف الأولي + ترشيح بشري غامر للتعارضات الحرجة فقط</td>
+                            <td><b>Adv. Engineering Informatics</b> (Q1 - IF: 8.0)</td>
+                        </tr>
+                        <tr>
+                            <td><b>المسار C (الأداة)</b></td>
+                            <td>ورقة نظام برمجي مفتوح المصدر (Open-Source Tool Paper)</td>
+                            <td>توصيف المعمارية الهندسية + دراسة حالة مشروع حقيقي + ترخيص MIT و Zenodo DOI</td>
+                            <td><b>ITcon</b> (Q1/Q2)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            event.currentTarget.classList.add('active');
+            const target = document.getElementById(tabId);
+            if (target) target.classList.add('active');
+
+            // Trigger mermaid re-render if switching to diagrams
+            if (tabId === 'tab-diagrams') {
+                setTimeout(() => { mermaid.contentLoaded(); }, 50);
+            }
+        }
+
+        function filterTimeline() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const items = document.querySelectorAll('.step-item');
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(query) ? 'block' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>
