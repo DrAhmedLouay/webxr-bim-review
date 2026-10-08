@@ -1772,6 +1772,152 @@
                                     <li><b>تزويد الصفحة بمحرك بحث فوري، وخاصية طي وتوسيع كافة البطاقات، ودعم مكتبة KaTeX للصياغة الرياضية.</b></li>
                                 </ul>
                             </div>
+                <!-- ===================================================================== -->
+                <!-- ERA 9: ROLE-BASED ACCESS CONTROL (RBAC), SECURITY & ARCHIVAL SYNCHRONIZATION (OCT 4 - 8, 2026) -->
+                <!-- ===================================================================== -->
+                <div class="era-divider">
+                    <h2>
+                        <span>🛡️</span>
+                        <span>المحور التاسع: إدارة صلاحيات الوصول الأكاديمي (RBAC)، الأمان والسرية، ومزامنة الأرشيف الموسوعي</span>
+                    </h2>
+                    <span class="era-date">4 - 8 أكتوبر 2026</span>
+                </div>
+
+                <!-- Turn 9.1 (Card 23) -->
+                <div class="card" id="card-turn-9-1">
+                    <div class="card-header" onclick="toggleCard('card-turn-9-1')">
+                        <div class="card-title">
+                            <span>2️⃣3️⃣</span>
+                            <span>إضافة صفحة تسجيل الدخول ونظام إدارة صلاحيات الوصول (RBAC) بحسابين مع حجب السجل عن حساب الطالبة</span>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <span class="badge badge-purple">إدارة الصلاحيات والأمان (RBAC)</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="user-prompt-container">
+                            <div class="user-label">
+                                <span>👤</span>
+                                <span>طلب المهندس المعماري د. أحمد لؤي أحمد:</span>
+                            </div>
+                            <div class="user-prompt-quote">
+"اضف صفحة رئيسية في اسم المستخدم ورمز المرور مع حسابين (الدكتور المشرف احمد لؤي احمد Admin، وحساب الطالبة ذرى مهدي Stdent)، على ان يتم اخفاء '[📜 سجل المحادثات والمخططات' من حساب الطالبة فقط."
+                            </div>
+                        </div>
+
+                        <div class="assistant-response-container">
+                            <div class="assistant-label">
+                                <span>🤖</span>
+                                <span>إجابة ومقترح مساعد الذكاء الاصطناعي الشاملة:</span>
+                            </div>
+                            <div class="assistant-box">
+                                <h4>🔐 البنية الهندسية لنظام التحكم في الوصول القائم على الدور الأكاديمي (RBAC):</h4>
+                                <p>استجابة لطلب د. أحمد بحماية خصوصية المخرجات البحثية والمناقشات الاستشارية ومنهجية العمل المتبعة، تم تأسيس بنية أمنية متكاملة داخل المتصفح:</p>
+                                <ul>
+                                    <li><b>بوابة الهبوط الرئيسية (Glassmorphism Portal Overlay):</b> شاشة تفاعلية ترحيبية بتأثير بلوري أنيق تظهر فور فتح المنصة وتحمل شارة التوثيق الأكاديمي: <code class="code-pill">🔬 إشراف وتطوير: المهندس المعماري الدكتور أحمد لؤي أحمد</code>.</li>
+                                    <li><b>تخصيص الحسابين المعتمدين:</b>
+                                        <ul>
+                                            <li><b>حساب الدكتور المشرف (Admin):</b> المستخدم <code class="code-pill">ahmed</code> (مع دعم <code class="code-pill">admin</code> / <code class="code-pill">drahmed</code>)، رمز المرور <code class="code-pill">123456</code> أو <code class="code-pill">123</code>. يمنح الصلاحيات الإشرافية المطلقة ويظهر زر ورابط سجل المحادثات والمخططات في الشريط العلوي ونافذة الإرشادات.</li>
+                                            <li><b>حساب الطالبة الباحثة (Student):</b> المستخدم <code class="code-pill">dhurra</code> (مع دعم <code class="code-pill">student</code> / <code class="code-pill">ذرى</code>)، رمز المرور <code class="code-pill">123456</code> أو <code class="code-pill">123</code>. يتيح أدوات مراجعة الموديل والواقع الافتراضي مع <b>حجب تام ومطلق</b> لسجل المحادثات والمخططات.</li>
+                                        </ul>
+                                    </li>
+                                    <li><b>الحجب البرمجي على مستوى الواجهة (DOM RBAC Enforcement):</b> إخفاء زر الشريط العلوي <code class="code-pill">#btn-conversations-log</code> وسطر الإرشادات <code class="code-pill">#instructions-log-row</code> تلقائياً بأولوية <code class="code-pill">display: none !important;</code> عند دخول الطالبة.</li>
+                                    <li><b>بوابة التحقق في رأس صفحة السجل (Head Gatekeeper Security):</b> إضافة كود تدقيق في وسم <code class="code-pill">&lt;head&gt;</code> لملف السجل يفحص الجلسة فوراً؛ وإذا تبين محاولة وصول الطالبة للرابط المباشر يتم إيقافها بتنبيه أمني فوري وإعادتها للصفحة الرئيسية.</li>
+                                    <li><b>شريط الجلسة وزر إنهاء الجلسة:</b> إضافة شارة المستخدم في الشريط العلوي مع زر <code class="code-pill">🚪 خروج (Logout)</code> لإنهاء الجلسة والتبديل الفوري بين الحسابات.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Turn 9.2 (Card 24) -->
+                <div class="card" id="card-turn-9-2">
+                    <div class="card-header" onclick="toggleCard('card-turn-9-2')">
+                        <div class="card-title">
+                            <span>2️⃣4️⃣</span>
+                            <span>تعزيز الأمان والسرية: إخفاء بطاقات الحسابات والنائبات والاعتماد على الإدخال اليدوي المباشر</span>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <span class="badge badge-amber">السرية والأمان (Confidentiality)</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="user-prompt-container">
+                            <div class="user-label">
+                                <span>👤</span>
+                                <span>طلب المهندس المعماري د. أحمد لؤي أحمد:</span>
+                            </div>
+                            <div class="user-prompt-quote">
+"اخفي بيانات الـ admin والـ Student والابقاء على ادخال البيانات"
+<div style="margin-top: 6px; font-size: 0.8rem; color: #94a3b8;">[مرفقاً بصورة شاشة لواجهة تسجيل الدخول تظهر بطاقات الحسابات وتلميحات أسماء المستخدمين والرموز]</div>
+                            </div>
+                        </div>
+
+                        <div class="assistant-response-container">
+                            <div class="assistant-label">
+                                <span>🤖</span>
+                                <span>إجابة ومقترح مساعد الذكاء الاصطناعي الشاملة:</span>
+                            </div>
+                            <div class="assistant-box">
+                                <h4>🛡️ تطبيق مبدأ الأمان عبر التصميم السري (Confidential by Design):</h4>
+                                <p>للحفاظ على أعلى درجات السرية الأكاديمية ومنع كشف أي معلومات عن الحسابات أو الرموز للزوار أو العامة، تم تعديل شاشة الدخول كالتالي:</p>
+                                <ul>
+                                    <li><b>شطب بطاقات الحسابات السريعة:</b> إزالة شبكة البطاقات التفاعلية وعنوانها نهائياً من بنية الصفحة والـ CSS، بحيث لا يظهر أي اسم أو دور مسبقاً.</li>
+                                    <li><b>تنظيف نائبات الحقول (Sanitized Placeholders):</b> إزالة كافة التلميحات التي كانت توضح أسماء الدخول <code class="code-pill">(ahmed / dhurra)</code> والرموز <code class="code-pill">(123456)</code>، واستبدالها بنصوص محايدة:
+                                        <ul>
+                                            <li>حقل اسم المستخدم: <code class="code-pill">أدخل اسم المستخدم</code></li>
+                                            <li>حقل رمز المرور: <code class="code-pill">أدخل رمز المرور</code></li>
+                                        </ul>
+                                    </li>
+                                    <li><b>تأمين رسائل التنبيه والخطأ:</b> توحيد رسالة الخطأ عند إدخال بيانات خاطئة إلى <code class="code-pill">❌ اسم المستخدم أو رمز المرور غير صحيح!</code> لمنع استكشاف أسماء المستخدمين الصالحة في المنظومة.</li>
+                                    <li><b>أبعاد رشيقة وتركيز تلقائي:</b> ضبط عرض الكارت إلى <code class="code-pill">max-width: 440px</code> وتفعيل التركيز التلقائي للمؤشر داخل حقل اسم المستخدم فور الظهور لسرعة وسلاسة الاستخدام.</li>
+                                    <li><b>الحفاظ على استقلالية الأدوار:</b> بقاء محرك التحقق الخلفي فعالاً بكامل الصلاحيات لتمييز المشرف وإظهار السجل، مقابل حجب السجل للطالبة.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Turn 9.3 (Card 25) -->
+                <div class="card" id="card-turn-9-3">
+                    <div class="card-header" onclick="toggleCard('card-turn-9-3')">
+                        <div class="card-title">
+                            <span>2️⃣5️⃣</span>
+                            <span>المعالجة الجذرية للخلل التوثيقي ومزامنة سجل المحادثات والأوامر والمسار البحثي الشامل</span>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <span class="badge badge-emerald">المزامنة الأرشيفية التامة</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="user-prompt-container">
+                            <div class="user-label">
+                                <span>👤</span>
+                                <span>طلب المهندس المعماري د. أحمد لؤي أحمد:</span>
+                            </div>
+                            <div class="user-prompt-quote">
+"كل ما مكتوب اعلاه غير موجود سجل المحادثات، عالج الخلل"
+                            </div>
+                        </div>
+
+                        <div class="assistant-response-container">
+                            <div class="assistant-label">
+                                <span>🤖</span>
+                                <span>إجابة ومقترح مساعد الذكاء الاصطناعي الشاملة:</span>
+                            </div>
+                            <div class="assistant-box">
+                                <h4>📚 تشخيص الخلل والمعالجة الجذرية للمزامنة الأرشيفية:</h4>
+                                <p>تم تشخيص سبب عدم ظهور المحادثات والأوامر الأخيرة في السجل بدقة:</p>
+                                <ul>
+                                    <li><b>سبب الخلل:</b> صفحة الويب التفاعلية <code class="code-pill">full_research_conversations_log.html</code> وملف الماركداون الرئيسي على المستودع <code class="code-pill">RESEARCH_DEVELOPMENT_LOG.md</code> كانا قد توقفا عند المرحلة 22، ولم تشملها التحديثات اللحظية الخاصة بإنشاء بوابة تسجيل الدخول (RBAC) وتأمين الحقول وسرية الواجهة، مما تسبب في غياب هذه المراحل الحوارية من واجهة السجل.</li>
+                                    <li><b>المعالجة الفورية:</b>
+                                        <ul>
+                                            <li>توسيع الأرشيف التفاعلي بإضافة <b>المحور التاسع</b> والبطاقات 23 و 24 و 25 بكافة نصوص الأوامر، المقترحات البرمجية، والأكواد المنفذة.</li>
+                                            <li>إضافة جدول مصفوفة الصلاحيات الأكاديمية (RBAC Access Matrix) ومخطط تسلسل المصادقة التفاعلي.</li>
+                                            <li>مزامنة وتحديث ملف <code class="code-pill">RESEARCH_DEVELOPMENT_LOG.md</code> على GitHub ليطابق صفحة الـ HTML بنسبة 100%.</li>
+                                            <li>تحديث الأرتيفاكتات داخل بيئة العمل في Antigravity: <code class="code-pill">master_full_conversations_log.md</code> و <code class="code-pill">research_development_log_and_steps.md</code>.</li>
+                                            <li>إجراء دفع فوري (Git Push) إلى المستودع لضمان انعكاس التحديثات على المنصة الحية مباشرة.</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1917,9 +2063,42 @@ flowchart TD
 
     subgraph PathB ["مسار د. أحمد المبتكر (Zero-Install WebXR OpenBIM Workflow)"]
         R2["أي برنامج BIM مفتوح (IFC / Revit / Archicad)"] --> W2["Web-IFC WebAssembly Engine (In-Browser)"]
-        W2 --> T2["Three.js Lightweight WebGL/WebXR Engine"]
         T2 --> G2["GitHub Pages (Zero Server / Zero Cost / Global Instant URL)"]
         G2 --> Q2["Meta Quest Standalone Browser (Untethered 1:1 Instant VR)"]
+    end
+                </div>
+            </div>
+
+            <div class="diagram-container">
+                <div class="diagram-title">
+                    <span>🛡️</span>
+                    <span>6. مخطط تسلسل إدارة الصلاحيات والأمان الأكاديمي (RBAC Sequence & Gatekeeper Flow)</span>
+                </div>
+                <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor User as المستخدم (د. أحمد / ذرى)
+    participant UI as واجهة الدخول (Portal Overlay)
+    participant Auth as محرك التحقق الأمني (RBAC Engine)
+    participant Session as إدارة الجلسة (Storage Session)
+    participant BIM as منصة الـ WebXR 3D
+    participant Log as سجل المحادثات (Log Page)
+
+    User->>UI: إدخال اسم المستخدم ورمز المرور
+    UI->>Auth: فحص بيانات الاعتماد والمطابقة
+    alt د. أحمد لؤي أحمد (Admin)
+        Auth->>Session: حفظ دور Admin والمشرف
+        Auth->>BIM: إتاحة كافة الأدوات + إظهار زر [سجل المحادثات والمخططات]
+        User->>Log: نقر زر السجل -> فتح الأرشيف الموسوعي الشامل
+    else الطالبة ذرى مهدي (Student)
+        Auth->>Session: حفظ دور Student
+        Auth->>BIM: إتاحة أدوات الـ 3D والـ VR + حجب تام لزر ورابط السجل
+        Note over BIM,Log: زر السجل مخفي تماماً (display: none !important)
+        opt محاولة فتح الرابط المباشر
+            User->>Log: محاولة زيارة full_research_conversations_log.html
+            Log->>Log: فحص دور المستخدم عبر Head Gatekeeper
+            Log-->>User: تنبيه أمني بالمنع وإعادة التوجيه إلى index.html
+        end
     end
                 </div>
             </div>
@@ -2250,6 +2429,68 @@ flowchart TD
                                 <td><span class="code-pill">🥽 دليل الواقع الافتراضي</span></td>
                                 <td>دليل تشغيل الـ VR والمحاكي</td>
                                 <td>فتح دليل تشغيل نظارة Meta Quest، وتفعيل محاكي مؤشر الليزر المكتبي (Desktop 6-DoF Simulator) لتجربة الـ VR بالفأرة.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Master Table 4: RBAC Access Matrix -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>🛡️</span>
+                        <span>مصفوفة إدارة صلاحيات الوصول والأمان الأكاديمي (Role-Based Access Control - RBAC)</span>
+                    </div>
+                    <span class="badge badge-purple">نظام الأمان والخصوصية</span>
+                </div>
+                <div class="card-body">
+                    <p>مصفوفة تفصيلية توضح الصلاحيات الممنوحة لكل حساب داخل المنصة، وآلية عزل وحجب سجل المحادثات والمخططات عن حساب الطالبة لضمان الخصوصية الأكاديمية والسرية التامة:</p>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>الميزة / الأداة التشغيلية</th>
+                                <th>حساب الدكتور المشرف (Admin)<br><small>د. أحمد لؤي أحمد</small></th>
+                                <th>حساب الطالبة الباحثة (Student)<br><small>ذرى مهدي</small></th>
+                                <th>آلية التطبيق الفني والأمني في المنصة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>معاينة نماذج الـ BIM و Web-IFC</b></td>
+                                <td><span class="badge badge-emerald">متاح بالكامل</span></td>
+                                <td><span class="badge badge-emerald">متاح بالكامل</span></td>
+                                <td>محرك Three.js + WebAssembly عبر المتصفح مباشرة.</td>
+                            </tr>
+                            <tr>
+                                <td><b>أدوات القياس الفراغي والقطاعات</b></td>
+                                <td><span class="badge badge-emerald">متاح بالكامل</span></td>
+                                <td><span class="badge badge-emerald">متاح بالكامل</span></td>
+                                <td>حساب الخلوص الرأسي $\Delta Y$ والإسقاط الأفقي ومستويات القطع $X,Y,Z$.</td>
+                            </tr>
+                            <tr>
+                                <td><b>فحص التعارضات والواقع الافتراضي (WebXR)</b></td>
+                                <td><span class="badge badge-emerald">متاح بالكامل</span></td>
+                                <td><span class="badge badge-emerald">متاح بالكامل</span></td>
+                                <td>استعراض مصفوفة التعارضات وتجربة نظارة Meta Quest ومحاكي الـ Desktop.</td>
+                            </tr>
+                            <tr>
+                                <td><b>زر ورابط سجل المحادثات والمخططات</b></td>
+                                <td><span class="badge badge-emerald">مُفعل وظاهر</span></td>
+                                <td><span class="badge badge-rose">محجوب ومخفي تماماً</span></td>
+                                <td>تطبيق <code class="code-pill">display: none !important;</code> فورياً في الـ DOM.</td>
+                            </tr>
+                            <tr>
+                                <td><b>الوصول المباشر لصفحة الأرشيف الموسوعي (HTML)</b></td>
+                                <td><span class="badge badge-emerald">مسموح بالكامل</span></td>
+                                <td><span class="badge badge-rose">محظور وموجه تلقائياً</span></td>
+                                <td>بوابة تدقيق برمجية في الرأس (<code class="code-pill">Head Gatekeeper</code>) تمنع الطالبة وتعيد توجيهها.</td>
+                            </tr>
+                            <tr>
+                                <td><b>تسجيل الخروج والتبديل السريع</b></td>
+                                <td><span class="badge badge-cyan">زر خروج متاح</span></td>
+                                <td><span class="badge badge-cyan">زر خروج متاح</span></td>
+                                <td>إنهاء الجلسة ومسح بيانات التخزين المؤقت والعودة لشاشة الدخول.</td>
                             </tr>
                         </tbody>
                     </table>
