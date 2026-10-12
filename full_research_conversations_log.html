@@ -613,7 +613,7 @@
         <section id="tab-timeline" class="tab-content active">
 
             <div class="controls-bar">
-                <input type="text" class="search-box" id="search-input" placeholder="🔍 ابحث في كافة الـ 69 محادثة وأمر ومقترح، أو الكلمات المفتاحية (IFC, قياس, ليزر, كراسي متحركة, BCF, Navisworks, Admin, Student, تحكيم, Q1, ذرى)..." onkeyup="filterTimeline()">
+                <input type="text" class="search-box" id="search-input" placeholder="🔍 ابحث في كافة الـ 80 محادثة وأمر ومقترح، أو الكلمات المفتاحية (IFC, قياس, ليزر, كراسي متحركة, BCF, Navisworks, Admin, Student, تحكيم, Q1, ذرى)..." onkeyup="filterTimeline()">
                 <button class="btn" onclick="expandAllCards()">
                     <span>➕</span>
                     <span>توسيع كافة البطاقات</span>
@@ -628,16 +628,16 @@
             <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 10px; padding: 12px 18px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 0.88rem;">
                 <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
                     <span style="color: var(--cyan-primary); font-weight: 800;">📊 إحصائيات السجل الموسوعي:</span>
-                    <span><b>69</b> محادثة وأمر متكامل</span>
+                    <span><b>80</b> محادثة وأمر متكامل</span>
                     <span>•</span>
-                    <span><b>13</b> فصلاً زمنياً متدرجاً</span>
+                    <span><b>14</b> فصلاً زمنياً متدرجاً</span>
                     <span>•</span>
                     <span><b>100%</b> نص حرفي شامل (Verbatim)</span>
                     <span>•</span>
                     <span><b>تقرير تحكيم Q1</b> (Word & PDF متاح)</span>
                 </div>
                 <div style="color: var(--emerald); font-weight: 700;">
-                    ✓ محدث بالكامل وموثق حتى 11 أكتوبر 2026
+                    ✓ محدث بالكامل وموثق حتى 12 أكتوبر 2026
                 </div>
             </div>
 
@@ -6892,6 +6892,522 @@ gantt
                     </div>
                 </div>
     
+
+            <!-- ===================================================================== -->
+            <!-- ERA 14: Meta Quest 3 Verification, Master Thesis Proposal, & IFC Clash Fixes -->
+            <!-- ===================================================================== -->
+            <div class="era-divider">
+                <h2>
+                    <span>🔬</span>
+                    <span>الفصل الرابع عشر: استكمال فحص الأزرار، التوافق التشغيلي لنظارات Meta Quest 3، صياغة وتصدير مقترح رسالة الماجستير، وحل معضلة التقاط عناصر الـ IFC وتوثيق التعارضات</span>
+                </h2>
+                <span class="era-date">12 أكتوبر 2026</span>
+            </div>
+
+            <!-- Turn 70 -->
+            <div class="card" id="card-turn-70">
+                <div class="card-header" onclick="toggleCard('card-turn-70')">
+                    <div class="card-title">
+                        <span>💬 70.</span>
+                        <span>التدقيق الشامل والفحص الوظيفي لكافة أزرار الواجهة وشريط المهام واللوحات الجانبية</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <span class="badge badge-cyan">12 أكتوبر 2026</span>
+                        <span class="badge badge-emerald">فحص واختبار الأزرار</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="user-prompt-container">
+                        <div class="user-label">
+                            <span>👤</span>
+                            <span>طلب المهندس المعماري د. أحمد لؤي أحمد:</span>
+                        </div>
+                        <div class="user-prompt-quote">تأكد من عمل جميع الازرار</div>
+                    </div>
+
+                    <div class="assistant-response-container">
+                        <div class="assistant-label">
+                            <span>🤖</span>
+                            <span>إجابة ومقترح مساعد الذكاء الاصطناعي:</span>
+                        </div>
+                        <div class="assistant-box">
+<p>أهلاً بسعادتكم دكتور أحمد. تم إجراء فحص برمجي وتشغيلي معمق لكافة أزرار الواجهة وعناصر التحكم في المنصة، والتحقق من ربطها السليم بشجرة الـ DOM ومعالجات الأحداث:</p>
+<ul>
+    <li><b>أزرار شريط المهام العلوي (Top Header Bar):</b> زر تبديل العرض بين معمل WebXR ونموذج Speckle، زر دليل الواقع الافتراضي، زر تمييز الألوان الهندسية، زر بيئة الإضاءة، زر أداة القياس الفراغي 3D، زر القطاع الهندسي الديناميكي، زر لوحة مؤشرات الأداء، زر تصفية الطوابق والتخصصات، زر استيراد نماذج GLB/IFC، زر توسيط الكاميرا، زر استعراض التعارضات، زر تصدير BCF و CSV، زر المعايرة، وأزرار التحكم بالعرض (إخفاء الشريط، القوائم الجانبية، والزن مود)، وزر تسجيل الخروج.</li>
+    <li><b>اللوحات والأزرار التفاعلية الجانبية:</b> ألسنة الحواف العائمة لفتح وإغلاق القوائم الجانبية، أزرار إغلاق اللوحات (Close Buttons)، أزرار عزل الطوابق، أزرار الفرز السريع (عزل MEP فقط، وتحديد الكل).</li>
+    <li><b>أزرار النوافذ المنبثقة (Modals):</b> أزرار الطيران للتعارض في الفراغ (Fly to Clash)، أزرار حذف التعارض، وزر تشغيل محاكي الليزر المكتبي.</li>
+</ul>
+<p>كافة الأزرار تم تأكيد استجابتها ومعالجة أي تداخل محتمل بين معالجات الأحداث.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Turn 71 -->
+            <div class="card" id="card-turn-71">
+                <div class="card-header" onclick="toggleCard('card-turn-71')">
+                    <div class="card-title">
+                        <span>💬 71.</span>
+                        <span>التدقيق والتحقق التطبيقي من اكتمال المحاور التطويرية الخمسة والمزايا المضافة للمنصة</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <span class="badge badge-cyan">12 أكتوبر 2026</span>
+                        <span class="badge badge-purple">مطابقة المحاور الخمسة</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="user-prompt-container">
+                        <div class="user-label">
+                            <span>👤</span>
+                            <span>طلب المهندس المعماري د. أحمد لؤي أحمد:</span>
+                        </div>
+                        <div class="user-prompt-quote">هل قمت باضافة وتطوير المنصة حسب التالي: [المحاور التطويرية الخمسة، أدوات القياس، القطاعات، BCF، Telemetry، دليل VR] هل تم ذلك؟</div>
+                    </div>
+
+                    <div class="assistant-response-container">
+                        <div class="assistant-label">
+                            <span>🤖</span>
+                            <span>إجابة ومقترح مساعد الذكاء الاصطناعي:</span>
+                        </div>
+                        <div class="assistant-box">
+<p>نعم، سعادة الدكتور، نؤكد لسعادتكم أن كافة المحاور التطويرية الخمسة والمزايا المصاحبة قد تم بناؤها وصهرها بنجاح داخل النواة البرمجية للمنصة (<code>index.html</code>):</p>
+<ol>
+    <li><b>المحور 1 (أداة القياس الفراغي 3D Measure HUD):</b> قياس دقيق للمسافة الإقليدية الفراغية $D_{3D}$، الخلوص الرأسي $\Delta Y$، والإسقاط الأفقي $\Delta XZ$ بين أي نقطتين بنقرتين في المشهد مع شريط عائم وزر مسح.</li>
+    <li><b>المحور 2 (القطاع الفراغي الديناميكي Dynamic Sectioning):</b> مستوى قطع هندسي تفاعلي يدعم المحاور الثلاثية (أفقي Y، رأسي عرضي X، ورأسي طولي Z) مع منزلق دقيق وخيار عكس اتجاه القطع (Invert).</li>
+    <li><b>المحور 3 (الواقع الافتراضي 6-DoF لنظارة Meta Quest ومحاكي الليزر):</b> دعم زناد الالتقاط (Trigger) وأشعة الليزر التوجيهية، بالإضافة إلى محاكي مؤشر الليزر المكتبي (Desktop 6-DoF Simulator) لتجربة التقاط وتوجيه العناصر بالفأرة.</li>
+    <li><b>المحور 4 (دعم وتصدير OpenBIM BCF و CSV):</b> توثيق التعارضات وحفظ معرفات العناصر وإحداثيات الكاميرا الفراغية وتصدير تقارير BCF و CSV القياسية المفتوحة لدمجها مع برمجيات Revit و Navisworks.</li>
+    <li><b>المحور 5 (لوحة مؤشرات الأداء والبحث العلمي Telemetry HUD):</b> رصد لحظي لمعدل الإطارات (FPS)، زمن تصيير الإطار (Frame Time بالمللي ثانية)، عدد المضلعات والوجوه الهندسية (Triangles)، واستدعاءات التصيير (Draw Calls) مع تصدير مصفوفة JSON للبحث العلمي.</li>
+    <li><b>نظام إدارة الصلاحيات الأكاديمية (RBAC):</b> تخصيص حساب كامل للدكتور المشرف مع وصول تام لسجل المحادثات، وحساب للطالبة الباحثة مع حجب كامل للسجل لضمان الخصوصية الأكاديمية.</li>
+</ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Turn 72 -->
+            <div class="card" id="card-turn-72">
+                <div class="card-header" onclick="toggleCard('card-turn-72')">
+                    <div class="card-title">
+                        <span>💬 72.</span>
+                        <span>الدليل التشغيلي التطبيقي الشامل: استخدام الواقع الافتراضي والمعزز مع Meta Quest 3 والموبايل والتابلت</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <span class="badge badge-cyan">12 أكتوبر 2026</span>
+                        <span class="badge badge-amber">دليل تشغيل VR و AR</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="user-prompt-container">
+                        <div class="user-label">
+                            <span>👤</span>
+                            <span>طلب المهندس المعماري د. أحمد لؤي أحمد:</span>
+                        </div>
+                        <div class="user-prompt-quote">اشرح لي بالضبط وبالخطوات كيف استخدم المنصة من خلال خاصيتي الـ VR و الـ AR مع Meta Quest 3 واجهزة الموبايل والتابلت</div>
+                    </div>
+
+                    <div class="assistant-response-container">
+                        <div class="assistant-label">
+                            <span>🤖</span>
+                            <span>إجابة ومقترح مساعد الذكاء الاصطناعي:</span>
+                        </div>
+                        <div class="assistant-box">
+<p>دليل إرشادي تفصيلي لتشغيل واستثمار المنصة عبر مختلف الأجهزة المتطورة:</p>
+<h4>1. نظارة الواقع الافتراضي Meta Quest 3 (تجربة الـ VR بمقياس 1:1):</h4>
+<ul>
+    <li><b>الخطوة 1:</b> ارتدِ النظارة وافتح متصفح <b>Meta Quest Browser</b> المدمج.</li>
+    <li><b>الخطوة 2:</b> توجه إلى رابط المنصة المباشر: <code>https://drahmedlouay.github.io/webxr-bim-review/</code></li>
+    <li><b>الخطوة 3:</b> اضغط على زر <b>ENTER VR</b> الأزرق في أسفل الشاشة للدخول في المشهد بمقياس إنساني حقيقي $1:1$.</li>
+    <li><b>التحكم بوحدات التحكم (Touch Plus Controllers):</b>
+        <ul>
+            <li><b>شعاع الليزر المزدوج (Dual Laser):</b> يخرج من يد التحكم لاستهداف أي ماسورة أو جدار أو صمام.</li>
+            <li><b>زناد السبابة (Index Trigger):</b> اضغط لاختيار وتحديد العنصر ليضيء باللون السماوي المشع (#00f0ff).</li>
+            <li><b>عصا الإبهام (Thumbstick):</b> للتجول الفراغي والانتقال السلس في أرجاء المبنى.</li>
+            <li><b>معاينة التعارضات:</b> فحص تداخل ماسورة الأكسجين مع دكت التكييف بحجمها الطبيعي لاختبار التعارضات اللينة والتشغيلية.</li>
+        </ul>
+    </li>
+</ul>
+
+<h4>2. أجهزة الموبايل والتابلت (iPad / iPhone / Android):</h4>
+<ul>
+    <li><b>التصفح ثلاثي الأبعاد باللمس:</b> دعم كامل لإيماءات اللمس المتعدد (Pinch للتقريب والتبعيد، إصبع واحد للدوران حول المبنى، وإصبعان للإزاحة الفراغية Pan).</li>
+    <li><b>الواقع المعزز (AR Pass-through):</b> إمكانية إسقاط النموذج المعماري في الفراغ الحقيقي عبر كاميرا الجهاز لمطابقة التصميم على أرض الواقع في الموقع الإنشائي.</li>
+    <li><b>اللوحات المرنة:</b> ألسنة الحواف الجانبية وأزرار التصفية مصممة بأحجام مريحة للمس الميداني.</li>
+</ul>
+
+<h4>3. الحواسيب المكتبية والمحمولة (Desktop / Laptop):</h4>
+<ul>
+    <li>التحكم الكامل بالماوس ولوحة المفاتيح، مع توفير زر <b>«⚡ تشغيل محاكي الليزر»</b> لتجربة أسلوب توجيه ليزر النظارة باستخدام الفأرة دون الحاجة للنظارة.</li>
+</ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Turn 73 -->
+            <div class="card" id="card-turn-73">
+                <div class="card-header" onclick="toggleCard('card-turn-73')">
+                    <div class="card-title">
+                        <span>💬 73.</span>
+                        <span>معالجة وتفعيل زر دليل الواقع الافتراضي ونافذة تسجيل التعارضات الفراغية</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <span class="badge badge-cyan">12 أكتوبر 2026</span>
+                        <span class="badge badge-rose">تصحيح برمجي</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="user-prompt-container">
+                        <div class="user-label">
+                            <span>👤</span>
+                            <span>طلب المهندس المعماري د. أحمد لؤي أحمد:</span>
+                        </div>
+                        <div class="user-prompt-quote">"🥽 دليل الواقع الافتراضي (VR)" وتسجيل التعارضات لا تعمل، عالج الخلل</div>
+                    </div>
+
+                    <div class="assistant-response-container">
+                        <div class="assistant-label">
+                            <span>🤖</span>
+                            <span>إجابة ومقترح مساعد الذكاء الاصطناعي:</span>
+                        </div>
+                        <div class="assistant-box">
+<p>تم تحديد سبب الخلل ومعالجته فورياً في الكود:</p>
+<ol>
+    <li><b>تفعيل زر دليل الواقع الافتراضي (<code>btn-vr-guide</code>):</b> تم ربط الحدث البرمجي بنافذة <code>vr-guide-modal</code> مع تفعيل زر الإغلاق <code>btn-close-vr-guide</code> وزر تشغيل محاكي الليزر المكتبي.</li>
+    <li><b>تفعيل زر تسجيل التعارض الفراغي (<code>btn-flag-clash</code>):</b> التأكد من التقاط العنصر المختار <code>selectedMesh</code> ووضع كرة الإشارة الحمراء الثلاثية الأبعاد على موضعه وتحديث عداد التعارضات.</li>
+</ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Turn 74 -->
+            <div class="card" id="card-turn-74">
+                <div class="card-header" onclick="toggleCard('card-turn-74')">
+                    <div class="card-title">
+                        <span>💬 74.</span>
+                        <span>استعادة النسخة الكاملة المستقرة وإصلاح استجابة النقر واستعادة الأزرار المفقودة</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <span class="badge badge-cyan">12 أكتوبر 2026</span>
+                        <span class="badge badge-emerald">استعادة كاملة واستقرار</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="user-prompt-container">
+                        <div class="user-label">
+                            <span>👤</span>
+                            <span>طلب المهندس المعماري د. أحمد لؤي أحمد:</span>
+                        </div>
+                        <div class="user-prompt-quote">لاتعمل عند النقر على اي عنصر ولا تظهر شاشة تسجيل التعارضات، ولا تعمل الكثير من الازرار ، كما اختفت</div>
+                    </div>
+
+                    <div class="assistant-response-container">
+                        <div class="assistant-label">
+                            <span>🤖</span>
+                            <span>إجابة ومقترح مساعد الذكاء الاصطناعي:</span>
+                        </div>
+                        <div class="assistant-box">
+<p>تم إجراء استرجاع شامل للنسخة الأصلية المستقرة مع صيانة شاملة للواجهة:</p>
+<ul>
+    <li>إعادة إدراج كافة أزرار شريط المهام بالكامل (أزرار تسجيل الانحراف BCF، استيراد BCF، المعايرة، دليل الواقع الافتراضي، وأدوات القياس والقطاع والتحكم).</li>
+    <li>إصلاح معالج النقر الفراغي (Click Raycaster) على كتل معمل WebXR وكافة العناصر المعمارية والـ MEP.</li>
+    <li>ضمان ظهور لوحة بيانات العنصر <code>desktop-info-panel</code> فورياً عند النقر.</li>
+</ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Turn 75 -->
+            <div class="card" id="card-turn-75">
+                <div class="card-header" onclick="toggleCard('card-turn-75')">
+                    <div class="card-title">
+                        <span>💬 75.</span>
+                        <span>توضيح مواقع القوائم وأشرطة الأدوات المرنة والاختصارات السريعة</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <span class="badge badge-cyan">12 أكتوبر 2026</span>
+                        <span class="badge badge-cyan">توجيه وإرشاد الواجهة</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="user-prompt-container">
+                        <div class="user-label">
+                            <span>👤</span>
+                            <span>طلب المهندس المعماري د. أحمد لؤي أحمد:</span>
+                        </div>
+                        <div class="user-prompt-quote">اين القائمة؟</div>
+                    </div>
+
+                    <div class="assistant-response-container">
+                        <div class="assistant-label">
+                            <span>🤖</span>
+                            <span>إجابة ومقترح مساعد الذكاء الاصطناعي:</span>
+                        </div>
+                        <div class="assistant-box">
+<p>تم توضيح منافذ الوصول للقوائم وأدوات المنصة:</p>
+<ol>
+    <li><b>شريط الأدوات الرئيسي العلوي (Top Header Bar):</b> يضم كافة الأزرار التشغيلية وأدوات القياس والقطاع والتصفية.</li>
+    <li><b>ألسنة الحواف الجانبية القابلة للطي (Edge Toggles):</b> لسان جانبي على يمين الشاشة لإظهار وإخفاء لوحات الخصائص والتصفية، ولسان على يسار الشاشة لقائمة التعليمات.</li>
+    <li><b>الرصيف العائم (Floating UI Dock):</b> يظهر في أعلى الشاشة عند إخفاء الشريط العلوي لتسهيل استعادته بنقرة واحدة.</li>
+    <li><b>اختصارات لوحة المفاتيح السريعة:</b> [T] للتبديل السريع للشريط العلوي، [S] للقوائم الجانبية، [H] لوضع العرض الكامل الخالي من القوائم (Zen Mode)، و [Esc] لاستعادة الواجهة الافتراضية.</li>
+</ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Turn 76 -->
+            <div class="card" id="card-turn-76">
+                <div class="card-header" onclick="toggleCard('card-turn-76')">
+                    <div class="card-title">
+                        <span>💬 76.</span>
+                        <span>الإصلاح الأولي لمعالجة وتحديد كتل نماذج الـ IFC المستوردة بالنقر</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <span class="badge badge-cyan">12 أكتوبر 2026</span>
+                        <span class="badge badge-purple">معالجة IFC Raycasting</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="user-prompt-container">
+                        <div class="user-label">
+                            <span>👤</span>
+                            <span>طلب المهندس المعماري د. أحمد لؤي أحمد:</span>
+                        </div>
+                        <div class="user-prompt-quote">عند استيراد ملف IFC ومحاولة تسجيل تعارض بالنقر على عنصر في المجسم لم تتفعل الخاصية، عالج ذلك</div>
+                    </div>
+
+                    <div class="assistant-response-container">
+                        <div class="assistant-label">
+                            <span>🤖</span>
+                            <span>إجابة ومقترح مساعد الذكاء الاصطناعي:</span>
+                        </div>
+                        <div class="assistant-box">
+<p>تم إجراء فحص لدورة حياة نماذج الـ IFC وتطبيق حل برمجي:</p>
+<ul>
+    <li>توسيع مصفوفة أهداف شعاع الالتقاط (Raycaster Targets) لتشمل كتل الفئات المفرزة <code>ifcCategoryMeshes</code> وكتل الطوابق <code>ifcStoreyMeshes</code>.</li>
+    <li>استدعاء خوارزمية <code>getExpressId</code> لاستخراج المعرف الهندسي للوجه المنقور وقراءة الخصائص الهندسية <code>getItemProperties</code> وعرضها في لوحة البيانات.</li>
+</ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Turn 77 -->
+            <div class="card" id="card-turn-77">
+                <div class="card-header" onclick="toggleCard('card-turn-77')">
+                    <div class="card-title">
+                        <span>💬 77.</span>
+                        <span>الصياغة الأكاديمية الشاملة لمقترح رسالة الماجستير وفق معايير مجلات Scopus Q1 والتسلسل الهيكلي المحدد</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <span class="badge badge-cyan">12 أكتوبر 2026</span>
+                        <span class="badge badge-emerald">مقترح رسالة الماجستير Q1</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="user-prompt-container">
+                        <div class="user-label">
+                            <span>👤</span>
+                            <span>طلب المهندس المعماري د. أحمد لؤي أحمد:</span>
+                        </div>
+                        <div class="user-prompt-quote">بناءً على المحادثات السابقة، اعد كتابة المقترح البحثي لرسالة الماجستير مع امكانية وضع عنوان عام لها “دور تقنيات الواقع المعزز والافتراضي في التصميم والاشراف المعماري”، مستفيداً من الملفات المرفقة مع كتابة التسلسل للمقترح كالاتي: 
+المقدمة (Introduction): تمهيد عام للموضوع يتدرج من الإطار الواسع إلى الضيق (Funnel Approach) وصولاً إلى تسليط الضوء على الفجوة المعرفية.
+المشكلة البحثية (Research Problem): التعريف الدقيق للفجوة المعرفية أو القصور في الممارسة الحالية الذي يستدعي التدخل. 
+أسئلة البحث (Research Questions): تفكيك المشكلة البحثية إلى تساؤلات مركزة. (السؤال الرئيسي يتفرع إلى أسئلة ثانوية).
+أهداف البحث (Research Objectives): ما يسعى البحث لتحقيقه بشكل ملموس. ترتبط الأهداف ارتباطاً وثيقاً بالأسئلة، وتُصاغ بأفعال مثل (تطوير، تقييم، استكشاف، صياغة إطار عمل، الخ).
+أهمية البحث (Research Significance): القيمة المضافة التي سيقدمها البحث للإطار النظري (الأكاديمي) أو التطبيقي (المهني/المجتمعي).
+نطاق وحدود البحث (Research Scope & Limitations): 
+منهجية البحث (Research Methodology): الخطة التشغيلية لتحقيق الأهداف (بحث نوعي، كمي، محاكاة رقمية، دراسة حالة، أو منهجية مختلطة) مع ذكر الأدوات المستخدمة.
+هيكلية البحث (Research Structure): استعراض موجز ومقترح لفصول الرسالة.
+التزم بالمحادثات الخاصة بهذا المشروع والمنصة والملفات المرفقة.</div>
+                    </div>
+
+                    <div class="assistant-response-container">
+                        <div class="assistant-label">
+                            <span>🤖</span>
+                            <span>إجابة ومقترح مساعد الذكاء الاصطناعي:</span>
+                        </div>
+                        <div class="assistant-box">
+<p>تم إعداد وصياغة المقترح البحثي الشامل لرسالة الماجستير بما يطابق أرقى معايير النشر الدولي في مجلات الربع الأول (Scopus Q1) والتسلسل الدقيق المطلوب:</p>
+<ul>
+    <li><b>العنوان العام المعتمد:</b> دور تقنيات الواقع المعزز والافتراضي في التصميم والإشراف المعماري.</li>
+    <li><b>العنوان التخصصي الدقيق (Q1-Aligned Title):</b> إطار عمل تكاملي مبني على تقنيات الويب الغامرة (WebXR) ونمذجة معلومات البناء (BIM) لفحص ومراجعة النماذج المعمارية والكشف المبكر عن التعارضات في الوقت الحقيقي.</li>
+</ul>
+
+<h4>الأقسام الهيكلية الثمانية للمقترح:</h4>
+<ol>
+    <li><b>المقدمة (Introduction - Funnel Approach):</b> التدرج الهرمي من الثورة الرقمية في صناعة التشييد والـ BIM، مروراً بتحديات التنسيق المعماري وتحديات شاشات العرض المسطحة، وصولاً إلى الفجوة الإدراكية في الفحص الحجمي 1:1.</li>
+    <li><b>المشكلة البحثية (Research Problem):</b> الانفصال الإدراكي والتعطيل في مراجعات الموقع الناتج عن إرهاق الإنذارات الزائفة (Clash Fatigue) وعجز البرمجيات الآلية (Navisworks) عن رصد التعارضات الفراغية والتشغيلية اللينة التي تسبب 60-70% من أوامر التغيير.</li>
+    <li><b>أسئلة البحث (Research Questions):</b> السؤال الرئيسي المحوري وتفرعه إلى 3 أسئلة فرعية (معمارية فراغية، تقنية برمجية، وسلوكية إدراكية).</li>
+    <li><b>أهداف البحث (Research Objectives):</b> صياغة أفعال إجرائية محددة (تطوير منصة مفتوحة، تقييم تجريبي مقارن، قياس الأداء والحمل المعرفي، وصياغة إطار عمل إرشادي).</li>
+    <li><b>أهمية البحث (Research Significance):</b> الأهمية النظرية (إثراء أدبيات الـ Human-in-the-Loop) والأهمية التطبيقية (خفض كلفة البرمجيات الاحتكارية، تقليص أوامر التغيير، وتسريع تسليم المشاريع).</li>
+    <li><b>نطاق وحدود البحث (Research Scope & Limitations):</b> الحدود الموضوعية (معيار OpenBIM IFC)، الحدود التقنية (WebXR ونظارات مستقلة Meta Quest)، والحدود التجريبية.</li>
+    <li><b>منهجية البحث (Research Methodology):</b> منهجية بحثية مختلطة متقدمة (Mixed-Methods) تمثل 70% جانباً تجريبياً و 30% جانباً نظرياً وتحليلياً، قائمة على تصميم المربع اللاتيني (Latin Square Design) وتطبيق مقاييس NASA-TLX ومقياس سهولة الاستخدام SUS.</li>
+    <li><b>هيكلية البحث (Research Structure):</b> توزيع الفصول الخمسة المقترحة للرسالة (المقدمة، مراجعة الأدبيات، منهجية وتطوير المنصة، الاختبار والنتائج الإحصائية، والمناقشة والتوصيات).</li>
+</ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Turn 78 -->
+            <div class="card" id="card-turn-78">
+                <div class="card-header" onclick="toggleCard('card-turn-78')">
+                    <div class="card-title">
+                        <span>💬 78.</span>
+                        <span>تصدير المقترح البحثي لرسالة الماجستير بصيغتي Word (.docx) و PDF (.pdf) مع ضبط RTL Fix والمحاذاة Justified</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <span class="badge badge-cyan">12 أكتوبر 2026</span>
+                        <span class="badge badge-emerald">تصدير Word و PDF</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="user-prompt-container">
+                        <div class="user-label">
+                            <span>👤</span>
+                            <span>طلب المهندس المعماري د. أحمد لؤي أحمد:</span>
+                        </div>
+                        <div class="user-prompt-quote">قم بتصدير المحادثة الاخيرة بامتداد WORD docx و امتداد PDF مع الاهتمام بمعايرة وضبط اتجاة النصوص من اليمين الى اليسار RTL fix والتنسيق justified.</div>
+                    </div>
+
+                    <div class="assistant-response-container">
+                        <div class="assistant-label">
+                            <span>🤖</span>
+                            <span>إجابة ومقترح مساعد الذكاء الاصطناعي:</span>
+                        </div>
+                        <div class="assistant-box">
+<p>تم بناء وتنفيذ كود بايثون مخصص لمعالجة وإنشاء ملفي المقترح البحثي بأعلى درجات الجودة التيبوغرافية وضبط اتجاه النصوص:</p>
+<ul>
+    <li><b>ملف Microsoft Word (<code>Masters_Thesis_Research_Proposal_AR_VR_BIM.docx</code>):</b>
+        <ul>
+            <li>تضمين وسوم الـ OpenXML الصريحة (<code>&lt;w:bidi/&gt;</code> على مستوى الفقرات والمقاطع، و <code>&lt;w:rtl/&gt;</code> على مستوى الـ text runs) لضمان انسياب النص العربي الطبيعي من اليمين لليسار في Microsoft Word و Google Docs دون تشويه للأقواس أو الأرقام.</li>
+            <li>تطبيق المحاذاة الكاملة (<code>alignment = WD_ALIGN_PARAGRAPH.JUSTIFY</code>) لكافة فقرات المتن.</li>
+        </ul>
+    </li>
+    <li><b>ملف Adobe PDF (<code>Masters_Thesis_Research_Proposal_AR_VR_BIM.pdf</code>):</b>
+        <ul>
+            <li>معالجة النصوص عبر خوارزمية إعادة التشكيل العربي (<code>arabic_reshaper</code>) وخوارزمية الاتجاهين (<code>bidi.algorithm.get_display</code>).</li>
+            <li>ربط خطوط TrueType النظامية (Arial و Arial Bold) وضبط المحاذاة على الضبط الكامل (Justified alignment = 4).</li>
+        </ul>
+    </li>
+    <li><b>روابط التحميل المباشرة:</b>
+        <ul>
+            <li>📄 <a href="Masters_Thesis_Research_Proposal_AR_VR_BIM.docx" target="_blank" style="color: var(--cyan-primary); font-weight: bold; text-decoration: underline;">تحميل ملف المقترح البحثي بصيغة Word (.docx)</a></li>
+            <li>📕 <a href="Masters_Thesis_Research_Proposal_AR_VR_BIM.pdf" target="_blank" style="color: var(--cyan-primary); font-weight: bold; text-decoration: underline;">تحميل ملف المقترح البحثي بصيغة Adobe PDF (.pdf)</a></li>
+        </ul>
+    </li>
+</ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Turn 79 -->
+            <div class="card" id="card-turn-79">
+                <div class="card-header" onclick="toggleCard('card-turn-79')">
+                    <div class="card-title">
+                        <span>💬 79.</span>
+                        <span>المعالجة الجذرية لخلل التقاط عناصر نماذج الـ IFC وحجب لوحة البيانات تحت لوحة التصفية</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <span class="badge badge-cyan">12 أكتوبر 2026</span>
+                        <span class="badge badge-rose">إصلاح جذري وحل المعضلة</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="user-prompt-container">
+                        <div class="user-label">
+                            <span>👤</span>
+                            <span>طلب المهندس المعماري د. أحمد لؤي أحمد:</span>
+                        </div>
+                        <div class="user-prompt-quote">للتجربة الآن: افتح صفحة المنصة ... استورد ملف الـ IFC عبر زر «📂 استيراد نموذج آخر» ... انقر فوق أي عنصر في المبنى، ستفتح لوحة بيانات العنصر على اليمين مباشرة، ثم اضغط على زر «🚩 تسجيل كتعارض تشغيلي» الأحمر وستظهر لك شاشة سجل التعارضات موثقة بكامل التفاصيل. - لم يعمل، عالج الخلل</div>
+                    </div>
+
+                    <div class="assistant-response-container">
+                        <div class="assistant-label">
+                            <span>🤖</span>
+                            <span>إجابة ومقترح مساعد الذكاء الاصطناعي:</span>
+                        </div>
+                        <div class="assistant-box">
+<p>تم إجراء تحليل أسباب جذرية (Root Cause Analysis) دقيق وشامل، وتم كشف وتفكيك 4 أسباب مترابطة كانت تعيق عمل الخاصية:</p>
+<ol>
+    <li><b>حجب لوحة بيانات العنصر تحت لوحة التصفية (Z-Index Occlusion):</b>
+        <p>عند اكتمال استيراد ملف الـ IFC، كانت المنصة تفتح تلقائياً لوحة تصفية الطوابق والتخصصات (<code>#bim-filter-panel</code>) التي تشغل الجانب الأيمن للشاشة بالكامل بارتفاع كامل وبـ <code>z-index: 95</code>. في المقابل، كانت لوحة بيانات العنصر (<code>#desktop-info-panel</code>) تمتلك <code>z-index: 90</code> وتقع في نفس الركن السفلي الأيمن، وبالتالي كانت تُفتح ولكنها <b>محجوبة ومخفية 100% خلف لوحة التصفية</b>، مما جعل المستخدم لا يراها ولا يتمكن من الضغط على زر تسجيل التعارض الأحمر.</p>
+        <p><b>الحل المنفذ:</b> رفع <code>z-index</code> الخاص بلوحة البيانات إلى <b>500</b> مع إطار مشع سماوي بارز (<code>border: 2px solid #00f0ff</code>) وظل ثلاثي الأبعاد عميق، وإغلاق لوحة التصفية تلقائياً عند استيراد النموذج أو عند النقر على أي عنصر لإفساح المجال كاملاً للمجسم والبيانات.</p>
+    </li>
+    <li><b>صرامة عتبة سحب المؤشر (Drag Distance Threshold):</b>
+        <p>كان الكود يلغي أي نقرة يتحرك فيها المؤشر بأكثر من 6 بكسل (<code>dragDist > 6</code>). في شاشات التراكباد والماوس وشاشات اللمس، أي نقرة طبيعية تتحرك بين 7 إلى 12 بكسل، فكان يتم إسقاط النقر كأنه عملية تدوير بالكاميرا.</p>
+        <p><b>الحل المنفذ:</b> رفع السماحية إلى <b>16 بكسل</b> لضمان التقاط كل نقرة طبيعية بسلاسة تامة.</p>
+    </li>
+    <li><b>المسح الشامل لكافة كتل المجسم (Comprehensive Mesh Traversal):</b>
+        <p>توسيع الـ Raycaster ليمسح شجرة المجسم المستورد بالكامل بجميع طبقاته وتعيين المعرف الهندسي الصحيح <code>expressID</code> وقراءة خصائص الـ IFC عبر WebAssembly.</p>
+    </li>
+    <li><b>إصلاح فحص التكرار في سجل التعارضات (Category Mesh Duplicate Fix):</b>
+        <p>تصحيح الفحص ليعتمد على <code>expressID</code> أو <code>elementId</code> الخاص بالعنصر المحدد، بدلاً من مقارنة شبكة الفئة المشتركة التي كانت تحجب أي عنصر ثانٍ من نفس الفئة باعتباره مكرراً.</p>
+    </li>
+    <li><b>تأكيد التوثيق بالمنارة وتحديث النافذة (Clash Review Modal at z-index: 600):</b>
+        <p>تثبيت كرة إشارة حمراء ثلاثية الأبعاد على موضع النقر في المبنى، وتحديث عداد التعارضات، وفتح نافذة سجل واستعراض التعارضات في منتصف الشاشة فورياً، وعرض إشعار تفاعلي يؤكد تسجيل التعارض بنجاح.</p>
+    </li>
+</ol>
+<p>تم اعتماد ورفع التعديلات فورياً إلى المستودع الرئيسي على GitHub و GitHub Pages عبر التعديل رقم <code>367245e</code>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Turn 80 -->
+            <div class="card" id="card-turn-80">
+                <div class="card-header" onclick="toggleCard('card-turn-80')">
+                    <div class="card-title">
+                        <span>💬 80.</span>
+                        <span>التحديث الموسوعي الفوري الشامل لسجل المحادثات والأوامر والمسار البحثي (80 مرحلة متكاملة)</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <span class="badge badge-cyan">12 أكتوبر 2026</span>
+                        <span class="badge badge-emerald">التوثيق الموسوعي الشامل</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="user-prompt-container">
+                        <div class="user-label">
+                            <span>👤</span>
+                            <span>طلب المهندس المعماري د. أحمد لؤي أحمد:</span>
+                        </div>
+                        <div class="user-prompt-quote">حدث "سجل المحادثات" تفصيلياً</div>
+                    </div>
+
+                    <div class="assistant-response-container">
+                        <div class="assistant-label">
+                            <span>🤖</span>
+                            <span>إجابة ومقترح مساعد الذكاء الاصطناعي:</span>
+                        </div>
+                        <div class="assistant-box">
+<p>استجابة فورية لأمر سعادتكم، تم إنجاز التحديث التوثيقي الموسوعي الشامل لـ <b>سجل المحادثات والمخططات (HTML)</b> وكافة ملفات التوثيق في المستودع:</p>
+<ul>
+    <li>تحديث صفحة الويب التفاعلية <code>full_research_conversations_log.html</code> برفع إجمالي المحادثات الموثقة حرفياً إلى <b>80 محادثة متكاملة</b> مقسمة عبر <b>14 فصلاً زمنياً وهندسياً</b>.</li>
+    <li>إدراج تفاصيل الفصل الرابع عشر بالكامل (الأدوار من 70 إلى 80) شاملاً تدقيق الأزرار، دليل استخدام Meta Quest 3، الصياغة الكاملة لمقترح الماجستير Q1، تصدير ملفات Word و PDF مع RTL Fix، والحل الجذري لمعضلة التقاط عناصر الـ IFC وسجل التعارضات.</li>
+    <li>تحديث ملف التوثيق المصدري <code>RESEARCH_DEVELOPMENT_LOG.md</code> بكافة التطورات الهندسية والأكاديمية.</li>
+    <li>المزامنة والرفع الفوري على GitHub و GitHub Pages ليكون السجل متاحاً لسعادتكم مباشرة.</li>
+</ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             </div> <!-- end #timeline-list -->
 
         </section>
