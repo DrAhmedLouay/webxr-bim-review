@@ -406,15 +406,15 @@
             position: absolute;
             bottom: 25px;
             right: 25px;
-            width: 330px;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(14px);
-            padding: 18px;
-            border-radius: 12px;
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            z-index: 90;
+            width: 350px;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(20px);
+            padding: 18px 20px;
+            border-radius: 14px;
+            border: 2px solid #00f0ff;
+            z-index: 500;
             display: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            box-shadow: 0 16px 50px rgba(0, 0, 0, 0.85), 0 0 25px rgba(0, 240, 255, 0.35);
         }
         #desktop-info-panel h3 {
             font-size: 1rem;
@@ -1243,7 +1243,7 @@
     </div>
 
     <!-- Clash Review & Inspection Modal -->
-    <div id="clash-review-modal" style="display: none; position: absolute; top: 75px; left: 50%; transform: translateX(-50%); width: 560px; max-width: 92vw; max-height: calc(100vh - 100px); background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(18px); padding: 18px 20px; border-radius: 16px; border: 1.5px solid rgba(239, 68, 68, 0.45); z-index: 105; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85); overflow-y: auto; color: #f8fafc;">
+    <div id="clash-review-modal" style="display: none; position: absolute; top: 75px; left: 50%; transform: translateX(-50%); width: 560px; max-width: 92vw; max-height: calc(100vh - 100px); background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(20px); padding: 18px 20px; border-radius: 16px; border: 2px solid #ef4444; z-index: 600; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(239, 68, 68, 0.35); overflow-y: auto; color: #f8fafc;">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 10px; margin-bottom: 14px;">
             <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 1.3rem;">⚠️</span>
@@ -2418,6 +2418,24 @@
                 gltfLoader.setDRACOLoader(dracoLoader);
             }
 
+            function showPlatformNotification(msg) {
+                var el = document.getElementById('platform-floating-toast');
+                if (!el) {
+                    el = document.createElement('div');
+                    el.id = 'platform-floating-toast';
+                    el.style.cssText = 'position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.96); border: 1.5px solid #00f0ff; color: #f8fafc; padding: 12px 24px; border-radius: 14px; font-size: 0.88rem; font-weight: 700; box-shadow: 0 12px 35px rgba(0,0,0,0.8), 0 0 20px rgba(0, 240, 255, 0.35); z-index: 1000; pointer-events: none; transition: opacity 0.3s ease; text-align: center; max-width: 90vw; direction: rtl;';
+                    document.body.appendChild(el);
+                }
+                el.innerText = msg;
+                el.style.display = 'block';
+                el.style.opacity = '1';
+                clearTimeout(el._hideTimer);
+                el._hideTimer = setTimeout(function() {
+                    el.style.opacity = '0';
+                    setTimeout(function() { el.style.display = 'none'; }, 300);
+                }, 3800);
+            }
+
             var fileInput = document.getElementById('file-input');
             var dropOverlay = document.getElementById('drop-overlay');
             var toast = document.getElementById('loading-toast');
@@ -2595,8 +2613,10 @@
                             }, false);
 
                             toast.style.display = 'none';
-                            // Open filter panel to show user the newly discovered storeys
-                            document.getElementById('bim-filter-panel').style.display = 'block';
+                            // Ensure filter panel does not obstruct 3D building view
+                            var fPanel = document.getElementById('bim-filter-panel');
+                            if (fPanel) fPanel.style.display = 'none';
+                            showPlatformNotification('✅ تم استيراد وتوسيط نموذج الـ IFC بنجاح! انقر على أي جزء بالمبنى لفتح بياناته وتسجيل التعارضات.');
                         } catch (err) {
                             console.error('IFC Error:', err);
                             toastError.style.display = 'block';
@@ -3315,7 +3335,6 @@
                             currentIFCLoader.ifcManager.removeSubset(currentCustomModel.modelID, null, 'user_selection_highlight');
                         } catch(e) {}
                     }
-                    if (ifcHighlightMesh.geometry) ifcHighlightMesh.geometry.dispose();
                     ifcHighlightMesh = null;
                 }
             }
@@ -3353,9 +3372,14 @@
                         subMesh.visible = true;
                         subMesh.renderOrder = 999;
                         ifcHighlightMesh = subMesh;
+                    } else if (selectedMesh) {
+                        applyObjectHighlight(selectedMesh);
                     }
                 } catch(err) {
                     console.warn('Error applying IFC selection highlight:', err);
+                    if (selectedMesh) {
+                        applyObjectHighlight(selectedMesh);
+                    }
                 }
             }
 
@@ -3381,7 +3405,7 @@
 
                 // If user was dragging OrbitControls to rotate or pan, ignore click selection
                 var dragDist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
-                if (dragDist > 6) return;
+                if (dragDist > 16) return;
 
                 mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
                 mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -3395,7 +3419,7 @@
                 }
 
                 // 1. Inspect IFC Model Element if custom IFC model is active
-                if (currentCustomModel && currentIFCLoader) {
+                if (currentCustomModel) {
                     var ifcTargets = [];
                     if (currentCustomModel.visible) ifcTargets.push(currentCustomModel);
                     if (activeSubsetMesh && activeSubsetMesh.visible) ifcTargets.push(activeSubsetMesh);
@@ -3409,14 +3433,25 @@
                             ifcTargets.push(ifcStoreyMeshes[sid]);
                         }
                     }
-                    if (explodedSubsets && explodedSubsets.length > 0) ifcTargets = ifcTargets.concat(explodedSubsets);
-
-                    // If targets are empty or model is root, check all meshes inside currentCustomModel
-                    if (ifcTargets.length === 0) {
-                        currentCustomModel.traverse(function(c) {
-                            if (c.isMesh) ifcTargets.push(c);
-                        });
+                    if (explodedSubsets && explodedSubsets.length > 0) {
+                        ifcTargets = ifcTargets.concat(explodedSubsets);
                     }
+
+                    // Collect all meshes inside currentCustomModel
+                    currentCustomModel.traverse(function(c) {
+                        if (c.isMesh && ifcTargets.indexOf(c) === -1) {
+                            ifcTargets.push(c);
+                        }
+                    });
+
+                    // Collect any active meshes in scene that are not lab elements or UI markers
+                    scene.traverse(function(c) {
+                        if (c.isMesh && c !== ifcHighlightMesh && !(c.userData && c.userData.isClashSphere) && !(c.userData && c.userData.isLabElem)) {
+                            if (ifcTargets.indexOf(c) === -1) {
+                                ifcTargets.push(c);
+                            }
+                        }
+                    });
 
                     var ifcHits = raycaster.intersectObjects(ifcTargets, true);
                     if (ifcHits.length > 0) {
@@ -3424,7 +3459,7 @@
                         var expressID = null;
                         var geom = hit.object.geometry;
 
-                        if (geom && hit.faceIndex !== undefined && currentIFCLoader.ifcManager) {
+                        if (geom && hit.faceIndex !== undefined && currentIFCLoader && currentIFCLoader.ifcManager) {
                             try {
                                 expressID = currentIFCLoader.ifcManager.getExpressId(geom, hit.faceIndex);
                             } catch(e) {
@@ -3432,24 +3467,35 @@
                             }
                         }
 
+                        if ((expressID === null || expressID === undefined || expressID < 0) && hit.object.userData && hit.object.userData.expressID !== undefined) {
+                            expressID = hit.object.userData.expressID;
+                        }
+
                         var pName = 'عنصر IFC';
                         var pType = 'IFC Element';
                         var modelID = (currentCustomModel && currentCustomModel.modelID !== undefined) ? currentCustomModel.modelID : 0;
 
-                        if (expressID !== undefined && expressID !== null && expressID >= 0) {
+                        if (typeof expressID === 'number' && expressID >= 0 && currentIFCLoader && currentIFCLoader.ifcManager) {
                             try {
                                 var props = await currentIFCLoader.ifcManager.getItemProperties(modelID, expressID);
                                 if (props) {
                                     pName = (props.Name && (props.Name.value || props.Name)) || ('عنصر #' + expressID);
-                                    pType = (props.__proto__ && props.__proto__.constructor && props.__proto__.constructor.name) || (props.type || 'عنصر IFC');
+                                    if (props.type) pType = String(props.type);
                                 }
                             } catch(err) {
                                 console.warn('Could not read IFC item properties:', err);
                                 pName = 'عنصر #' + expressID;
                             }
+
+                            try {
+                                if (currentIFCLoader.ifcManager.getIfcType) {
+                                    var typeName = currentIFCLoader.ifcManager.getIfcType(modelID, expressID);
+                                    if (typeName) pType = typeName;
+                                }
+                            } catch(te) {}
                         } else {
                             // Fallback if expressID was not resolved from face
-                            expressID = 'ELEM-' + Math.floor(Math.random() * 9000);
+                            expressID = (expressID !== null && expressID !== undefined) ? expressID : ('ELEM-' + Math.floor(Math.random() * 9000));
                             pName = hit.object.name || ('كتلة نموذج IFC #' + (hit.faceIndex || 1));
                         }
 
@@ -3470,6 +3516,11 @@
                         };
 
                         panel.style.display = 'block';
+                        panel.classList.remove('ui-sidebar-hidden');
+                        var fp = document.getElementById('bim-filter-panel');
+                        if (fp) fp.style.display = 'none';
+
+                        showPlatformNotification('🎯 تم تحديد العنصر: ' + pName + ' | يمكنك الآن تسجيله كتعارض تشغيلي');
 
                         if (typeof expressID === 'number') {
                             applyIFCHighlight(expressID);
@@ -3506,6 +3557,9 @@
                     valClearance.innerText = data.clearance || 'مطابق للمواصفات';
                     valStatus.innerText = data.status || 'جاهز للمعاينة الفراغية';
                     panel.style.display = 'block';
+                    panel.classList.remove('ui-sidebar-hidden');
+                    var fpLab = document.getElementById('bim-filter-panel');
+                    if (fpLab) fpLab.style.display = 'none';
 
                     applyObjectHighlight(hitBIM);
                 } else {
@@ -3738,14 +3792,21 @@
 
             // Flag Clash Button in Info Panel (Checks for duplicates)
             document.getElementById('btn-flag-clash').addEventListener('click', function() {
-                if (!selectedMesh) return;
+                if (!selectedMesh) {
+                    showPlatformNotification('⚠️ يرجى النقر على أي عنصر أولاً لتحديده في الفراغ قبل تسجيل التعارض.');
+                    return;
+                }
                 var data = selectedMesh.userData || {};
                 var targetId = data.elementId || selectedMesh.name || 'ID-UNKNOWN';
+                var targetExpressID = data.expressID;
 
                 // Check if element is already registered in flaggedIssues
                 var isDuplicate = flaggedIssues.some(function(issue) {
-                    if (issue.mesh && issue.mesh === selectedMesh) return true;
+                    if (targetExpressID !== undefined && targetExpressID !== null && issue.expressID !== undefined && issue.expressID !== null) {
+                        return String(issue.expressID) === String(targetExpressID);
+                    }
                     if (issue.elementId && targetId !== 'ID-UNKNOWN' && issue.elementId === targetId) return true;
+                    if (!currentCustomModel && issue.mesh && issue.mesh === selectedMesh) return true;
                     return false;
                 });
 
@@ -3762,7 +3823,7 @@
                 }
 
                 var clashSphere = new THREE.Mesh(
-                    new THREE.SphereGeometry(0.16, 16, 16),
+                    new THREE.SphereGeometry(0.18, 16, 16),
                     new THREE.MeshBasicMaterial({ color: 0xef4444 })
                 );
                 clashSphere.userData = { isClashSphere: true };
@@ -3783,16 +3844,17 @@
                     description: 'تعارض فراغي / تشغيلي تم رصده وتوثيقه في جلسة المراجعة',
                     pos: worldPos,
                     mesh: selectedMesh,
-                    expressID: data.expressID || null,
+                    expressID: targetExpressID || null,
                     sphere: clashSphere
                 });
 
                 updateClashCounter();
                 renderClashModalList();
                 clashModal.style.display = 'block';
+                panel.style.display = 'none';
                 if (typeof filterPanel !== 'undefined' && filterPanel) filterPanel.style.display = 'none';
 
-                alert('✅ تم توثيق التعارض بنجاح: ' + targetId + '\n\nتمت إضافته إلى سجل التعارضات (Clash Detection Log) وتثبيت كرة الإشارة الحمراء على موضعه.');
+                showPlatformNotification('🚩 تم توثيق التعارض بنجاح: ' + targetId + ' (أضيف لسجل التعارضات)');
             });
 
             // Export CSV (Handles both lab predefined clashes and custom flagged issues)
