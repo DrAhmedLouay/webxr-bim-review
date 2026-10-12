@@ -806,7 +806,31 @@
     <!-- Web-IFC-Three UMD Loader (Works natively with window.THREE) -->
     <script src="https://unpkg.com/web-ifc-three@0.0.126/IFCLoader.umd.cjs"></script>
 <script src="./main.js"></script>
-</head>
+        /* Make telemetry grid visible and overlay UI */
+        .tel-grid {
+            display: flex !important;
+            flex-wrap: wrap;
+            gap: 8px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 210;
+            background: rgba(0,0,0,0.4);
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+        .tel-grid .btn {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            padding: 6px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.84rem;
+            min-width: 80px;
+        }
+        .tel-grid .btn:hover {background:#1d4ed8;}
+
 <body>
     <!-- ===================================================================== -->
     <!-- Login / Access Control Portal Overlay (Admin vs Student) -->
@@ -1026,7 +1050,10 @@
                 <div class="tel-lbl">محرك الـ BIM الفعال:</div>
                 <div class="tel-val" id="tel-wasm" style="font-size: 0.85rem; color: #38bdf8;">WebXR MEP</div>
             </div>
-        </div>
+                <button id="exportBCF" class="btn" style="background:#2563eb;color:#fff;border:none;padding:6px 8px;border-radius:6px;cursor:pointer;margin-left:6px;">📋 تسجيل الانحراف</button>
+        <button id="loadBCF" class="btn" style="background:#2563eb;color:#fff;border:none;padding:6px 8px;border-radius:6px;cursor:pointer;margin-left:6px;">📥 دعم BCF</button>
+        <button id="calibrate" class="btn" style="background:#2563eb;color:#fff;border:none;padding:6px 8px;border-radius:6px;cursor:pointer;margin-left:6px;">⚙️ معايرة</button>
+</div>
 
         <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 0.72rem; color: #64748b;">بيانات كمية جاهزة للأوراق العلمية</span>
@@ -4759,5 +4786,10 @@
         }
     </script>
 
+<div id="toolbar" style="position: absolute; top: 12px; right: 12px; z-index: 200; display: flex; gap: 8px;">
+  <button id="exportBCF" class="btn" style="background:#2563eb;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;">📋 تسجيل الانحراف (Export BCF)</button>
+  <button id="loadBCF" class="btn" style="background:#2563eb;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;">📥 دعم BCF (Load BCF)</button>
+  <button id="calibrate" class="btn" style="background:#2563eb;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;">⚙️ معايرة</button>
+</div>
 </body>
 </html>
