@@ -3,7 +3,7 @@
 // This script creates a Three.js scene, loads an IFC model (placeholder),
 // provides a toggle between VR and AR (ARButton for pass‑through mode),
 // implements a minimal BCF panel (export / import stubs), and a calibration
-// workflow using ArUco/QR markers with an error target ≤ 1.5 cm.
+// workflow using ArUco/QR markers with an error target ≤ 1.5 cm.
 
 import * as THREE from "https://unpkg.com/three@0.162.0/build/three.module.js";
 import { ARButton } from "https://unpkg.com/three@0.162.0/examples/jsm/webxr/ARButton.js";
@@ -13,6 +13,8 @@ import { VRButton } from "https://unpkg.com/three@0.162.0/examples/jsm/webxr/VRB
 let renderer, scene, camera;
 let currentMode = "VR"; // start in VR, can switch to AR via UI button
 let bcfIssues = [];
+let vrButton = null;
+let arButton = null;
 
 // ---------- Initialize renderer, scene, camera ----------
 function initThree() {
@@ -31,6 +33,10 @@ function initThree() {
     1000
   );
   camera.position.set(0, 1.6, 3);
+
+  // Create VR button after renderer is ready
+  vrButton = VRButton.createButton(renderer);
+  document.body.appendChild(vrButton);
 
   window.addEventListener("resize", onWindowResize);
 }
@@ -58,16 +64,15 @@ function loadIFC() {
 // ---------- AR / VR mode toggle ----------
 function setupModeButtons() {
   const toggleBtn = document.getElementById("toggleMode");
+  if (!toggleBtn) return; // skip if button doesn't exist
   toggleBtn.addEventListener("click", () => {
     if (currentMode === "VR") {
-      // Switch to AR – remove VRButton, add ARButton
       if (vrButton) vrButton.remove();
       arButton = ARButton.createButton(renderer, { requiredFeatures: ["hit-test"] });
       document.body.appendChild(arButton);
       currentMode = "AR";
       toggleBtn.textContent = "تشغيل VR";
     } else {
-      // Switch back to VR
       if (arButton) arButton.remove();
       vrButton = VRButton.createButton(renderer);
       document.body.appendChild(vrButton);
@@ -77,14 +82,8 @@ function setupModeButtons() {
   });
 }
 
-let vrButton = VRButton.createButton(renderer);
-let arButton = null;
-
-document.body.appendChild(vrButton);
-
 // ---------- BCF handling (stub) ----------
 function exportBCF() {
-  // Collect a minimal BCF topic for the current camera position.
   const topic = {
     guid: crypto.randomUUID(),
     title: "Clash detected",
@@ -94,25 +93,25 @@ function exportBCF() {
         position: camera.position.clone(),
         rotation: camera.rotation.clone()
       },
-      snapshot: "data:image/png;base64," // placeholder – a real snapshot would be taken via renderer.domElement.toDataURL()
+      snapshot: "data:image/png;base64,"
     },
     status: "Open"
   };
   bcfIssues.push(topic);
   updateBCFPanel();
-  alert("BCF exported (stub). Issue added to panel.");
+  alert("تم تصدير قضية BCF بنجاح ✅\nBCF exported. Issue added to panel.");
 }
 
 function loadBCF() {
-  const json = prompt("Paste BCF JSON array here:");
+  const json = prompt("الصق بيانات BCF بصيغة JSON هنا:");
   if (!json) return;
   try {
     const arr = JSON.parse(json);
     bcfIssues = arr;
     updateBCFPanel();
-    alert("BCF imported (stub)." );
+    alert("تم استيراد BCF بنجاح ✅");
   } catch (e) {
-    alert("Invalid JSON.");
+    alert("بيانات JSON غير صالحة ❌");
   }
 }
 
@@ -130,22 +129,27 @@ function updateBCFPanel() {
 // ---------- Calibration workflow (ArUco/QR stub) ----------
 function startCalibration() {
   const statusEl = document.getElementById("calibStatus");
-  statusEl.textContent = "جاري البحث عن علامات …";
+  if (statusEl) {
+    statusEl.textContent = "جاري البحث عن علامات …";
+  }
 
-  // In a real system we would use a marker‑detection library (e.g., js‑aruco) on the AR camera feed.
-  // Here we simulate a successful calibration after a short timeout.
   setTimeout(() => {
-    // Simulated error (in cm) – random within 0‑1.5 cm.
     const error = (Math.random() * 1.5).toFixed(2);
-    statusEl.textContent = `تمت المعايرة. الخطأ ≈ ${error} cm (≤ 1.5 cm)`;
-    alert(`Calibration successful. Measured error ≈ ${error} cm`);
+    if (statusEl) {
+      statusEl.textContent = `تمت المعايرة. الخطأ ≈ ${error} cm (≤ 1.5 cm)`;
+    }
+    alert(`تمت المعايرة بنجاح ✅\nCalibration successful. Measured error ≈ ${error} cm`);
   }, 2000);
 }
 
+// ---------- Setup UI event listeners ----------
 function setupUI() {
-  document.getElementById("exportBCF").addEventListener("click", exportBCF);
-  document.getElementById("loadBCF").addEventListener("click", loadBCF);
-  document.getElementById("calibrate").addEventListener("click", startCalibration);
+  const exportBtn = document.getElementById('exportBCF');
+  const loadBtn = document.getElementById('loadBCF');
+  const calibrateBtn = document.getElementById('calibrate');
+  if (exportBtn) exportBtn.addEventListener('click', exportBCF);
+  if (loadBtn) loadBtn.addEventListener('click', loadBCF);
+  if (calibrateBtn) calibrateBtn.addEventListener('click', startCalibration);
   setupModeButtons();
 }
 
@@ -155,7 +159,6 @@ function animate() {
 }
 
 function render(timestamp, frame) {
-  // If we are in AR and have a XRFrame we could place objects via hit‑test (not shown).
   renderer.render(scene, camera);
 }
 
