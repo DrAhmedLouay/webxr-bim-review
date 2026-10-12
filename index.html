@@ -3411,39 +3411,72 @@
                     }
                     if (explodedSubsets && explodedSubsets.length > 0) ifcTargets = ifcTargets.concat(explodedSubsets);
 
+                    // If targets are empty or model is root, check all meshes inside currentCustomModel
+                    if (ifcTargets.length === 0) {
+                        currentCustomModel.traverse(function(c) {
+                            if (c.isMesh) ifcTargets.push(c);
+                        });
+                    }
+
                     var ifcHits = raycaster.intersectObjects(ifcTargets, true);
                     if (ifcHits.length > 0) {
                         var hit = ifcHits[0];
-                        try {
-                            var expressID = currentIFCLoader.ifcManager.getExpressId(hit.object.geometry, hit.faceIndex);
-                            if (expressID !== undefined && expressID !== null) {
-                                var props = await currentIFCLoader.ifcManager.getItemProperties(currentCustomModel.modelID, expressID);
-                                var pName = (props && props.Name && props.Name.value) || ('IFC Element #' + expressID);
-                                var pType = (props && props.__proto__ && props.__proto__.constructor && props.__proto__.constructor.name) || 'عنصر IFC';
-                                
-                                valId.innerText = '#' + expressID + ' (' + pName + ')';
-                                valCat.innerText = pType;
-                                valSys.innerText = 'نموذج الـ IFC المستورد';
-                                valDim.innerText = 'أبعاد ومناسيب هندسية أصلية';
-                                valClearance.innerText = 'مطابق لقاعدة بيانات OpenBIM';
-                                valStatus.innerText = 'جاهز للفحص والمطابقة الهندسية';
+                        var expressID = null;
+                        var geom = hit.object.geometry;
 
-                                selectedMesh = hit.object;
-                                selectedMesh.userData = {
-                                    elementId: '#' + expressID + ' - ' + pName,
-                                    category: pType,
-                                    system: 'Architectural / BIM',
-                                    expressID: expressID,
-                                    clickPoint: hit.point ? hit.point.clone() : null
-                                };
-                                panel.style.display = 'block';
-
-                                applyIFCHighlight(expressID);
-                                return;
+                        if (geom && hit.faceIndex !== undefined && currentIFCLoader.ifcManager) {
+                            try {
+                                expressID = currentIFCLoader.ifcManager.getExpressId(geom, hit.faceIndex);
+                            } catch(e) {
+                                console.warn('getExpressId error:', e);
                             }
-                        } catch(err) {
-                            console.warn('Could not inspect clicked IFC element:', err);
                         }
+
+                        var pName = 'عنصر IFC';
+                        var pType = 'IFC Element';
+                        var modelID = (currentCustomModel && currentCustomModel.modelID !== undefined) ? currentCustomModel.modelID : 0;
+
+                        if (expressID !== undefined && expressID !== null && expressID >= 0) {
+                            try {
+                                var props = await currentIFCLoader.ifcManager.getItemProperties(modelID, expressID);
+                                if (props) {
+                                    pName = (props.Name && (props.Name.value || props.Name)) || ('عنصر #' + expressID);
+                                    pType = (props.__proto__ && props.__proto__.constructor && props.__proto__.constructor.name) || (props.type || 'عنصر IFC');
+                                }
+                            } catch(err) {
+                                console.warn('Could not read IFC item properties:', err);
+                                pName = 'عنصر #' + expressID;
+                            }
+                        } else {
+                            // Fallback if expressID was not resolved from face
+                            expressID = 'ELEM-' + Math.floor(Math.random() * 9000);
+                            pName = hit.object.name || ('كتلة نموذج IFC #' + (hit.faceIndex || 1));
+                        }
+
+                        valId.innerText = '#' + expressID + ' (' + pName + ')';
+                        valCat.innerText = pType;
+                        valSys.innerText = 'نموذج الـ IFC المستورد';
+                        valDim.innerText = 'أبعاد ومناسيب هندسية أصلية';
+                        valClearance.innerText = 'جاهز للفحص وتوثيق التعارضات';
+                        valStatus.innerText = 'تم التحديد بنجاح في الفراغ';
+
+                        selectedMesh = hit.object;
+                        selectedMesh.userData = {
+                            elementId: '#' + expressID + ' - ' + pName,
+                            category: pType,
+                            system: 'Architectural / BIM',
+                            expressID: expressID,
+                            clickPoint: hit.point ? hit.point.clone() : hit.object.position.clone()
+                        };
+
+                        panel.style.display = 'block';
+
+                        if (typeof expressID === 'number') {
+                            applyIFCHighlight(expressID);
+                        } else {
+                            applyObjectHighlight(hit.object);
+                        }
+                        return;
                     }
                 }
 
@@ -3755,10 +3788,11 @@
                 });
 
                 updateClashCounter();
-                if (clashModal.style.display === 'block') {
-                    renderClashModalList();
-                }
-                alert('✅ تم توثيق التعارض بنجاح: ' + targetId);
+                renderClashModalList();
+                clashModal.style.display = 'block';
+                if (typeof filterPanel !== 'undefined' && filterPanel) filterPanel.style.display = 'none';
+
+                alert('✅ تم توثيق التعارض بنجاح: ' + targetId + '\n\nتمت إضافته إلى سجل التعارضات (Clash Detection Log) وتثبيت كرة الإشارة الحمراء على موضعه.');
             });
 
             // Export CSV (Handles both lab predefined clashes and custom flagged issues)
