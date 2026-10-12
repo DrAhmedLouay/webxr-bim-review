@@ -4801,8 +4801,10 @@
 
     <!-- BCF & Calibration Toolbar -->
     <div id="bcf-toolbar">
-        <button id="exportBCF" class="bcf-btn" type="button">📋 تسجيل الانحراف</button>
-        <button id="loadBCF" class="bcf-btn" type="button">📥 دعم BCF</button>
+        <button id="btn-toolbar-vr-guide" class="bcf-btn" type="button" style="background: linear-gradient(135deg, #0284c7, #0369a1);">🥽 دليل الواقع الافتراضي</button>
+        <button id="btn-toolbar-record-clash" class="bcf-btn" type="button" style="background: linear-gradient(135deg, #dc2626, #b91c1c);">🚩 تسجيل تعارض</button>
+        <button id="exportBCF" class="bcf-btn" type="button">📋 تصدير BCF</button>
+        <button id="loadBCF" class="bcf-btn" type="button">📥 استيراد BCF</button>
         <button id="calibrate" class="bcf-btn" type="button">⚙️ معايرة</button>
     </div>
 
@@ -4815,9 +4817,59 @@
                 var btnExport = document.getElementById('exportBCF');
                 var btnLoad = document.getElementById('loadBCF');
                 var btnCalib = document.getElementById('calibrate');
+                var btnVrGuideToolbar = document.getElementById('btn-toolbar-vr-guide');
+                var btnRecordClashToolbar = document.getElementById('btn-toolbar-record-clash');
                 var fileInput = document.getElementById('bcf-file-input');
 
-                // 1. تسجيل الانحراف (Export BCF)
+                // 0. زر دليل الواقع الافتراضي (VR Guide) - يفتح الدليل مباشرة
+                function toggleVrGuideModal(e) {
+                    if (e) { e.stopPropagation(); e.preventDefault(); }
+                    var modal = document.getElementById('vr-guide-modal');
+                    if (modal) {
+                        modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
+                        modal.style.zIndex = '99999';
+                        if (modal.style.display === 'block') {
+                            modal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }
+                }
+
+                var headerVrGuide = document.getElementById('btn-vr-guide');
+                if (headerVrGuide) {
+                    headerVrGuide.onclick = toggleVrGuideModal;
+                }
+                if (btnVrGuideToolbar) {
+                    btnVrGuideToolbar.onclick = toggleVrGuideModal;
+                }
+
+                // 1. زر تسجيل التعارض الفراغي (Record Clash)
+                function triggerRecordClash(e) {
+                    if (e) { e.stopPropagation(); e.preventDefault(); }
+                    var flagBtn = document.getElementById('btn-flag-clash');
+                    var desktopPanel = document.getElementById('desktop-info-panel');
+                    var isElementSelected = desktopPanel && (desktopPanel.classList.contains('active') || desktopPanel.style.display === 'block');
+                    
+                    if (isElementSelected && flagBtn) {
+                        flagBtn.click();
+                    } else {
+                        // إذا لم يختر المستخدم عنصراً بعد، نفتح له نافذة سجل التعارضات مباشرة مع إرشاده لكيفية الرصد
+                        var clashModal = document.getElementById('clash-review-modal');
+                        var btnView = document.getElementById('btn-view-clashes');
+                        if (btnView) {
+                            btnView.click();
+                        } else if (clashModal) {
+                            clashModal.style.display = 'block';
+                            clashModal.style.zIndex = '99999';
+                        }
+                        alert('📌 لتسجيل تعارض جديد:\n1. انقر على أي عنصر (دكت، ماسورة، صمام) في المشهد لتحديده.\n2. ثم اضغط "🚩 تسجيل تعارض" لتوثيقه فورياً بالاسم والإحداثيات.');
+                    }
+                }
+
+                if (btnRecordClashToolbar) {
+                    btnRecordClashToolbar.onclick = triggerRecordClash;
+                }
+
+                // 2. تصدير BCF (Export BCF)
                 if (btnExport) {
                     btnExport.addEventListener('click', function(e) {
                         e.stopPropagation();
@@ -4847,12 +4899,12 @@
                             a.click();
                             document.body.removeChild(a);
                             URL.revokeObjectURL(url);
-                            alert('✅ تم تسجيل الانحراف وحفظ تقرير BCF بنجاح!\n\n(BCF Deviation Record Exported)');
+                            alert('✅ تم تصدير تقرير BCF بنجاح!\n\n(BCF Deviation Record Exported)');
                         }
                     });
                 }
 
-                // 2. دعم BCF (Load / Import BCF)
+                // 3. استيراد ودعم BCF (Load / Import BCF)
                 if (btnLoad && fileInput) {
                     btnLoad.addEventListener('click', function(e) {
                         e.stopPropagation();
@@ -4878,7 +4930,7 @@
                     });
                 }
 
-                // 3. معايرة (Calibration 1:1)
+                // 4. معايرة (Calibration 1:1)
                 if (btnCalib) {
                     btnCalib.addEventListener('click', function(e) {
                         e.stopPropagation();
